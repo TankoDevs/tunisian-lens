@@ -1,0 +1,57 @@
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Link } from "react-router-dom";
+import { Camera } from "lucide-react";
+
+export function Login() {
+    return (
+        <div className="min-h-[calc(100vh-4rem)] grid grid-cols-1 md:grid-cols-2">
+            {/* Form Section */}
+            <div className="flex items-center justify-center p-8 bg-background">
+                <div className="w-full max-w-md space-y-8 animate-in fade-in slide-in-from-left-4 duration-500">
+                    <div className="text-center md:text-left space-y-2">
+                        <Link to="/" className="inline-flex items-center space-x-2 md:hidden mb-4">
+                            <Camera className="h-6 w-6" />
+                            <span className="font-serif text-xl font-bold">Tunisian Lens</span>
+                        </Link>
+                        <h1 className="text-3xl font-serif font-bold tracking-tight">Welcome back</h1>
+                        <p className="text-muted-foreground">Enter your credentials to access your account</p>
+                    </div>
+
+                    <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+                        <div className="space-y-2">
+                            <label htmlFor="email" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Email</label>
+                            <Input id="email" type="email" placeholder="name@example.com" />
+                        </div>
+                        <div className="space-y-2">
+                            <label htmlFor="password" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Password</label>
+                            <Input id="password" type="password" />
+                        </div>
+                        <Button className="w-full" type="submit">Sign In</Button>
+                    </form>
+
+                    <div className="text-center text-sm text-muted-foreground">
+                        Don't have an account?{" "}
+                        <Link to="/signup" className="underline underline-offset-4 hover:text-primary">
+                            Sign up
+                        </Link>
+                    </div>
+                </div>
+            </div>
+
+            {/* Image Section */}
+            <div className="hidden md:block relative bg-muted">
+                <img
+                    src="https://images.unsplash.com/photo-1596486008882-7aa0888df552?q=80&w=1200&auto=format&fit=crop"
+                    alt="Tunisian Architecture"
+                    className="absolute inset-0 h-full w-full object-cover"
+                />
+                <div className="absolute inset-0 bg-black/20" />
+                <div className="absolute bottom-8 left-8 right-8 text-white p-6 bg-black/40 backdrop-blur-sm rounded-lg">
+                    <p className="text-lg font-serif italic">"Photography is the story I fail to put into words."</p>
+                    <p className="text-sm mt-2 opacity-80">— Destin Sparks</p>
+                </div>
+            </div>
+        </div>
+    );
+}
