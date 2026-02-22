@@ -1,13 +1,14 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { ARTISTS } from "../data/mockData"; // Keep ARTISTS
 import { Button } from "../components/ui/button";
-import { ArrowLeft, Heart, Share2, Info, Lock, Download } from "lucide-react";
+import { ArrowLeft, Heart, Share2, Info, Lock, Download, Trash2 } from "lucide-react";
 import { ProjectCard } from "../components/ui/ProjectCard";
 import { useProjects } from "../context/ProjectContext";
 
 export function ProjectDetails() {
     const { id } = useParams<{ id: string }>();
-    const { getProject, projects } = useProjects();
+    const navigate = useNavigate();
+    const { getProject, projects, deleteProject } = useProjects();
 
     const project = getProject(id!); // Use hook to get project
     // Fallback if not found (for demo)
@@ -15,25 +16,45 @@ export function ProjectDetails() {
 
     const artist = ARTISTS.find(a => a.id === project.artist.id) || project.artist; // Fallback to project.artist if not found in mock ARTISTS
     const moreProjects = projects.filter(p => p.artist.id === project.artist.id && p.id !== project.id).slice(0, 3);
+    const isOwner = project.artist.id === 'current_user';
+
+    const handleDelete = () => {
+        if (window.confirm("Are you sure you want to delete this project? This action cannot be undone.")) {
+            deleteProject(project.id);
+            navigate('/explore');
+        }
+    };
 
     return (
         <div className="min-h-screen pb-12">
             {/* Navigation Back */}
-            <div className="container mx-auto px-4 py-6">
+            <div className="container mx-auto px-4 py-6 flex justify-between items-center">
                 <Link to="/explore">
                     <Button variant="ghost" className="pl-0 gap-2">
                         <ArrowLeft className="h-4 w-4" /> Back to Explore
                     </Button>
                 </Link>
+
+                {isOwner && (
+                    <Button variant="destructive" className="gap-2" onClick={handleDelete}>
+                        <Trash2 className="h-4 w-4" /> Delete Project
+                    </Button>
+                )}
             </div>
 
             {/* Hero Image */}
             <div className="w-full bg-black">
                 <div className="container mx-auto px-0 md:px-4">
                     <img
-                        src={project.image}
+                        src={project.image || "https://picsum.photos/seed/fallback/1200/800"}
                         alt={project.title}
                         className="w-full max-h-[85vh] object-contain mx-auto"
+                        onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            if (!target.src.includes('placeholder')) {
+                                target.src = "https://picsum.photos/seed/placeholder/1200/800";
+                            }
+                        }}
                     />
                 </div>
             </div>
@@ -96,7 +117,7 @@ export function ProjectDetails() {
                                 <img src={artist.avatar} alt={artist.name} className="h-12 w-12 rounded-full object-cover" />
                                 <div>
                                     <Link to={`/artist/${artist.id}`} className="font-bold hover:underline">{artist.name}</Link>
-                                    <p className="text-xs text-muted-foreground">{artist.location}</p>
+                                    <p className="text-xs text-muted-foreground">{(artist as any).location || "Tunisia"}</p>
                                 </div>
                             </div>
                         )}

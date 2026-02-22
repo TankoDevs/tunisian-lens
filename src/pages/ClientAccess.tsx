@@ -34,7 +34,7 @@ export function ClientAccess() {
             <div className="w-full max-w-md p-8 space-y-8 bg-background rounded-lg border shadow-sm mx-4">
                 <div className="text-center space-y-2">
                     <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 mb-4">
-                        <Lock className="h-6 w-6 text-primary" />
+                        <Lock className="h-6 w-6" strokeWidth={2} />
                     </div>
                     <h1 className="text-2xl font-serif font-bold">Client Access</h1>
                     <p className="text-muted-foreground">
@@ -54,7 +54,7 @@ export function ClientAccess() {
                     </div>
 
                     <Button type="submit" className="w-full h-11 text-base">
-                        Access Gallery <ArrowRight className="ml-2 h-4 w-4" />
+                        Access Gallery <ArrowRight className="ml-2 h-4 w-4" strokeWidth={2} />
                     </Button>
                 </form>
 

@@ -26,73 +26,79 @@ export const PROJECTS = [
     {
         id: "1",
         title: "Medina Shadows",
-        image: "https://images.unsplash.com/photo-1544212903-a44b83446c67?q=80&w=800&auto=format&fit=crop",
+        image: "https://picsum.photos/seed/tunis-medina/800/600",
         category: "Street",
         likes: 124,
         artist: {
             id: "a1",
             name: "Amine Benali",
-            avatar: "https://randomuser.me/api/portraits/men/32.jpg"
+            avatar: "https://i.pravatar.cc/150?u=amine",
+            isVerified: true
         }
     },
     {
         id: "2",
         title: "Sidi Bou Said Blue",
-        image: "https://images.unsplash.com/photo-1588616183633-e71c990b7972?q=80&w=800&auto=format&fit=crop",
+        image: "https://picsum.photos/seed/sidi-bou-said/800/600",
         category: "Architecture",
         likes: 89,
         artist: {
             id: "a2",
             name: "Sarra Jaziri",
-            avatar: "https://randomuser.me/api/portraits/women/44.jpg"
+            avatar: "https://i.pravatar.cc/150?u=sarra",
+            isVerified: false
         }
     },
     {
         id: "3",
         title: "Sahara Sunset",
-        image: "https://images.unsplash.com/photo-1549309019-38374d6c6e7f?q=80&w=800&auto=format&fit=crop",
+        image: "https://picsum.photos/seed/tunisia-sahara/800/600",
         category: "Landscape",
         likes: 256,
         artist: {
             id: "a3",
             name: "Karim Tounsi",
-            avatar: "https://randomuser.me/api/portraits/men/85.jpg"
+            avatar: "https://i.pravatar.cc/150?u=karim",
+            isVerified: true
         }
     },
     {
         id: "4",
         title: "Traditional Wedding",
-        image: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=800&auto=format&fit=crop",
+        image: "https://picsum.photos/seed/tunisia-culture/800/600",
         category: "Wedding",
         likes: 312,
         artist: {
             id: "a2",
             name: "Sarra Jaziri",
-            avatar: "https://randomuser.me/api/portraits/women/44.jpg"
+            avatar: "https://i.pravatar.cc/150?u=sarra",
+            isVerified: false
         }
     },
     {
         id: "5",
         title: "Tunis Central Market",
-        image: "https://images.unsplash.com/photo-1577038896013-0599c2776c5f?q=80&w=800&auto=format&fit=crop",
+        image: "https://picsum.photos/seed/tunis-market/800/600",
         category: "Street",
         likes: 98,
         artist: {
             id: "a1",
             name: "Amine Benali",
-            avatar: "https://randomuser.me/api/portraits/men/32.jpg"
+            avatar: "https://i.pravatar.cc/150?u=amine",
+            isVerified: true
         }
     },
     {
         id: "6",
         title: "El Jem Amphitheater",
-        image: "https://images.unsplash.com/photo-1605713936660-f4633d6b05d1?q=80&w=800&auto=format&fit=crop",
+        image: "https://picsum.photos/seed/el-jem/800/600",
         category: "Architecture",
         likes: 175,
         artist: {
             id: "a3",
             name: "Karim Tounsi",
-            avatar: "https://randomuser.me/api/portraits/men/85.jpg"
+            avatar: "https://i.pravatar.cc/150?u=karim",
+            isVerified: true
         }
     }
 ];
@@ -105,6 +111,7 @@ export const ARTISTS = [
         bio: "Street photographer capturing the soul of Tunis. Lover of light and shadow.",
         location: "Tunis",
         categories: ["Street", "Documentary"],
+        isVerified: true,
         contact: {
             email: "amine.b@example.com",
             instagram: "@aminelens",
@@ -118,6 +125,7 @@ export const ARTISTS = [
         bio: "Capturing love stories and architectural marvels. Available for weddings worldwide.",
         location: "Sousse",
         categories: ["Wedding", "Architecture"],
+        isVerified: false,
         contact: {
             email: "sarra.j@example.com",
             instagram: "@sarraphoto",
@@ -131,6 +139,7 @@ export const ARTISTS = [
         bio: "Landscape photographer exploring the diverse beauty of Tunisia, from the Mediterranean to the Sahara.",
         location: "Tozeur",
         categories: ["Landscape", "Travel"],
+        isVerified: true,
         contact: {
             email: "karim.t@example.com",
             instagram: "@karimscapes",

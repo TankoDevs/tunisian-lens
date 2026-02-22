@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { ProjectCard } from "../components/ui/ProjectCard";
 import { useProjects } from "../context/ProjectContext";
+import { isArtistVerified } from "./ArtistProfile";
 
 export function Home() {
     const { publicProjects } = useProjects();
@@ -14,9 +15,15 @@ export function Home() {
             <section className="relative h-[80vh] flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 z-0">
                     <img
-                        src="https://images.unsplash.com/photo-1549309019-38374d6c6e7f?q=80&w=2000&auto=format&fit=crop"
+                        src="https://picsum.photos/seed/tunis-panorama/1920/1080"
                         alt="Tunisian Landscape"
                         className="h-full w-full object-cover"
+                        onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            if (!target.src.includes('placeholder')) {
+                                target.src = "https://picsum.photos/seed/placeholder-hero/1920/1080";
+                            }
+                        }}
                     />
                     <div className="absolute inset-0 bg-black/40" />
                 </div>
@@ -53,7 +60,7 @@ export function Home() {
                         </div>
                         <Link to="/explore">
                             <Button variant="ghost" className="hidden sm:flex items-center gap-2">
-                                View All <ArrowRight className="h-4 w-4" />
+                                View All <ArrowRight className="h-4 w-4" strokeWidth={2} />
                             </Button>
                         </Link>
                     </div>
@@ -63,6 +70,10 @@ export function Home() {
                             <ProjectCard
                                 key={project.id}
                                 {...project}
+                                artist={{
+                                    ...project.artist,
+                                    isVerified: isArtistVerified(project.artist.id)
+                                }}
                             />
                         ))}
                     </div>

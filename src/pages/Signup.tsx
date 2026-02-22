@@ -1,17 +1,71 @@
+import { useState } from "react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Camera } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { useAlert } from "../context/AlertContext";
+import { Captcha } from "../components/ui/Captcha";
 
 export function Signup() {
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [city, setCity] = useState("");
+    const [role, setRole] = useState<'photographer' | 'visitor'>("photographer");
+    const [isVerified, setIsVerified] = useState(false);
+    const { signup } = useAuth();
+    const { showAlert } = useAlert();
+    const navigate = useNavigate();
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        // Custom Validation
+        if (!firstName || !lastName) {
+            showAlert("Please enter your full name", "error");
+            return;
+        }
+        if (!email) {
+            showAlert("Email is required", "error");
+            return;
+        }
+        if (!password) {
+            showAlert("Please create a password", "error");
+            return;
+        }
+        if (role === 'photographer' && !city) {
+            showAlert("Please provide your city", "error");
+            return;
+        }
+        if (!isVerified) {
+            showAlert("Please complete the verification slider", "warning");
+            return;
+        }
+
+        try {
+            await signup(email, password, `${firstName} ${lastName}`, role);
+            navigate("/");
+        } catch (error) {
+            showAlert("Failed to create account. Please try again.", "error");
+        }
+    };
+
     return (
         <div className="min-h-[calc(100vh-4rem)] grid grid-cols-1 md:grid-cols-2">
             {/* Image Section (Left on Desktop) */}
             <div className="hidden md:block relative bg-muted order-2 md:order-1">
                 <img
-                    src="https://images.unsplash.com/photo-1563215286-34e065f49e47?q=80&w=1200&auto=format&fit=crop"
+                    src="https://picsum.photos/seed/sidi-bou-said-door/1200/1600"
                     alt="Tunisian Door"
                     className="absolute inset-0 h-full w-full object-cover"
+                    onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        if (!target.src.includes('placeholder')) {
+                            target.src = "https://picsum.photos/seed/placeholder-signup/1200/1600";
+                        }
+                    }}
                 />
                 <div className="absolute inset-0 bg-black/20" />
                 <div className="absolute bottom-8 left-8 right-8 text-white p-6 bg-black/40 backdrop-blur-sm rounded-lg">
@@ -31,30 +85,83 @@ export function Signup() {
                         <p className="text-muted-foreground">Showcase your work to the world</p>
                     </div>
 
-                    <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+                    <form className="space-y-4" onSubmit={handleSubmit} noValidate>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <label htmlFor="first-name" className="text-sm font-medium leading-none">First name</label>
-                                <Input id="first-name" placeholder="First Name" />
+                                <Input
+                                    id="first-name"
+                                    placeholder="First Name"
+                                    value={firstName}
+                                    onChange={(e) => setFirstName(e.target.value)}
+                                />
                             </div>
                             <div className="space-y-2">
                                 <label htmlFor="last-name" className="text-sm font-medium leading-none">Last name</label>
-                                <Input id="last-name" placeholder="Last Name" />
+                                <Input
+                                    id="last-name"
+                                    placeholder="Last Name"
+                                    value={lastName}
+                                    onChange={(e) => setLastName(e.target.value)}
+                                />
                             </div>
                         </div>
+                        <div className="space-y-4 pt-2">
+                            <label className="text-sm font-medium leading-none">I am a...</label>
+                            <div className="grid grid-cols-2 gap-4">
+                                <Button
+                                    type="button"
+                                    variant={role === 'photographer' ? 'default' : 'outline'}
+                                    onClick={() => setRole('photographer')}
+                                    className="w-full"
+                                >
+                                    Photographer
+                                </Button>
+                                <Button
+                                    type="button"
+                                    variant={role === 'visitor' ? 'default' : 'outline'}
+                                    onClick={() => setRole('visitor')}
+                                    className="w-full"
+                                >
+                                    Visitor
+                                </Button>
+                            </div>
+                        </div>
+
                         <div className="space-y-2">
                             <label htmlFor="email" className="text-sm font-medium leading-none">Email</label>
-                            <Input id="email" type="email" placeholder="name@example.com" />
+                            <Input
+                                id="email"
+                                type="email"
+                                placeholder="name@example.com"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
                         </div>
                         <div className="space-y-2">
                             <label htmlFor="password" className="text-sm font-medium leading-none">Password</label>
-                            <Input id="password" type="password" />
+                            <Input
+                                id="password"
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
                         </div>
-                        <div className="space-y-2">
-                            <label htmlFor="city" className="text-sm font-medium leading-none">City</label>
-                            <Input id="city" placeholder="Tunis" />
+                        {role === 'photographer' && (
+                            <div className="space-y-2">
+                                <label htmlFor="city" className="text-sm font-medium leading-none">City</label>
+                                <Input
+                                    id="city"
+                                    placeholder="Tunis"
+                                    value={city}
+                                    onChange={(e) => setCity(e.target.value)}
+                                />
+                            </div>
+                        )}
+                        <div className="pt-2">
+                            <Captcha onVerify={setIsVerified} />
                         </div>
-                        <Button className="w-full" type="submit">Create Account</Button>
+                        <Button className="w-full" type="submit" disabled={!isVerified}>Create Account</Button>
                     </form>
 
                     <div className="text-center text-sm text-muted-foreground">

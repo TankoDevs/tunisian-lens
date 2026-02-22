@@ -6,7 +6,7 @@ export function About() {
             <div className="text-center space-y-4">
                 <div className="flex justify-center mb-6">
                     <div className="p-4 bg-muted rounded-full">
-                        <Camera className="h-10 w-10 text-primary" />
+                        <Camera className="h-10 w-10" strokeWidth={2} />
                     </div>
                 </div>
                 <h1 className="text-4xl md:text-5xl font-serif font-bold tracking-tight">About Tunisian Lens</h1>

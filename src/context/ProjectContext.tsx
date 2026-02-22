@@ -1,18 +1,18 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { PROJECTS as mockProjects } from '../data/mockData';
+import { supabase } from '../lib/supabaseClient';
+import { useAuth } from './AuthContext';
 
-// Types
 export interface Artist {
     id: string;
     name: string;
     avatar: string;
+    location: string;
     bio?: string;
-    location?: string;
-    categories?: string[];
-    contact?: {
-        email: string;
-        instagram: string;
-        phone: string;
-    };
+    tags?: string[];
+    followers?: number;
+    following?: number;
+    projectCount?: number;
 }
 
 export interface Project {
@@ -25,62 +25,123 @@ export interface Project {
         id: string;
         name: string;
         avatar: string;
-        location?: string;
     };
     description?: string;
     tags?: string[];
     date?: string;
     isPrivate?: boolean;
+    isDownloadable?: boolean;
     accessCode?: string;
 }
 
 interface ProjectContextType {
-    projects: Project[]; // Contains public AND private projects? Or just public? -> Let's keep all, but provide helpers
+    projects: Project[];
     publicProjects: Project[];
-    addProject: (project: Omit<Project, 'id' | 'likes' | 'artist'>) => void;
+    isLoading: boolean;
+    addProject: (newProjectData: Omit<Project, 'id' | 'likes' | 'artist'>) => Promise<void>;
     getProject: (id: string) => Project | undefined;
     getProjectByCode: (code: string) => Project | undefined;
+    deleteProject: (id: string) => Promise<void>;
 }
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
 
-export function ProjectProvider({ children }: { children: ReactNode }) {
+export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [projects, setProjects] = useState<Project[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const { user } = useAuth();
 
-    // Initialize from localStorage
-    useEffect(() => {
-        const storedProjects = localStorage.getItem('tunisian_lens_projects_v2');
-        if (storedProjects) {
-            try {
-                setProjects(JSON.parse(storedProjects));
-            } catch (e) {
-                console.error("Failed to parse projects from local storage", e);
-                setProjects([]);
+    // Derived state for public projects
+    const publicProjects = projects.filter(p => !p.isPrivate);
+
+    // Fetch projects from Supabase
+    const fetchProjects = async () => {
+        setIsLoading(true);
+        try {
+            const { data, error } = await supabase
+                .from('projects')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.warn("Supabase fetch error, falling back to local storage/mock", error);
+                const storedProjects = localStorage.getItem('tunisian_lens_projects_v2');
+                let parsed = storedProjects ? JSON.parse(storedProjects) : mockProjects;
+
+                // DATA NORMALIZATION: Ensure 'image' exists even if saved as 'image_url' (stale data fix)
+                const normalized = parsed.map((p: any) => ({
+                    ...p,
+                    image: p.image || p.image_url || "https://images.unsplash.com/photo-1544212903-a44b83446c67?q=80&w=800&auto=format&fit=crop"
+                }));
+
+                setProjects(normalized);
+            } else if (data && data.length > 0) {
+                // Normalize Supabase data too (mapping snake_case to camelCase)
+                const normalized = data.map((p: any) => ({
+                    ...p,
+                    image: p.image || p.image_url,
+                    isPrivate: p.isPrivate ?? p.is_private,
+                    isDownloadable: p.isDownloadable ?? p.is_downloadable,
+                    accessCode: p.accessCode ?? p.access_code
+                }));
+                setProjects(normalized);
+            } else {
+                setProjects(mockProjects);
             }
-        } else {
-            setProjects([]);
+        } catch (e) {
+            setProjects(mockProjects);
+        } finally {
+            setIsLoading(false);
         }
+    };
+
+    useEffect(() => {
+        fetchProjects();
     }, []);
 
-    const addProject = (newProjectData: Omit<Project, 'id' | 'likes' | 'artist'>) => {
-        const currentUserArtist = {
-            id: "current_user",
-            name: "You",
-            avatar: "https://randomuser.me/api/portraits/lego/1.jpg",
-            location: "Tunis"
-        };
+    const addProject = async (newProjectData: Omit<Project, 'id' | 'likes' | 'artist'>) => {
+        if (!user) return;
 
-        const newProject: Project = {
-            id: Date.now().toString(),
+        const newProject = {
+            title: newProjectData.title,
+            category: newProjectData.category,
+            image: newProjectData.image,
+            description: newProjectData.description,
+            tags: newProjectData.tags,
+            is_private: newProjectData.isPrivate,
+            is_downloadable: newProjectData.isDownloadable,
+            access_code: newProjectData.accessCode,
             likes: 0,
-            artist: currentUserArtist,
-            date: new Date().toISOString(),
-            ...newProjectData
+            artist: {
+                id: user.id,
+                name: user.name,
+                avatar: user.avatar
+            }
         };
 
-        const updatedProjects = [newProject, ...projects];
-        setProjects(updatedProjects);
-        localStorage.setItem('tunisian_lens_projects_v2', JSON.stringify(updatedProjects));
+        const { data, error } = await supabase
+            .from('projects')
+            .insert([newProject])
+            .select();
+
+        if (error) {
+            console.error("Error adding project to Supabase:", error);
+            // Fallback for demo
+            const localProject: Project = {
+                id: Date.now().toString(),
+                ...newProject,
+                artist: newProject.artist as any,
+                date: new Date().toISOString()
+            } as any;
+            const updated = [localProject, ...projects];
+            setProjects(updated);
+            localStorage.setItem('tunisian_lens_projects_v2', JSON.stringify(updated));
+            return;
+        }
+
+        if (data) {
+            setProjects([data[0], ...projects]);
+        }
     };
 
     const getProject = (id: string) => {
@@ -88,15 +149,29 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
     };
 
     const getProjectByCode = (code: string) => {
-        // Case insensitive match for better UX
-        return projects.find(p => p.isPrivate && p.accessCode && p.accessCode.toLowerCase() === code.toLowerCase());
+        return projects.find(p => p.accessCode === code);
     };
 
-    // Filter out private projects for general consumption
-    const publicProjects = projects.filter(p => !p.isPrivate);
+    const deleteProject = async (id: string) => {
+        const { error } = await supabase
+            .from('projects')
+            .delete()
+            .eq('id', id);
+
+        if (error) {
+            console.error("Error deleting project from Supabase:", error);
+            // Fallback for local
+            const updatedProjects = projects.filter(p => p.id !== id);
+            setProjects(updatedProjects);
+            localStorage.setItem('tunisian_lens_projects_v2', JSON.stringify(updatedProjects));
+            return;
+        }
+
+        setProjects(projects.filter(p => p.id !== id));
+    };
 
     return (
-        <ProjectContext.Provider value={{ projects, publicProjects, addProject, getProject, getProjectByCode }}>
+        <ProjectContext.Provider value={{ projects, publicProjects, isLoading, addProject, getProject, getProjectByCode, deleteProject }}>
             {children}
         </ProjectContext.Provider>
     );

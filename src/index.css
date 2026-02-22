@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -81,6 +81,36 @@
   .animate-scan {
     animation: scan 2s linear infinite;
   }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply tracking-tight;
+  }
+
+  button,
+  label,
+  select,
+  input,
+  textarea {
+    @apply font-medium;
+  }
+
+  /* Specific heading weights for consistency */
+  h1 {
+    @apply font-bold text-4xl md:text-5xl;
+  }
+
+  h2 {
+    @apply font-semibold text-3xl md:text-4xl;
+  }
+
+  h3 {
+    @apply font-semibold text-2xl md:text-3xl;
+  }
 }
 
 @layer base {
@@ -91,5 +121,7 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    font-family: 'Inter', sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 }
