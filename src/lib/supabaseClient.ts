@@ -1,12 +1,24 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://your-project.supabase.co'
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'your-anon-key'
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || ''
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || ''
 
-// Simple check to prevent crash if URL is clearly dummy
-export const isConfigured = supabaseUrl !== 'https://your-project.supabase.co' && !supabaseUrl.includes('your-project')
+// Configured only when both env vars are present and look valid
+export const isConfigured =
+    supabaseUrl.startsWith('https://') &&
+    supabaseUrl.includes('.supabase.co') &&
+    supabaseAnonKey.length > 10
 
-export const supabase = createClient(
-    isConfigured ? supabaseUrl : 'https://dummy-url-to-prevent-crash.supabase.co',
-    supabaseAnonKey
-)
+let _supabase: SupabaseClient | null = null
+
+if (isConfigured) {
+    try {
+        _supabase = createClient(supabaseUrl, supabaseAnonKey)
+    } catch (e) {
+        console.warn('Supabase client failed to initialize:', e)
+        _supabase = null
+    }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+export const supabase = _supabase!

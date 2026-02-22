@@ -7,20 +7,24 @@ import { ProjectProvider } from './context/ProjectContext'
 import { AuthProvider } from './context/AuthContext'
 import { AlertProvider } from './context/AlertContext'
 import { ThemeProvider } from './context/ThemeContext'
+import { ErrorBoundary } from './components/ui/ErrorBoundary'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
-      <ThemeProvider>
-        <AlertProvider>
-          <AuthProvider>
-            <ProjectProvider>
-              <App />
-            </ProjectProvider>
-          </AuthProvider>
-        </AlertProvider>
-      </ThemeProvider>
-    </BrowserRouter>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <ThemeProvider>
+          <AlertProvider>
+            <AuthProvider>
+              <ProjectProvider>
+                <App />
+              </ProjectProvider>
+            </AuthProvider>
+          </AlertProvider>
+        </ThemeProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
   </StrictMode>,
 )
+
 
