@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { PROJECTS as mockProjects } from '../data/mockData';
-import { supabase } from '../lib/supabaseClient';
+import { supabase, isConfigured } from '../lib/supabaseClient';
 import { useAuth } from './AuthContext';
 
 export interface Artist {
@@ -54,42 +53,47 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     // Derived state for public projects
     const publicProjects = projects.filter(p => !p.isPrivate);
 
-    // Fetch projects from Supabase
+    // Fetch projects — from Supabase if configured, otherwise from localStorage only
     const fetchProjects = async () => {
         setIsLoading(true);
         try {
-            const { data, error } = await supabase
-                .from('projects')
-                .select('*')
-                .order('created_at', { ascending: false });
+            if (isConfigured) {
+                const { data, error } = await supabase
+                    .from('projects')
+                    .select('*')
+                    .order('created_at', { ascending: false });
 
-            if (error) {
-                console.warn("Supabase fetch error, falling back to local storage/mock", error);
-                const storedProjects = localStorage.getItem('tunisian_lens_projects_v2');
-                let parsed = storedProjects ? JSON.parse(storedProjects) : mockProjects;
-
-                // DATA NORMALIZATION: Ensure 'image' exists even if saved as 'image_url' (stale data fix)
-                const normalized = parsed.map((p: any) => ({
-                    ...p,
-                    image: p.image || p.image_url || "https://images.unsplash.com/photo-1544212903-a44b83446c67?q=80&w=800&auto=format&fit=crop"
-                }));
-
-                setProjects(normalized);
-            } else if (data && data.length > 0) {
-                // Normalize Supabase data too (mapping snake_case to camelCase)
-                const normalized = data.map((p: any) => ({
-                    ...p,
-                    image: p.image || p.image_url,
-                    isPrivate: p.isPrivate ?? p.is_private,
-                    isDownloadable: p.isDownloadable ?? p.is_downloadable,
-                    accessCode: p.accessCode ?? p.access_code
-                }));
-                setProjects(normalized);
+                if (error) {
+                    console.warn('Supabase fetch error, using localStorage fallback', error);
+                    const stored = localStorage.getItem('tunisian_lens_projects_v2');
+                    const parsed: any[] = stored ? JSON.parse(stored) : [];
+                    setProjects(parsed.map((p: any) => ({
+                        ...p,
+                        image: p.image || p.image_url || ''
+                    })));
+                } else if (data && data.length > 0) {
+                    setProjects(data.map((p: any) => ({
+                        ...p,
+                        image: p.image || p.image_url,
+                        isPrivate: p.isPrivate ?? p.is_private,
+                        isDownloadable: p.isDownloadable ?? p.is_downloadable,
+                        accessCode: p.accessCode ?? p.access_code
+                    })));
+                } else {
+                    setProjects([]);
+                }
             } else {
-                setProjects(mockProjects);
+                // No Supabase — use localStorage submissions only (no mock data)
+                const stored = localStorage.getItem('tunisian_lens_projects_v2');
+                const parsed: any[] = stored ? JSON.parse(stored) : [];
+                setProjects(parsed.map((p: any) => ({
+                    ...p,
+                    image: p.image || p.image_url || ''
+                })));
             }
         } catch (e) {
-            setProjects(mockProjects);
+            console.warn('Project fetch failed:', e);
+            setProjects([]);
         } finally {
             setIsLoading(false);
         }

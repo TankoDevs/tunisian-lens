@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Filter } from "lucide-react";
+import { Search, Filter, Camera } from "lucide-react";
 import { CATEGORIES, CITIES } from "../data/mockData"; // Keep CATEGORIES/CITIES from mockData
 import { ProjectCard } from "../components/ui/ProjectCard";
 import { Button } from "../components/ui/button";
@@ -7,6 +7,7 @@ import { Input } from "../components/ui/input";
 import { cn } from "../lib/utils";
 import { useProjects } from "../context/ProjectContext";
 import { isArtistVerified } from "./ArtistProfile";
+import { Link } from "react-router-dom";
 
 export function Explore() {
     const { publicProjects, deleteProject } = useProjects();
@@ -112,6 +113,18 @@ export function Explore() {
                             onDelete={deleteProject}
                         />
                     ))
+                ) : publicProjects.length === 0 ? (
+                    // Truly empty — no projects at all
+                    <div className="col-span-full py-24 flex flex-col items-center gap-4 text-center text-muted-foreground">
+                        <Camera size={48} strokeWidth={1} className="opacity-30" />
+                        <div>
+                            <p className="text-xl font-semibold text-foreground">No work here yet</p>
+                            <p className="text-sm mt-1">Be the first Tunisian photographer to share your work.</p>
+                        </div>
+                        <Link to="/submit">
+                            <Button variant="default" className="mt-2">Submit Your Work</Button>
+                        </Link>
+                    </div>
                 ) : (
                     <div className="col-span-full py-20 text-center text-muted-foreground">
                         <p className="text-lg">No projects found matching your criteria.</p>
