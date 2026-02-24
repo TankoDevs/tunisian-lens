@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useMarketplace } from "../context/MarketplaceContext";
 import { Button } from "./ui/button";
-import { Menu, X, Camera, User, LogIn, UserPlus, LogOut, Sun, Moon } from "lucide-react";
+import { Menu, X, Camera, User, LogIn, UserPlus, LogOut, Sun, Moon, Briefcase } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
@@ -12,6 +13,7 @@ export function Navbar() {
     const userMenuRef = useRef<HTMLDivElement>(null);
     const { user, isAuthenticated, logout } = useAuth();
     const { theme, toggleTheme } = useTheme();
+    const { getConnects } = useMarketplace();
     const navigate = useNavigate();
 
     // Close user menu when clicking outside
@@ -45,11 +47,14 @@ export function Navbar() {
                     <Link to="/explore" className="text-sm font-medium hover:text-primary/80 transition-colors">
                         Explore
                     </Link>
-                    <Link to="/artists" className="text-sm font-medium hover:text-primary/80 transition-colors">
+                    <Link to="/photographers" className="text-sm font-medium hover:text-primary/80 transition-colors">
                         Photographers
                     </Link>
                     <Link to="/about" className="text-sm font-medium hover:text-primary/80 transition-colors">
                         About
+                    </Link>
+                    <Link to="/jobs" className="text-sm font-medium hover:text-primary/80 transition-colors flex items-center gap-1.5">
+                        Find Jobs
                     </Link>
                 </div>
 
@@ -114,7 +119,21 @@ export function Navbar() {
                                                     <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
                                                 </div>
                                             </div>
+                                            {user?.role === 'photographer' && (
+                                                <div className="px-4 py-2 border-b bg-amber-50/50 dark:bg-amber-950/20 flex items-center justify-between">
+                                                    <span className="text-[10px] font-bold uppercase tracking-tight text-amber-700 dark:text-amber-500">My Connects</span>
+                                                    <span className="font-bold text-sm text-amber-700 dark:text-amber-500">⚡ {getConnects(user.id)}</span>
+                                                </div>
+                                            )}
                                             <div className="p-2 space-y-1">
+                                                <Link
+                                                    to="/dashboard"
+                                                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg hover:bg-accent transition-colors"
+                                                    onClick={() => setIsUserMenuOpen(false)}
+                                                >
+                                                    <Briefcase className="h-4 w-4" strokeWidth={2} />
+                                                    Dashboard
+                                                </Link>
                                                 {user?.role === 'photographer' && (
                                                     <Link
                                                         to={`/artist/${user.id}`}
@@ -178,10 +197,23 @@ export function Navbar() {
                     </div>
                 </div>
 
-                {/* Mobile Menu Toggle */}
-                <button className="md:hidden" onClick={() => setIsOpen(!isOpen)}>
-                    {isOpen ? <X className="h-6 w-6" strokeWidth={2} /> : <Menu className="h-6 w-6" strokeWidth={2} />}
-                </button>
+                {/* Mobile Right Controls */}
+                <div className="md:hidden flex items-center gap-2">
+                    <button
+                        className="rounded-full w-9 h-9 flex items-center justify-center hover:bg-accent transition-colors"
+                        onClick={toggleTheme}
+                        title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+                    >
+                        {theme === 'light' ? (
+                            <Moon className="h-5 w-5" strokeWidth={2} />
+                        ) : (
+                            <Sun className="h-5 w-5" strokeWidth={2} />
+                        )}
+                    </button>
+                    <button onClick={() => setIsOpen(!isOpen)}>
+                        {isOpen ? <X className="h-6 w-6" strokeWidth={2} /> : <Menu className="h-6 w-6" strokeWidth={2} />}
+                    </button>
+                </div>
             </div>
 
             {/* Mobile Menu */}
@@ -190,11 +222,14 @@ export function Navbar() {
                     <Link to="/explore" className="block text-sm font-medium py-2" onClick={() => setIsOpen(false)}>
                         Explore
                     </Link>
-                    <Link to="/artists" className="block text-sm font-medium py-2" onClick={() => setIsOpen(false)}>
+                    <Link to="/photographers" className="block text-sm font-medium py-2" onClick={() => setIsOpen(false)}>
                         Photographers
                     </Link>
                     <Link to="/about" className="block text-sm font-medium py-2" onClick={() => setIsOpen(false)}>
                         About
+                    </Link>
+                    <Link to="/jobs" className="block text-sm font-medium py-2 text-primary font-bold" onClick={() => setIsOpen(false)}>
+                        Find Jobs
                     </Link>
                     <div className="border-t pt-4 space-y-4">
                         <Link to="/client-access" className="block text-sm font-medium py-2 text-primary" onClick={() => setIsOpen(false)}>
@@ -203,6 +238,17 @@ export function Navbar() {
                         <Link to="/submit" className="block text-sm font-medium py-2" onClick={() => setIsOpen(false)}>
                             Submit Work
                         </Link>
+                        {/* Theme Toggle Row */}
+                        <button
+                            className="flex items-center gap-3 w-full text-sm font-medium py-2"
+                            onClick={toggleTheme}
+                        >
+                            {theme === 'light' ? (
+                                <><Moon className="h-4 w-4" strokeWidth={2} /> Switch to Dark Mode</>
+                            ) : (
+                                <><Sun className="h-4 w-4" strokeWidth={2} /> Switch to Light Mode</>
+                            )}
+                        </button>
                         <div className="grid grid-cols-2 gap-3 pt-2">
                             <Link to="/login" onClick={() => setIsOpen(false)}>
                                 <Button variant="outline" className="w-full">Log In</Button>

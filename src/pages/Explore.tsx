@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Search, Filter, Camera } from "lucide-react";
-import { CATEGORIES, CITIES } from "../data/mockData"; // Keep CATEGORIES/CITIES from mockData
+import { Search, Filter, Camera, CheckCircle2 } from "lucide-react";
+import { CATEGORIES, COUNTRIES } from "../data/mockData";
 import { ProjectCard } from "../components/ui/ProjectCard";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -12,8 +12,9 @@ import { Link } from "react-router-dom";
 export function Explore() {
     const { publicProjects, deleteProject } = useProjects();
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-    const [selectedCity, setSelectedCity] = useState<string | null>(null);
+    const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
+    const [verifiedOnly, setVerifiedOnly] = useState(false);
     const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
 
     const filteredProjects = publicProjects.filter((project) => {
@@ -23,8 +24,9 @@ export function Explore() {
             project.title.toLowerCase().includes(searchLower) ||
             project.artist.name.toLowerCase().includes(searchLower) ||
             project.category.toLowerCase().includes(searchLower);
+        const matchesVerified = !verifiedOnly || isArtistVerified(project.artist.id);
 
-        return matchesCategory && matchesSearch;
+        return matchesCategory && matchesSearch && matchesVerified;
     });
 
     return (
@@ -78,23 +80,34 @@ export function Explore() {
                         ))}
                     </div>
 
-                    {/* Cities (Visual UI for now) */}
-                    <div className="flex flex-wrap gap-2 pt-2 border-t">
-                        <span className="text-sm text-muted-foreground flex items-center mr-2">
-                            City:
-                        </span>
-                        {CITIES.slice(0, 5).map((city) => (
+                    {/* Country filter */}
+                    <div className="flex flex-wrap gap-2 pt-2 border-t items-center">
+                        <span className="text-sm text-muted-foreground mr-1">Country:</span>
+                        {COUNTRIES.slice(0, 8).map((country) => (
                             <Button
-                                key={city}
-                                variant={selectedCity === city ? "secondary" : "ghost"}
+                                key={country}
+                                variant={selectedCountry === country ? "secondary" : "ghost"}
                                 size="sm"
-                                onClick={() => setSelectedCity(city === selectedCity ? null : city)}
+                                onClick={() => setSelectedCountry(country === selectedCountry ? null : country)}
                                 className="text-xs h-7"
                             >
-                                {city}
+                                {country}
                             </Button>
                         ))}
-                        {/* More cities would go here */}
+                    </div>
+
+                    {/* Verified Only */}
+                    <div className="flex items-center gap-2 pt-2 border-t">
+                        <button
+                            onClick={() => setVerifiedOnly(!verifiedOnly)}
+                            className={cn(
+                                "flex items-center gap-2 text-sm px-3 py-1.5 rounded-full border transition-colors",
+                                verifiedOnly ? "bg-foreground text-background border-foreground" : "hover:bg-muted border-border"
+                            )}
+                        >
+                            <CheckCircle2 className="h-3.5 w-3.5" strokeWidth={2} />
+                            Verified Only
+                        </button>
                     </div>
                 </div>
             </div>
@@ -128,7 +141,7 @@ export function Explore() {
                 ) : (
                     <div className="col-span-full py-20 text-center text-muted-foreground">
                         <p className="text-lg">No projects found matching your criteria.</p>
-                        <Button variant="link" onClick={() => { setSelectedCategory(null); setSearchQuery(""); setSelectedCity(null); }}>
+                        <Button variant="link" onClick={() => { setSelectedCategory(null); setSearchQuery(""); setSelectedCountry(null); setVerifiedOnly(false); }}>
                             Clear all filters
                         </Button>
                     </div>

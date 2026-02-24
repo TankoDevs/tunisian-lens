@@ -13,7 +13,7 @@ export function Signup() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [city, setCity] = useState("");
-    const [role, setRole] = useState<'photographer' | 'visitor'>("photographer");
+    const [role, setRole] = useState<'photographer' | 'visitor' | 'client'>("photographer");
     const [isVerified, setIsVerified] = useState(false);
     const { signup } = useAuth();
     const { showAlert } = useAlert();
@@ -45,7 +45,7 @@ export function Signup() {
         }
 
         try {
-            await signup(email, password, `${firstName} ${lastName}`, role);
+            await signup(email, password, `${firstName} ${lastName}`, role, role === 'photographer' ? { city } : undefined);
             navigate("/");
         } catch (error) {
             showAlert("Failed to create account. Please try again.", "error");
@@ -108,7 +108,7 @@ export function Signup() {
                         </div>
                         <div className="space-y-4 pt-2">
                             <label className="text-sm font-medium leading-none">I am a...</label>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-3 gap-4">
                                 <Button
                                     type="button"
                                     variant={role === 'photographer' ? 'default' : 'outline'}
@@ -124,6 +124,14 @@ export function Signup() {
                                     className="w-full"
                                 >
                                     Visitor
+                                </Button>
+                                <Button
+                                    type="button"
+                                    variant={role === 'client' ? 'default' : 'outline'}
+                                    onClick={() => setRole('client')}
+                                    className="w-full"
+                                >
+                                    Client
                                 </Button>
                             </div>
                         </div>

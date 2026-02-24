@@ -1,0 +1,230 @@
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { ArrowLeft, Briefcase } from "lucide-react";
+import { motion } from "framer-motion";
+import { useMarketplace } from "../context/MarketplaceContext";
+import { useAuth } from "../context/AuthContext";
+import { JOB_CATEGORIES } from "../data/mockData";
+import { Button } from "../components/ui/button";
+
+export function PostJob() {
+    const { postJob } = useMarketplace();
+    const { user, isAuthenticated } = useAuth();
+    const navigate = useNavigate();
+
+    const [form, setForm] = useState({
+        title: '',
+        description: '',
+        budget: '',
+        currency: 'USD',
+        location: '',
+        isRemote: false,
+        category: JOB_CATEGORIES[0],
+        deadline: '',
+        connectsRequired: 4,
+    });
+    const [submitted, setSubmitted] = useState(false);
+    const [error, setError] = useState('');
+
+    if (!isAuthenticated) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center space-y-4">
+                    <Briefcase className="h-12 w-12 mx-auto text-muted-foreground opacity-40" strokeWidth={1.5} />
+                    <p className="text-lg font-medium">Sign in to post a job</p>
+                    <Link to="/login"><Button>Log In</Button></Link>
+                </div>
+            </div>
+        );
+    }
+
+    if (user?.role === 'photographer') {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center space-y-4">
+                    <Briefcase className="h-12 w-12 mx-auto text-muted-foreground opacity-40" strokeWidth={1.5} />
+                    <p className="text-lg font-medium">Only clients can post jobs</p>
+                    <p className="text-sm text-muted-foreground">Photographers can browse and apply to jobs.</p>
+                    <Link to="/jobs"><Button variant="outline">Browse Jobs</Button></Link>
+                </div>
+            </div>
+        );
+    }
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        setError('');
+        if (!form.title.trim() || !form.description.trim() || !form.budget || !form.deadline) {
+            setError('Please fill in all required fields.');
+            return;
+        }
+        postJob({
+            title: form.title.trim(),
+            description: form.description.trim(),
+            budget: parseInt(form.budget),
+            currency: form.currency,
+            location: form.location.trim() || undefined,
+            isRemote: form.isRemote,
+            category: form.category,
+            deadline: form.deadline,
+            connectsRequired: form.connectsRequired,
+        });
+        setSubmitted(true);
+        setTimeout(() => navigate('/jobs'), 1800);
+    };
+
+    if (submitted) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="text-center space-y-4"
+                >
+                    <div className="text-5xl">🎉</div>
+                    <p className="text-xl font-semibold">Job posted successfully!</p>
+                    <p className="text-muted-foreground text-sm">Redirecting to the job board...</p>
+                </motion.div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="min-h-screen bg-background py-10">
+            <div className="container mx-auto px-4 max-w-2xl">
+                <Link to="/jobs" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6">
+                    <ArrowLeft className="h-4 w-4" strokeWidth={2} /> Back to jobs
+                </Link>
+
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4 }}
+                >
+                    <h1 className="font-serif text-3xl font-bold mb-1">Post a Photography Job</h1>
+                    <p className="text-muted-foreground mb-8">Verified photographers will apply using their Connects.</p>
+
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        {/* Title */}
+                        <div className="space-y-1.5">
+                            <label className="text-sm font-medium">Job Title <span className="text-red-500">*</span></label>
+                            <input
+                                type="text"
+                                value={form.title}
+                                onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
+                                placeholder="e.g. Wedding Photographer for June Event"
+                                className="w-full h-10 px-3 rounded-lg border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                            />
+                        </div>
+
+                        {/* Category */}
+                        <div className="space-y-1.5">
+                            <label className="text-sm font-medium">Category <span className="text-red-500">*</span></label>
+                            <select
+                                value={form.category}
+                                onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
+                                className="w-full h-10 px-3 rounded-lg border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                            >
+                                {JOB_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                            </select>
+                        </div>
+
+                        {/* Description */}
+                        <div className="space-y-1.5">
+                            <label className="text-sm font-medium">Description <span className="text-red-500">*</span></label>
+                            <textarea
+                                value={form.description}
+                                onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
+                                placeholder="Describe the job in detail: what you need, the event, your style preference, timeline, etc."
+                                rows={5}
+                                className="w-full px-3 py-2 rounded-lg border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
+                            />
+                        </div>
+
+                        {/* Budget + Currency */}
+                        <div className="space-y-1.5">
+                            <label className="text-sm font-medium">Budget <span className="text-red-500">*</span></label>
+                            <div className="flex gap-2">
+                                <input
+                                    type="number"
+                                    min="1"
+                                    value={form.budget}
+                                    onChange={e => setForm(f => ({ ...f, budget: e.target.value }))}
+                                    placeholder="e.g. 800"
+                                    className="flex-1 h-10 px-3 rounded-lg border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                                />
+                                <select
+                                    value={form.currency}
+                                    onChange={e => setForm(f => ({ ...f, currency: e.target.value }))}
+                                    className="w-24 h-10 px-2 rounded-lg border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                                >
+                                    {['USD', 'EUR', 'TND', 'GBP', 'AED'].map(c => <option key={c} value={c}>{c}</option>)}
+                                </select>
+                            </div>
+                        </div>
+
+                        {/* Location */}
+                        <div className="space-y-1.5">
+                            <label className="text-sm font-medium">Location <span className="text-muted-foreground text-xs">(optional)</span></label>
+                            <input
+                                type="text"
+                                value={form.location}
+                                onChange={e => setForm(f => ({ ...f, location: e.target.value }))}
+                                placeholder="e.g. Tunis, Tunisia"
+                                className="w-full h-10 px-3 rounded-lg border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                            />
+                            <label className="flex items-center gap-2 text-sm cursor-pointer mt-1">
+                                <input
+                                    type="checkbox"
+                                    checked={form.isRemote}
+                                    onChange={e => setForm(f => ({ ...f, isRemote: e.target.checked }))}
+                                    className="rounded"
+                                />
+                                Remote / brief coordination only
+                            </label>
+                        </div>
+
+                        {/* Deadline */}
+                        <div className="space-y-1.5">
+                            <label className="text-sm font-medium">Deadline <span className="text-red-500">*</span></label>
+                            <input
+                                type="date"
+                                value={form.deadline}
+                                min={new Date().toISOString().split('T')[0]}
+                                onChange={e => setForm(f => ({ ...f, deadline: e.target.value }))}
+                                className="w-full h-10 px-3 rounded-lg border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                            />
+                        </div>
+
+                        {/* Connects Required */}
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium">
+                                Connects Required to Apply
+                                <span className="ml-2 text-amber-600 font-bold">{form.connectsRequired}</span>
+                            </label>
+                            <p className="text-xs text-muted-foreground">Higher connects = fewer but more serious applicants. Recommended: 2–6.</p>
+                            <input
+                                type="range"
+                                min="1"
+                                max="10"
+                                value={form.connectsRequired}
+                                onChange={e => setForm(f => ({ ...f, connectsRequired: parseInt(e.target.value) }))}
+                                className="w-full accent-amber-500"
+                            />
+                            <div className="flex justify-between text-xs text-muted-foreground">
+                                <span>1 (low barrier)</span>
+                                <span>10 (high barrier)</span>
+                            </div>
+                        </div>
+
+                        {error && <p className="text-sm text-red-500 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</p>}
+
+                        <Button type="submit" className="w-full h-11" size="lg">
+                            Post Job
+                        </Button>
+                    </form>
+                </motion.div>
+            </div>
+        </div>
+    );
+}

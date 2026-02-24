@@ -10,25 +10,29 @@ import { Login } from "./pages/Login";
 import { Signup } from "./pages/Signup";
 import { About } from "./pages/About";
 import { SubmitProject } from "./pages/SubmitProject";
-
 import { ClientAccess } from "./pages/ClientAccess";
 import { Links } from "./pages/Links";
 import { LoadingScreen } from "./components/ui/LoadingScreen";
+import { Photographers } from "./pages/Photographers";
+import { Hire } from "./pages/Hire";
+import { Jobs } from "./pages/Jobs";
+import { PostJob } from "./pages/PostJob";
+import { JobDetail } from "./pages/JobDetail";
+import { Dashboard } from "./pages/Dashboard";
+import { MarketplaceProvider } from "./context/MarketplaceContext";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate initial load time or wait for resources
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 2000); // 2s total to allow at least one full rotation + extra for "clean" feel
-
+    }, 2000);
     return () => clearTimeout(timer);
   }, []);
 
   return (
-    <>
+    <MarketplaceProvider>
       <AnimatePresence mode="wait">
         {isLoading && <LoadingScreen key="loader" />}
       </AnimatePresence>
@@ -45,9 +49,15 @@ function App() {
           <Route path="/submit" element={<SubmitProject />} />
           <Route path="/client-access" element={<ClientAccess />} />
           <Route path="/links" element={<Links />} />
+          <Route path="/photographers" element={<Photographers />} />
+          <Route path="/hire/:id" element={<Hire />} />
+          <Route path="/jobs" element={<Jobs />} />
+          <Route path="/jobs/post" element={<PostJob />} />
+          <Route path="/jobs/:id" element={<JobDetail />} />
+          <Route path="/dashboard" element={<Dashboard />} />
         </Route>
       </Routes>
-    </>
+    </MarketplaceProvider>
   );
 }
 

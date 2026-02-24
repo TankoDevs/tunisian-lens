@@ -6,14 +6,14 @@ interface User {
     email: string;
     name: string;
     avatar?: string;
-    role: 'photographer' | 'visitor' | 'admin';
+    role: 'photographer' | 'visitor' | 'admin' | 'client';
 }
 
 interface AuthContextType {
     user: User | null;
     isAuthenticated: boolean;
     login: (email: string, password: string) => Promise<void>;
-    signup: (email: string, password: string, name: string, role?: 'photographer' | 'visitor' | 'admin') => Promise<void>;
+    signup: (email: string, password: string, name: string, role?: 'photographer' | 'visitor' | 'admin' | 'client', metadata?: Record<string, any>) => Promise<void>;
     logout: () => void;
 }
 
@@ -43,34 +43,104 @@ seedAdminAccount();
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
 
+    const fetchUserProfile = async (supabaseUser: any) => {
+        try {
+            // 1. Get user role and verification status from public.users
+            let { data: profile, error: profileError } = await supabase
+                .from('users')
+                .select('*')
+                .eq('id', supabaseUser.id)
+                .single();
+
+            // If profile doesn't exist (happens right after signup), the trigger might not have finished
+            // or we might need to create it manually if triggers are disabled.
+            if (profileError && profileError.code === 'PGRST116') {
+                const { data: newProfile, error: createError } = await supabase
+                    .from('users')
+                    .upsert({
+                        id: supabaseUser.id,
+                        email: supabaseUser.email,
+                        name: supabaseUser.user_metadata.full_name || supabaseUser.email?.split('@')[0],
+                        role: supabaseUser.user_metadata.role || 'photographer'
+                    })
+                    .select()
+                    .single();
+
+                if (!createError) profile = newProfile;
+            }
+
+            // 2. If photographer, ensure photographer record exists
+            if (profile?.role === 'photographer') {
+                const { data: photo, error: photoError } = await supabase
+                    .from('photographers')
+                    .select('*')
+                    .eq('user_id', supabaseUser.id)
+                    .single();
+
+                if (photoError && photoError.code === 'PGRST116') {
+                    // Create photographer profile
+                    await supabase.from('photographers').insert({
+                        user_id: supabaseUser.id,
+                        location: supabaseUser.user_metadata.city || '',
+                        connects_balance: 0 // Start at 0 until verified
+                    });
+                }
+
+                // 3. Connects Award Logic: If verified and never awarded, give 20 connects
+                if (profile.is_verified) {
+                    const { data: transactions } = await supabase
+                        .from('connect_transactions')
+                        .select('id')
+                        .eq('photographer_id', photo?.id || '')
+                        .eq('reason', 'bonus')
+                        .limit(1);
+
+                    if (!transactions || transactions.length === 0) {
+                        // Get photo id if we just created it or it was missing
+                        const photoId = photo?.id || (await supabase.from('photographers').select('id').eq('user_id', supabaseUser.id).single()).data?.id;
+
+                        if (photoId) {
+                            // Award 20 connects
+                            await supabase.from('photographers').update({ connects_balance: 20 }).eq('id', photoId);
+                            await supabase.from('connect_transactions').insert({
+                                photographer_id: photoId,
+                                amount: 20,
+                                reason: 'bonus'
+                            });
+                        }
+                    }
+                }
+            }
+
+            // Map data
+            const userData: User = {
+                id: supabaseUser.id,
+                email: supabaseUser.email || '',
+                name: profile?.name || supabaseUser.user_metadata.full_name || supabaseUser.email?.split('@')[0] || 'User',
+                avatar: supabaseUser.user_metadata.avatar_url || "https://randomuser.me/api/portraits/lego/1.jpg",
+                role: profile?.role || supabaseUser.user_metadata.role || 'photographer'
+            };
+
+            setUser(userData);
+        } catch (e) {
+            console.error("Failed to fetch extended profile:", e);
+        }
+    };
+
     // Sync auth state
     useEffect(() => {
         if (isConfigured) {
             // Get initial Supabase session
             supabase.auth.getSession().then(({ data: { session } }) => {
                 if (session?.user) {
-                    const u = session.user;
-                    setUser({
-                        id: u.id,
-                        email: u.email || '',
-                        name: u.user_metadata.full_name || u.email?.split('@')[0] || 'User',
-                        avatar: u.user_metadata.avatar_url || "https://randomuser.me/api/portraits/lego/1.jpg",
-                        role: u.user_metadata.role || 'photographer'
-                    });
+                    fetchUserProfile(session.user);
                 }
             });
 
             // Listen for Supabase auth changes
             const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
                 if (session?.user) {
-                    const u = session.user;
-                    setUser({
-                        id: u.id,
-                        email: u.email || '',
-                        name: u.user_metadata.full_name || u.email?.split('@')[0] || 'User',
-                        avatar: u.user_metadata.avatar_url || "https://randomuser.me/api/portraits/lego/1.jpg",
-                        role: u.user_metadata.role || 'photographer'
-                    });
+                    fetchUserProfile(session.user);
                 } else {
                     setUser(null);
                 }
@@ -119,7 +189,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     };
 
-    const signup = async (email: string, password: string, name: string, role: 'photographer' | 'visitor' | 'admin' = 'photographer') => {
+    const signup = async (email: string, password: string, name: string, role: 'photographer' | 'visitor' | 'admin' | 'client' = 'photographer', metadata?: Record<string, any>) => {
         if (isConfigured) {
             const { error } = await supabase.auth.signUp({
                 email,
@@ -127,7 +197,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 options: {
                     data: {
                         full_name: name,
-                        role: role
+                        role: role,
+                        ...metadata
                     },
                 },
             });
@@ -144,7 +215,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 email,
                 password,
                 name,
-                role
+                role,
+                ...metadata
             };
 
             mockUsers.push(newUser);
@@ -155,7 +227,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 email: newUser.email,
                 name: newUser.name,
                 avatar: "https://randomuser.me/api/portraits/lego/1.jpg",
-                role: newUser.role as 'photographer' | 'visitor' | 'admin'
+                role: newUser.role as 'photographer' | 'visitor' | 'admin' | 'client'
             };
             setUser(userData);
             localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(userData));

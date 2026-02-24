@@ -10,13 +10,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import { useAlert } from "../context/AlertContext";
 import { Captcha } from "../components/ui/Captcha";
-import { supabase } from "../lib/supabaseClient"; // Added this import
+import { uploadImage } from "../lib/cloudinary";
 
 import { checkImageSafety } from "../lib/api";
 
 export function SubmitProject() {
     const { addProject } = useProjects();
-    const { isAuthenticated, user } = useAuth();
+    const { isAuthenticated } = useAuth();
     const { showAlert } = useAlert();
     const navigate = useNavigate();
 
@@ -202,24 +202,14 @@ export function SubmitProject() {
         try {
             let imageUrl = selectedImage!;
 
-            // Real Upload to Supabase Storage
-            if (imageFile && user) {
-                const fileExt = imageFile.name.split('.').pop();
-                const fileName = `${user.id}/${Date.now()}.${fileExt}`;
-
-                const { data: uploadData, error: uploadError } = await supabase.storage
-                    .from('projects')
-                    .upload(fileName, imageFile);
-
-                if (uploadError) {
-                    console.error("Storage upload failed:", uploadError);
-                    // Fallback to data URL for demo persistence
+            // Real Upload to Cloudinary
+            if (imageFile) {
+                try {
+                    const uploadedUrl = await uploadImage(imageFile);
+                    imageUrl = uploadedUrl;
+                } catch (uploadError) {
+                    console.error("Cloudinary upload failed:", uploadError);
                     showAlert("Image upload failed. Using local preview for submission.", "warning");
-                } else if (uploadData) {
-                    const { data: { publicUrl } } = supabase.storage
-                        .from('projects')
-                        .getPublicUrl(fileName);
-                    imageUrl = publicUrl;
                 }
             }
 

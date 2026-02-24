@@ -1,11 +1,12 @@
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { ARTISTS, PROJECTS } from "../data/mockData";
 import { ProjectCard } from "../components/ui/ProjectCard";
 import { Button } from "../components/ui/button";
-import { MapPin, Mail, Instagram, Phone, ShieldCheck } from "lucide-react";
+import { MapPin, Mail, Instagram, Phone, ShieldCheck, Globe, Clock, Check, Calendar } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { VerificationBadge } from "../components/ui/VerificationBadge";
+import { cn } from "../lib/utils";
 
 const VERIFICATION_KEY = 'tunisian_lens_verified_artists';
 
@@ -75,8 +76,13 @@ export function ArtistProfile() {
 
     // Default values for mock users who might not have full artist profile data yet
     const location = (artist as any).location || "Tunisia";
+    const country = (artist as any).country || "Tunisia";
     const bio = (artist as any).bio || "Passionate photographer exploring the beauty of Tunisia.";
     const profileCategories = (artist as any).categories || ["Photography"];
+    const languages = (artist as any).languages || [];
+    const startingPrice = (artist as any).startingPrice || null;
+    const currency = (artist as any).currency || "USD";
+    const packages = (artist as any).packages || [];
     const contact = (artist as any).contact || {
         email: (artist as any).email || "contact@example.com",
         instagram: "@tunisian_lens",
@@ -99,10 +105,21 @@ export function ArtistProfile() {
                             <h1 className="text-3xl font-serif font-bold">{artist.name}</h1>
                             {isVerified && <VerificationBadge size={20} />}
                         </div>
-                        <div className="flex items-center justify-center md:justify-start text-muted-foreground space-x-2">
-                            <MapPin className="h-4 w-4" strokeWidth={2} />
-                            <span>{location}, Tunisia</span>
+                        <div className="flex flex-wrap items-center justify-center md:justify-start text-muted-foreground gap-3">
+                            <span className="flex items-center gap-1">
+                                <MapPin className="h-4 w-4" strokeWidth={2} />
+                                {location}
+                            </span>
+                            <span className="flex items-center gap-1">
+                                <Globe className="h-4 w-4" strokeWidth={2} />
+                                {country}
+                            </span>
                         </div>
+                        {languages.length > 0 && (
+                            <p className="text-sm text-muted-foreground">
+                                <span className="font-medium text-foreground">Speaks:</span> {languages.join(", ")}
+                            </p>
+                        )}
                         <p className="max-w-md text-muted-foreground">{bio}</p>
                         <div className="flex flex-wrap gap-2 justify-center md:justify-start pt-2">
                             {profileCategories.map((cat: string) => (
@@ -125,8 +142,16 @@ export function ArtistProfile() {
                                 {isVerified ? "Remove Verification" : "Verify Photographer"}
                             </Button>
                         )}
-                        <Button size="lg" onClick={() => setShowContact(!showContact)}>
-                            {showContact ? "Hide Contact Info" : "Contact Artist"}
+                        {startingPrice && (
+                            <Link to={`/hire/${id}`}>
+                                <Button size="lg" className="gap-2">
+                                    <Calendar className="h-4 w-4" strokeWidth={2} />
+                                    Request Booking
+                                </Button>
+                            </Link>
+                        )}
+                        <Button size="lg" variant="outline" onClick={() => setShowContact(!showContact)}>
+                            {showContact ? "Hide Contact" : "Contact"}
                         </Button>
                     </div>
 
@@ -148,6 +173,47 @@ export function ArtistProfile() {
                     )}
                 </div>
             </div>
+
+            {/* Service Packages */}
+            {packages.length > 0 && (
+                <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-2xl font-serif font-bold">Service Packages</h2>
+                        <Link to={`/hire/${id}`}>
+                            <Button variant="outline" size="sm" className="gap-1.5">
+                                <Calendar className="h-4 w-4" strokeWidth={2} /> Book Now
+                            </Button>
+                        </Link>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        {packages.map((pkg: any, i: number) => (
+                            <div key={i} className={cn(
+                                "p-5 rounded-xl border-2 space-y-3",
+                                i === 1 ? "border-foreground" : "border-border"
+                            )}>
+                                {i === 1 && <span className="text-[10px] font-bold uppercase tracking-widest bg-foreground text-background px-2 py-0.5 rounded-full">Popular</span>}
+                                <div>
+                                    <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{pkg.name}</p>
+                                    <p className="text-2xl font-bold mt-1">${pkg.price} <span className="text-sm font-normal text-muted-foreground">{currency}</span></p>
+                                </div>
+                                <p className="text-sm text-muted-foreground">{pkg.description}</p>
+                                <div className="flex items-center gap-1.5 text-sm">
+                                    <Clock className="h-3.5 w-3.5" strokeWidth={2} />
+                                    {pkg.deliveryDays} day{pkg.deliveryDays !== 1 ? "s" : ""} delivery
+                                </div>
+                                <ul className="space-y-1.5">
+                                    {pkg.includes.map((item: string) => (
+                                        <li key={item} className="flex items-start gap-2 text-xs text-muted-foreground">
+                                            <Check className="h-3.5 w-3.5 mt-0.5 flex-shrink-0 text-foreground" strokeWidth={2.5} />
+                                            {item}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {/* Portfolio Grid */}
             <div>
