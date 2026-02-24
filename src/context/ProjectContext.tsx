@@ -67,18 +67,26 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
                     console.warn('Supabase fetch error, using localStorage fallback', error);
                     const stored = localStorage.getItem('tunisian_lens_projects_v2');
                     const parsed: Project[] = stored ? JSON.parse(stored) : [];
-                    setProjects(parsed.map((p: Project) => ({
+                    setProjects(parsed.map((p) => ({
                         ...p,
-                        image: p.image || (p as any).image_url || ''
+                        image: p.image || ((p as unknown as Record<string, string>)['image_url']) || ''
                     })));
                 } else if (data && data.length > 0) {
-                    setProjects(data.map((p: any) => ({
-                        ...p,
-                        image: p.image || p.image_url,
-                        isPrivate: p.is_private,
-                        isDownloadable: p.is_downloadable,
-                        accessCode: p.access_code
-                    })) as Project[]);
+                    type SupabaseRow = Record<string, unknown>;
+                    setProjects((data as SupabaseRow[]).map((p) => ({
+                        id: p['id'] as string,
+                        title: p['title'] as string,
+                        image: (p['image'] || p['image_url']) as string,
+                        category: p['category'] as string,
+                        likes: p['likes'] as number,
+                        artist: p['artist'] as Project['artist'],
+                        description: p['description'] as string | undefined,
+                        tags: p['tags'] as string[] | undefined,
+                        date: p['date'] as string | undefined,
+                        isPrivate: p['is_private'] as boolean | undefined,
+                        isDownloadable: p['is_downloadable'] as boolean | undefined,
+                        accessCode: p['access_code'] as string | undefined,
+                    })));
                 } else {
                     setProjects([]);
                 }
@@ -86,9 +94,9 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
                 // No Supabase — use localStorage submissions only (no mock data)
                 const stored = localStorage.getItem('tunisian_lens_projects_v2');
                 const parsed: Project[] = stored ? JSON.parse(stored) : [];
-                setProjects(parsed.map((p: Project) => ({
+                setProjects(parsed.map((p) => ({
                     ...p,
-                    image: p.image || (p as any).image_url || ''
+                    image: p.image || ((p as unknown as Record<string, string>)['image_url']) || ''
                 })));
             }
         } catch (e) {

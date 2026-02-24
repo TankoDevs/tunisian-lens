@@ -39,7 +39,16 @@ const CURRENT_USER_KEY = 'tunisian_lens_current_user';
 })();
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const [user, setUser] = useState<User | null>(null);
+    const [user, setUser] = useState<User | null>(() => {
+        // For mock mode, initialize from localStorage synchronously (lazy state init — avoids setState in effect)
+        if (!isConfigured) {
+            const stored = localStorage.getItem(CURRENT_USER_KEY);
+            if (stored) {
+                try { return JSON.parse(stored) as User; } catch { /* ignore */ }
+            }
+        }
+        return null;
+    });
 
     interface SupabaseUser { id: string; email?: string; user_metadata: Record<string, unknown>; }
     const fetchUserProfile = async (supabaseUser: SupabaseUser) => {
@@ -153,16 +162,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
             return () => subscription.unsubscribe();
         } else {
-            // Mock mode: Check localStorage for session
-            const storedUser = localStorage.getItem(CURRENT_USER_KEY);
-            if (storedUser) {
-                try {
-                    const parsed = JSON.parse(storedUser);
-                    setUser(parsed);
-                } catch {
-                    localStorage.removeItem(CURRENT_USER_KEY);
-                }
-            }
             console.log("🛠️ Auth running in Mock Mode (No Supabase detected)");
         }
     }, []);

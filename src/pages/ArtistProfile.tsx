@@ -3,12 +3,42 @@ import { ARTISTS, PROJECTS } from "../data/mockData";
 import { ProjectCard } from "../components/ui/ProjectCard";
 import { Button } from "../components/ui/button";
 import { MapPin, Mail, Instagram, Phone, ShieldCheck, Globe, Clock, Check, Calendar } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { VerificationBadge } from "../components/ui/VerificationBadge";
 import { cn } from "../lib/utils";
-
 import { isArtistVerified, setArtistVerification } from "../lib/verification";
+
+interface ArtistLike {
+    id: string;
+    name: string;
+    avatar: string;
+    location?: string;
+    country?: string;
+    bio?: string;
+    categories?: string[];
+    languages?: string[];
+    startingPrice?: number | null;
+    currency?: string;
+    packages?: PackageItem[];
+    contact?: ContactInfo;
+    email?: string;
+    isVerified?: boolean;
+}
+
+interface PackageItem {
+    name: string;
+    price: number;
+    description: string;
+    deliveryDays: number;
+    includes: string[];
+}
+
+interface ContactInfo {
+    email: string;
+    instagram: string;
+    phone: string;
+}
 
 export function ArtistProfile() {
     const { id } = useParams<{ id: string }>();
@@ -16,24 +46,17 @@ export function ArtistProfile() {
     const { user } = useAuth();
     const isAdmin = user?.role === 'admin';
 
-    // (removed redundant state)
+    // Derive verification status directly — no setState in effects
+    const verifiedFromStorage = id ? isArtistVerified(id) : false;
+    const [isVerified, setIsVerified] = useState<boolean>(verifiedFromStorage);
 
     // Get mock users from storage
-    const mockUsers = JSON.parse(localStorage.getItem('tunisian_lens_mock_users') || '[]');
+    const mockUsers: ArtistLike[] = JSON.parse(localStorage.getItem('tunisian_lens_mock_users') || '[]');
 
     // Find artist: Check hardcoded ARTISTS first, then mock users
-    interface MockUser { id: string; email: string; name: string; avatar?: string; role: string; isVerified?: boolean; }
-    const artist = ARTISTS.find(a => a.id === id) ||
-        (mockUsers as MockUser[]).find((u: MockUser) => u.id === id);
-
-    const [isVerified, setIsVerified] = useState(() => id ? isArtistVerified(id) : false);
-
-    useEffect(() => {
-        if (id) {
-            const status = isArtistVerified(id);
-            setIsVerified(prev => prev !== status ? status : prev);
-        }
-    }, [id]);
+    const artist: ArtistLike | undefined =
+        (ARTISTS.find(a => a.id === id) as ArtistLike | undefined) ||
+        mockUsers.find(u => u.id === id);
 
     const artistProjects = PROJECTS.filter(p => p.artist.id === id);
 
@@ -54,17 +77,16 @@ export function ArtistProfile() {
     };
 
     // Default values for mock users who might not have full artist profile data yet
-    const artistAsAny = artist as any;
-    const location = artistAsAny.location || "Tunisia";
-    const country = artistAsAny.country || "Tunisia";
-    const bio = artistAsAny.bio || "Passionate photographer exploring the beauty of Tunisia.";
-    const profileCategories = artistAsAny.categories || ["Photography"];
-    const languages = artistAsAny.languages || [];
-    const startingPrice = artistAsAny.startingPrice || null;
-    const currency = artistAsAny.currency || "USD";
-    const packages = artistAsAny.packages || [];
-    const contact = artistAsAny.contact || {
-        email: artistAsAny.email || "contact@example.com",
+    const location = artist.location || "Tunisia";
+    const country = artist.country || "Tunisia";
+    const bio = artist.bio || "Passionate photographer exploring the beauty of Tunisia.";
+    const profileCategories = artist.categories || ["Photography"];
+    const languages = artist.languages || [];
+    const startingPrice = artist.startingPrice || null;
+    const currency = artist.currency || "USD";
+    const packages = artist.packages || [];
+    const contact: ContactInfo = artist.contact || {
+        email: artist.email || "contact@example.com",
         instagram: "@tunisian_lens",
         phone: "+216 -- --- ---"
     };
@@ -166,7 +188,7 @@ export function ArtistProfile() {
                         </Link>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        {packages.map((pkg: any, i: number) => (
+                        {packages.map((pkg: PackageItem, i: number) => (
                             <div key={i} className={cn(
                                 "p-5 rounded-xl border-2 space-y-3",
                                 i === 1 ? "border-foreground" : "border-border"
