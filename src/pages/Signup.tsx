@@ -47,7 +47,7 @@ export function Signup() {
         try {
             await signup(email, password, `${firstName} ${lastName}`, role, role === 'photographer' ? { city } : undefined);
             navigate("/");
-        } catch (error) {
+        } catch (_error) {
             showAlert("Failed to create account. Please try again.", "error");
         }
     };

@@ -103,8 +103,8 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
             setApplications(mappedApps);
             setConnectsBalance(balanceMap);
 
-        } catch (e) {
-            console.error("Error refreshing marketplace data:", e);
+        } catch (_secret_e) {
+            console.error("Error refreshing marketplace data:", _secret_e);
         } finally {
             setIsLoading(false);
         }
@@ -146,7 +146,11 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
             if (photoError) throw photoError;
 
-            const isVerified = (photo.is_verified as any)?.is_verified;
+            const isVerifiedResult = photo.is_verified as unknown as { is_verified: boolean } | { is_verified: boolean }[];
+            const isVerified = Array.isArray(isVerifiedResult)
+                ? isVerifiedResult[0]?.is_verified
+                : isVerifiedResult?.is_verified;
+
             if (!isVerified) return { success: false, message: 'You must be verified to apply.' };
 
             // 2. Get Job

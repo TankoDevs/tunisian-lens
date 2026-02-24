@@ -52,10 +52,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 .eq('id', supabaseUser.id)
                 .single();
 
+            if (profileError && profileError.code !== 'PGRST116') {
+                console.error("Profile fetch error:", profileError);
+            }
+
             // If profile doesn't exist (happens right after signup), the trigger might not have finished
             // or we might need to create it manually if triggers are disabled.
             if (profileError && profileError.code === 'PGRST116') {
-                const { data: newProfile, error: createError } = await supabase
+                const { data: newProfile, error: _createError } = await supabase
                     .from('users')
                     .upsert({
                         id: supabaseUser.id,
@@ -66,18 +70,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     .select()
                     .single();
 
-                if (!createError) profile = newProfile;
+                if (!_createError) profile = newProfile;
             }
 
             // 2. If photographer, ensure photographer record exists
             if (profile?.role === 'photographer') {
-                const { data: photo, error: photoError } = await supabase
+                const { data: photo, error: _photoError } = await supabase
                     .from('photographers')
                     .select('*')
                     .eq('user_id', supabaseUser.id)
                     .single();
 
-                if (photoError && photoError.code === 'PGRST116') {
+                if (_photoError && _photoError.code === 'PGRST116') {
                     // Create photographer profile
                     await supabase.from('photographers').insert({
                         user_id: supabaseUser.id,
@@ -122,8 +126,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             };
 
             setUser(userData);
-        } catch (e) {
-            console.error("Failed to fetch extended profile:", e);
+        } catch (_e) {
+            console.error("Failed to fetch extended profile:", _e);
         }
     };
 
@@ -153,7 +157,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (storedUser) {
                 try {
                     setUser(JSON.parse(storedUser));
-                } catch (e) {
+                } catch (_e) {
                     localStorage.removeItem(CURRENT_USER_KEY);
                 }
             }

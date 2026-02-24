@@ -110,7 +110,7 @@ export function SubmitProject() {
                     setLowConfidence(true);
                 }
             }
-        } catch (error) {
+        } catch (_error) {
             clearInterval(interval);
             setIsScanning(false);
             setScanResult('api-error');
@@ -232,8 +232,8 @@ export function SubmitProject() {
             } else {
                 navigate('/explore');
             }
-        } catch (error) {
-            console.error(error);
+        } catch (_error) {
+            console.error(_error);
             setIsSubmitting(false);
             showAlert("Failed to publish project. Please try again.", "error");
         }
