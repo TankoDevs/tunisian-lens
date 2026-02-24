@@ -35,7 +35,7 @@ export function Login() {
         try {
             await login(email, password);
             navigate("/");
-        } catch (error) {
+        } catch {
             showAlert("Login failed. Please check your credentials.", "error");
         }
     };

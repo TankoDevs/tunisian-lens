@@ -5,7 +5,7 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { ARTISTS, PROJECTS } from "../data/mockData";
 import { VerificationBadge } from "../components/ui/VerificationBadge";
-import { isArtistVerified } from "./ArtistProfile";
+import { isArtistVerified } from "../lib/verification";
 import { cn } from "../lib/utils";
 
 const COUNTRY_FLAGS: Record<string, string> = {

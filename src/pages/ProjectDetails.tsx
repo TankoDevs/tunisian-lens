@@ -14,7 +14,8 @@ export function ProjectDetails() {
     // Fallback if not found (for demo)
     if (!project) return <div className="p-12 text-center">Project not found</div>;
 
-    const artist = ARTISTS.find(a => a.id === project.artist.id) || project.artist; // Fallback to project.artist if not found in mock ARTISTS
+    interface DisplayArtist { id: string; name: string; avatar: string; location?: string; }
+    const artist: DisplayArtist = ARTISTS.find(a => a.id === project.artist.id) || project.artist; // Fallback to project.artist
     const moreProjects = projects.filter(p => p.artist.id === project.artist.id && p.id !== project.id).slice(0, 3);
     const isOwner = project.artist.id === 'current_user';
 
@@ -117,7 +118,7 @@ export function ProjectDetails() {
                                 <img src={artist.avatar} alt={artist.name} className="h-12 w-12 rounded-full object-cover" />
                                 <div>
                                     <Link to={`/artist/${artist.id}`} className="font-bold hover:underline">{artist.name}</Link>
-                                    <p className="text-xs text-muted-foreground">{(artist as any).location || "Tunisia"}</p>
+                                    <p className="text-xs text-muted-foreground">{artist.location || "Tunisia"}</p>
                                 </div>
                             </div>
                         )}

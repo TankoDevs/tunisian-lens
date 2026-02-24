@@ -45,8 +45,9 @@ export function Dashboard() {
     const isAdmin = user.role === 'admin';
 
     // Verification check (mock)
-    const mockUsers: any[] = JSON.parse(localStorage.getItem('tunisian_lens_mock_users') || '[]');
-    const mockUser = mockUsers.find((u: any) => u.id === user.id);
+    interface MockUser { id: string; email: string; isVerified?: boolean; }
+    const mockUsers: MockUser[] = JSON.parse(localStorage.getItem('tunisian_lens_mock_users') || '[]');
+    const mockUser = mockUsers.find((u: MockUser) => u.id === user.id);
     const isVerified = mockUser?.isVerified === true;
 
     return (

@@ -44,14 +44,15 @@ export function JobDetail() {
     const isOwner = user?.id === job.clientId;
 
     // Check if current user is verified (mock mode check)
-    const mockUsers: any[] = JSON.parse(localStorage.getItem('tunisian_lens_mock_users') || '[]');
-    const mockUser = mockUsers.find((u: any) => u.id === user?.id);
+    interface MockUser { id: string; email: string; isVerified?: boolean; }
+    const mockUsers: MockUser[] = JSON.parse(localStorage.getItem('tunisian_lens_mock_users') || '[]');
+    const mockUser = mockUsers.find((u: MockUser) => u.id === user?.id);
     const isVerified = mockUser?.isVerified === true;
 
     const handleApply = async () => {
         if (!proposedPrice) { setResult({ success: false, message: 'Please enter your proposed price.' }); return; }
         setLoading(true);
-        const res = applyToJob(job.id, coverLetter, parseInt(proposedPrice));
+        const res = await applyToJob(job.id, coverLetter, parseInt(proposedPrice));
         setResult(res);
         setLoading(false);
     };

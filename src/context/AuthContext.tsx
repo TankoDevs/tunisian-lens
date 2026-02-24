@@ -13,7 +13,7 @@ interface AuthContextType {
     user: User | null;
     isAuthenticated: boolean;
     login: (email: string, password: string) => Promise<void>;
-    signup: (email: string, password: string, name: string, role?: 'photographer' | 'visitor' | 'admin' | 'client', metadata?: Record<string, any>) => Promise<void>;
+    signup: (email: string, password: string, name: string, role?: 'photographer' | 'visitor' | 'admin' | 'client', metadata?: Record<string, unknown>) => Promise<void>;
     logout: () => void;
 }
 
@@ -23,9 +23,9 @@ const MOCK_USERS_KEY = 'tunisian_lens_mock_users';
 const CURRENT_USER_KEY = 'tunisian_lens_current_user';
 
 // Seed a default admin account so it's always available
-function seedAdminAccount() {
+(function seedAdminAccount() {
     const mockUsers = JSON.parse(localStorage.getItem(MOCK_USERS_KEY) || '[]');
-    const adminExists = mockUsers.some((u: any) => u.email === 'admin@tunisianlens.com');
+    const adminExists = mockUsers.some((u: { email: string }) => u.email === 'admin@tunisianlens.com');
     if (!adminExists) {
         mockUsers.push({
             id: 'admin-1',
@@ -35,23 +35,23 @@ function seedAdminAccount() {
             role: 'admin'
         });
         localStorage.setItem(MOCK_USERS_KEY, JSON.stringify(mockUsers));
-        console.log("🔑 Default admin account seeded: admin@tunisianlens.com / admin123");
     }
-}
-seedAdminAccount();
+})();
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
 
-    const fetchUserProfile = async (supabaseUser: any) => {
+    interface SupabaseUser { id: string; email?: string; user_metadata: Record<string, unknown>; }
+    const fetchUserProfile = async (supabaseUser: SupabaseUser) => {
         try {
             // 1. Get user role and verification status from public.users
-            let { data: profile, error: profileError } = await supabase
+            const { data: profileData, error: profileError } = await supabase
                 .from('users')
                 .select('*')
                 .eq('id', supabaseUser.id)
                 .single();
 
+            let profile = profileData;
             if (profileError && profileError.code !== 'PGRST116') {
                 console.error("Profile fetch error:", profileError);
             }
@@ -101,7 +101,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
                     if (!transactions || transactions.length === 0) {
                         // Get photo id if we just created it or it was missing
-                        const photoId = photo?.id || (await supabase.from('photographers').select('id').eq('user_id', supabaseUser.id).single()).data?.id;
+                        const { data: photoDataRef } = await supabase.from('photographers').select('id').eq('user_id', supabaseUser.id).single();
+                        const photoId = (photo?.id || (photoDataRef as { id: string } | null)?.id) as string | undefined;
 
                         if (photoId) {
                             // Award 20 connects
@@ -120,9 +121,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const userData: User = {
                 id: supabaseUser.id,
                 email: supabaseUser.email || '',
-                name: profile?.name || supabaseUser.user_metadata.full_name || supabaseUser.email?.split('@')[0] || 'User',
-                avatar: supabaseUser.user_metadata.avatar_url || "https://randomuser.me/api/portraits/lego/1.jpg",
-                role: profile?.role || supabaseUser.user_metadata.role || 'photographer'
+                name: (profile?.name as string) || (supabaseUser.user_metadata.full_name as string) || supabaseUser.email?.split('@')[0] || 'User',
+                avatar: (supabaseUser.user_metadata.avatar_url as string) || "https://randomuser.me/api/portraits/lego/1.jpg",
+                role: (profile?.role as 'photographer' | 'visitor' | 'admin' | 'client') || (supabaseUser.user_metadata.role as 'photographer' | 'visitor' | 'admin' | 'client') || 'photographer'
             };
 
             setUser(userData);
@@ -156,8 +157,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const storedUser = localStorage.getItem(CURRENT_USER_KEY);
             if (storedUser) {
                 try {
-                    setUser(JSON.parse(storedUser));
-                } catch (_e) {
+                    const parsed = JSON.parse(storedUser);
+                    setUser(parsed);
+                } catch {
                     localStorage.removeItem(CURRENT_USER_KEY);
                 }
             }
@@ -175,7 +177,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } else {
             // Mock login
             const mockUsers = JSON.parse(localStorage.getItem(MOCK_USERS_KEY) || '[]');
-            const foundUser = mockUsers.find((u: any) => u.email === email && u.password === password);
+            const foundUser = mockUsers.find((u: { email: string; password: string }) => u.email === email && u.password === password);
 
             if (foundUser) {
                 const userData: User = {
@@ -193,7 +195,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     };
 
-    const signup = async (email: string, password: string, name: string, role: 'photographer' | 'visitor' | 'admin' | 'client' = 'photographer', metadata?: Record<string, any>) => {
+    const signup = async (email: string, password: string, name: string, role: 'photographer' | 'visitor' | 'admin' | 'client' = 'photographer', metadata?: Record<string, unknown>) => {
         if (isConfigured) {
             const { error } = await supabase.auth.signUp({
                 email,
@@ -210,7 +212,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } else {
             // Mock signup
             const mockUsers = JSON.parse(localStorage.getItem(MOCK_USERS_KEY) || '[]');
-            if (mockUsers.some((u: any) => u.email === email)) {
+            if (mockUsers.some((u: { email: string }) => u.email === email)) {
                 throw new Error("User already exists");
             }
 
@@ -254,6 +256,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
     const context = useContext(AuthContext);
     if (context === undefined) {

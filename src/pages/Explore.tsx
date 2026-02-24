@@ -6,7 +6,7 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { cn } from "../lib/utils";
 import { useProjects } from "../context/ProjectContext";
-import { isArtistVerified } from "./ArtistProfile";
+import { isArtistVerified } from "../lib/verification";
 import { Link } from "react-router-dom";
 
 export function Explore() {

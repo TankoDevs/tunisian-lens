@@ -8,32 +8,7 @@ import { useAuth } from "../context/AuthContext";
 import { VerificationBadge } from "../components/ui/VerificationBadge";
 import { cn } from "../lib/utils";
 
-const VERIFICATION_KEY = 'tunisian_lens_verified_artists';
-
-/** Read all verified artist IDs from localStorage */
-function getVerifiedArtists(): Record<string, boolean> {
-    try {
-        return JSON.parse(localStorage.getItem(VERIFICATION_KEY) || '{}');
-    } catch {
-        return {};
-    }
-}
-
-/** Persist a single artist's verification status */
-function setArtistVerification(artistId: string, verified: boolean) {
-    const current = getVerifiedArtists();
-    current[artistId] = verified;
-    localStorage.setItem(VERIFICATION_KEY, JSON.stringify(current));
-}
-
-/** Check if an artist is verified (checks localStorage override first, then mock data default) */
-export function isArtistVerified(artistId: string): boolean {
-    const overrides = getVerifiedArtists();
-    if (artistId in overrides) return overrides[artistId];
-    // Fallback: check the hardcoded mock data default
-    const artist = ARTISTS.find(a => a.id === artistId);
-    return !!(artist as any)?.isVerified;
-}
+import { isArtistVerified, setArtistVerification } from "../lib/verification";
 
 export function ArtistProfile() {
     const { id } = useParams<{ id: string }>();
@@ -41,18 +16,22 @@ export function ArtistProfile() {
     const { user } = useAuth();
     const isAdmin = user?.role === 'admin';
 
-    const [isVerified, setIsVerified] = useState(false);
+    // (removed redundant state)
 
     // Get mock users from storage
     const mockUsers = JSON.parse(localStorage.getItem('tunisian_lens_mock_users') || '[]');
 
     // Find artist: Check hardcoded ARTISTS first, then mock users
+    interface MockUser { id: string; email: string; name: string; avatar?: string; role: string; isVerified?: boolean; }
     const artist = ARTISTS.find(a => a.id === id) ||
-        mockUsers.find((u: any) => u.id === id);
+        (mockUsers as MockUser[]).find((u: MockUser) => u.id === id);
+
+    const [isVerified, setIsVerified] = useState(() => id ? isArtistVerified(id) : false);
 
     useEffect(() => {
         if (id) {
-            setIsVerified(isArtistVerified(id));
+            const status = isArtistVerified(id);
+            setIsVerified(prev => prev !== status ? status : prev);
         }
     }, [id]);
 
@@ -75,16 +54,17 @@ export function ArtistProfile() {
     };
 
     // Default values for mock users who might not have full artist profile data yet
-    const location = (artist as any).location || "Tunisia";
-    const country = (artist as any).country || "Tunisia";
-    const bio = (artist as any).bio || "Passionate photographer exploring the beauty of Tunisia.";
-    const profileCategories = (artist as any).categories || ["Photography"];
-    const languages = (artist as any).languages || [];
-    const startingPrice = (artist as any).startingPrice || null;
-    const currency = (artist as any).currency || "USD";
-    const packages = (artist as any).packages || [];
-    const contact = (artist as any).contact || {
-        email: (artist as any).email || "contact@example.com",
+    const artistAsAny = artist as any;
+    const location = artistAsAny.location || "Tunisia";
+    const country = artistAsAny.country || "Tunisia";
+    const bio = artistAsAny.bio || "Passionate photographer exploring the beauty of Tunisia.";
+    const profileCategories = artistAsAny.categories || ["Photography"];
+    const languages = artistAsAny.languages || [];
+    const startingPrice = artistAsAny.startingPrice || null;
+    const currency = artistAsAny.currency || "USD";
+    const packages = artistAsAny.packages || [];
+    const contact = artistAsAny.contact || {
+        email: artistAsAny.email || "contact@example.com",
         instagram: "@tunisian_lens",
         phone: "+216 -- --- ---"
     };

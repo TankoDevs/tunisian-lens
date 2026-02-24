@@ -193,9 +193,9 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
             await refreshData();
             return { success: true, message: 'Application sent!' };
 
-        } catch (e: any) {
+        } catch (e: unknown) {
             console.error("Application error:", e);
-            return { success: false, message: e.message || 'Failed to submit application.' };
+            return { success: false, message: (e as Error).message || 'Failed to submit application.' };
         }
     };
 
@@ -223,6 +223,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
     );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useMarketplace() {
     const ctx = useContext(MarketplaceContext);
     if (!ctx) throw new Error('useMarketplace must be used within MarketplaceProvider');

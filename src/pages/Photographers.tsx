@@ -5,7 +5,7 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { ARTISTS, COUNTRIES, CATEGORIES } from "../data/mockData";
 import { VerificationBadge } from "../components/ui/VerificationBadge";
-import { isArtistVerified } from "./ArtistProfile";
+import { isArtistVerified } from "../lib/verification";
 import { cn } from "../lib/utils";
 
 const COUNTRY_FLAGS: Record<string, string> = {
@@ -228,14 +228,14 @@ export function Photographers() {
                                                 <Globe className="h-3.5 w-3.5 flex-shrink-0" strokeWidth={2} />
                                                 <span>{COUNTRY_FLAGS[artist.country] || ""} {artist.country}</span>
                                             </div>
-                                            {/* Mock rating */}
+                                            {/* Mock rating based on char codes of name for stability */}
                                             <div className="flex items-center gap-1 mt-1">
                                                 <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" strokeWidth={0} />
                                                 <span className="text-xs font-medium">
-                                                    {(4.5 + Math.random() * 0.4).toFixed(1)}
+                                                    {(4.5 + (artist.name.length % 5) * 0.1).toFixed(1)}
                                                 </span>
                                                 <span className="text-xs text-muted-foreground">
-                                                    ({Math.floor(Math.random() * 80 + 20)} reviews)
+                                                    ({(artist.name.charCodeAt(0) % 80) + 20} reviews)
                                                 </span>
                                             </div>
                                         </div>

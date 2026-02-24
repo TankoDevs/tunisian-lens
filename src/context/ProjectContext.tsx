@@ -66,29 +66,29 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
                 if (error) {
                     console.warn('Supabase fetch error, using localStorage fallback', error);
                     const stored = localStorage.getItem('tunisian_lens_projects_v2');
-                    const parsed: any[] = stored ? JSON.parse(stored) : [];
-                    setProjects(parsed.map((p: any) => ({
+                    const parsed: Project[] = stored ? JSON.parse(stored) : [];
+                    setProjects(parsed.map((p: Project) => ({
                         ...p,
-                        image: p.image || p.image_url || ''
+                        image: p.image || (p as any).image_url || ''
                     })));
                 } else if (data && data.length > 0) {
                     setProjects(data.map((p: any) => ({
                         ...p,
                         image: p.image || p.image_url,
-                        isPrivate: p.isPrivate ?? p.is_private,
-                        isDownloadable: p.isDownloadable ?? p.is_downloadable,
-                        accessCode: p.accessCode ?? p.access_code
-                    })));
+                        isPrivate: p.is_private,
+                        isDownloadable: p.is_downloadable,
+                        accessCode: p.access_code
+                    })) as Project[]);
                 } else {
                     setProjects([]);
                 }
             } else {
                 // No Supabase — use localStorage submissions only (no mock data)
                 const stored = localStorage.getItem('tunisian_lens_projects_v2');
-                const parsed: any[] = stored ? JSON.parse(stored) : [];
-                setProjects(parsed.map((p: any) => ({
+                const parsed: Project[] = stored ? JSON.parse(stored) : [];
+                setProjects(parsed.map((p: Project) => ({
                     ...p,
-                    image: p.image || p.image_url || ''
+                    image: p.image || (p as any).image_url || ''
                 })));
             }
         } catch (e) {
@@ -134,9 +134,9 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
             const localProject: Project = {
                 id: Date.now().toString(),
                 ...newProject,
-                artist: newProject.artist as any,
+                artist: newProject.artist,
                 date: new Date().toISOString()
-            } as any;
+            } as Project;
             const updated = [localProject, ...projects];
             setProjects(updated);
             localStorage.setItem('tunisian_lens_projects_v2', JSON.stringify(updated));
@@ -181,6 +181,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useProjects() {
     const context = useContext(ProjectContext);
     if (context === undefined) {
