@@ -19,6 +19,7 @@ import { Jobs } from "./pages/Jobs";
 import { PostJob } from "./pages/PostJob";
 import { JobDetail } from "./pages/JobDetail";
 import { Dashboard } from "./pages/Dashboard";
+import { Admin } from "./pages/Admin";
 import { MarketplaceProvider } from "./context/MarketplaceContext";
 
 function App() {
@@ -55,6 +56,7 @@ function App() {
           <Route path="/jobs/post" element={<PostJob />} />
           <Route path="/jobs/:id" element={<JobDetail />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/admin" element={<Admin />} />
         </Route>
       </Routes>
     </MarketplaceProvider>

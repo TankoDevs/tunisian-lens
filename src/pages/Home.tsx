@@ -147,7 +147,7 @@ export function Home() {
                         Join our growing global community. Create your professional profile, list your services, and get discovered by clients worldwide.
                     </p>
                     <Link to="/signup">
-                        <Button size="lg" variant="outline" className="mt-4 border-background/30 text-background hover:bg-background/10">
+                        <Button size="lg" className="mt-4 bg-white text-black border border-white hover:bg-white/90 hover:text-black">
                             Start Your Portfolio
                         </Button>
                     </Link>

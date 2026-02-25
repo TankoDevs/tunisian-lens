@@ -1,19 +1,22 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useMarketplace } from "../context/MarketplaceContext";
 import { Button } from "./ui/button";
-import { Menu, X, Camera, User, LogIn, UserPlus, LogOut, Sun, Moon, Briefcase } from "lucide-react";
+import { Menu, X, Camera, User, LogIn, UserPlus, LogOut, Sun, Moon, Briefcase, ShieldCheck } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
+import { useTunisianAccess } from "../lib/useTunisianAccess";
 
 export function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
     const userMenuRef = useRef<HTMLDivElement>(null);
+    const mobileMenuRef = useRef<HTMLDivElement>(null);
     const { user, isAuthenticated, logout } = useAuth();
     const { theme, toggleTheme } = useTheme();
     const { getConnects } = useMarketplace();
+    const { hasAccess: hasTunisianAccess } = useTunisianAccess();
     const navigate = useNavigate();
 
     // Close user menu when clicking outside
@@ -26,6 +29,32 @@ export function Navbar() {
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
+
+    // Lock body scroll when mobile menu is open
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => { document.body.style.overflow = ''; };
+    }, [isOpen]);
+
+    // Close mobile menu on outside click/tap
+    useEffect(() => {
+        if (!isOpen) return;
+        function handleOutside(event: MouseEvent | TouchEvent) {
+            if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        }
+        document.addEventListener('mousedown', handleOutside);
+        document.addEventListener('touchstart', handleOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleOutside);
+            document.removeEventListener('touchstart', handleOutside);
+        };
+    }, [isOpen]);
 
     const handleLogout = () => {
         logout();
@@ -53,9 +82,11 @@ export function Navbar() {
                     <Link to="/about" className="text-sm font-medium hover:text-primary/80 transition-colors">
                         About
                     </Link>
-                    <Link to="/jobs" className="text-sm font-medium hover:text-primary/80 transition-colors flex items-center gap-1.5">
-                        Find Jobs
-                    </Link>
+                    {hasTunisianAccess && (
+                        <Link to="/jobs" className="text-sm font-medium hover:text-primary/80 transition-colors flex items-center gap-1.5">
+                            Find Jobs
+                        </Link>
+                    )}
                 </div>
 
                 {/* Desktop Actions */}
@@ -134,6 +165,16 @@ export function Navbar() {
                                                     <Briefcase className="h-4 w-4" strokeWidth={2} />
                                                     Dashboard
                                                 </Link>
+                                                {user?.role === 'admin' && (
+                                                    <Link
+                                                        to="/admin"
+                                                        className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg hover:bg-accent transition-colors text-primary"
+                                                        onClick={() => setIsUserMenuOpen(false)}
+                                                    >
+                                                        <ShieldCheck className="h-4 w-4" strokeWidth={2} />
+                                                        Admin Panel
+                                                    </Link>
+                                                )}
                                                 {user?.role === 'photographer' && (
                                                     <Link
                                                         to={`/artist/${user.id}`}
@@ -218,7 +259,7 @@ export function Navbar() {
 
             {/* Mobile Menu */}
             {isOpen && (
-                <div className="md:hidden border-b bg-background p-4 space-y-4">
+                <div ref={mobileMenuRef} className="md:hidden border-b bg-background p-4 space-y-4">
                     <Link to="/explore" className="block text-sm font-medium py-2" onClick={() => setIsOpen(false)}>
                         Explore
                     </Link>
@@ -228,9 +269,11 @@ export function Navbar() {
                     <Link to="/about" className="block text-sm font-medium py-2" onClick={() => setIsOpen(false)}>
                         About
                     </Link>
-                    <Link to="/jobs" className="block text-sm font-medium py-2 text-primary font-bold" onClick={() => setIsOpen(false)}>
-                        Find Jobs
-                    </Link>
+                    {hasTunisianAccess && (
+                        <Link to="/jobs" className="block text-sm font-medium py-2 text-primary font-bold" onClick={() => setIsOpen(false)}>
+                            Find Jobs
+                        </Link>
+                    )}
                     <div className="border-t pt-4 space-y-4">
                         <Link to="/client-access" className="block text-sm font-medium py-2 text-primary" onClick={() => setIsOpen(false)}>
                             Client Access
@@ -238,17 +281,12 @@ export function Navbar() {
                         <Link to="/submit" className="block text-sm font-medium py-2" onClick={() => setIsOpen(false)}>
                             Submit Work
                         </Link>
-                        {/* Theme Toggle Row */}
-                        <button
-                            className="flex items-center gap-3 w-full text-sm font-medium py-2"
-                            onClick={toggleTheme}
-                        >
-                            {theme === 'light' ? (
-                                <><Moon className="h-4 w-4" strokeWidth={2} /> Switch to Dark Mode</>
-                            ) : (
-                                <><Sun className="h-4 w-4" strokeWidth={2} /> Switch to Light Mode</>
-                            )}
-                        </button>
+                        {user?.role === 'admin' && (
+                            <Link to="/admin" className="flex items-center gap-2 text-sm font-bold py-2 text-primary" onClick={() => setIsOpen(false)}>
+                                <ShieldCheck className="h-4 w-4" strokeWidth={2} />
+                                Admin Panel
+                            </Link>
+                        )}
                         <div className="grid grid-cols-2 gap-3 pt-2">
                             <Link to="/login" onClick={() => setIsOpen(false)}>
                                 <Button variant="outline" className="w-full">Log In</Button>

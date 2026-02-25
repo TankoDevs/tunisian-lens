@@ -13,6 +13,7 @@ export function Signup() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [city, setCity] = useState("");
+    const [country, setCountry] = useState("Tunisia");
     const [role, setRole] = useState<'photographer' | 'visitor' | 'client'>("photographer");
     const [isVerified, setIsVerified] = useState(false);
     const { signup } = useAuth();
@@ -45,7 +46,7 @@ export function Signup() {
         }
 
         try {
-            await signup(email, password, `${firstName} ${lastName}`, role, role === 'photographer' ? { city } : undefined);
+            await signup(email, password, `${firstName} ${lastName}`, role, { country, ...(role === 'photographer' ? { city } : {}) });
             navigate("/");
         } catch {
             showAlert("Failed to create account. Please try again.", "error");
@@ -166,6 +167,31 @@ export function Signup() {
                                 />
                             </div>
                         )}
+                        <div className="space-y-2">
+                            <label htmlFor="country" className="text-sm font-medium leading-none">Country</label>
+                            <select
+                                id="country"
+                                value={country}
+                                onChange={(e) => setCountry(e.target.value)}
+                                className="w-full h-10 px-3 rounded-lg border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                            >
+                                <option value="Tunisia">🇹🇳 Tunisia</option>
+                                <option value="Algeria">🇩🇿 Algeria</option>
+                                <option value="Morocco">🇲🇦 Morocco</option>
+                                <option value="Libya">🇱🇾 Libya</option>
+                                <option value="Egypt">🇪🇬 Egypt</option>
+                                <option value="France">🇫🇷 France</option>
+                                <option value="Germany">🇩🇪 Germany</option>
+                                <option value="United States">🇺🇸 United States</option>
+                                <option value="United Kingdom">🇬🇧 United Kingdom</option>
+                                <option value="Other">🌍 Other</option>
+                            </select>
+                            {country !== 'Tunisia' && (
+                                <p className="text-xs text-amber-600 dark:text-amber-400">
+                                    ⚠️ The job marketplace (Find Jobs) is restricted to Tunisian citizens and residents.
+                                </p>
+                            )}
+                        </div>
                         <div className="pt-2">
                             <Captcha onVerify={setIsVerified} />
                         </div>

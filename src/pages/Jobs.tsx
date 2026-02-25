@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Search, SlidersHorizontal, PlusCircle, Briefcase } from "lucide-react";
+import { Search, SlidersHorizontal, PlusCircle, Briefcase, Lock } from "lucide-react";
 import { motion } from "framer-motion";
 import { useMarketplace } from "../context/MarketplaceContext";
 import { useAuth } from "../context/AuthContext";
+import { useTunisianAccess } from "../lib/useTunisianAccess";
 import { JOB_CATEGORIES } from "../data/mockData";
 import { JobCard } from "../components/ui/JobCard";
 import { ConnectsBadge } from "../components/ui/ConnectsBadge";
@@ -12,12 +13,57 @@ import { Button } from "../components/ui/button";
 export function Jobs() {
     const { jobs, getConnects } = useMarketplace();
     const { user, isAuthenticated } = useAuth();
+    const { hasAccess } = useTunisianAccess();
     const [search, setSearch] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [maxBudget, setMaxBudget] = useState('');
     const [showOpen, setShowOpen] = useState(true);
 
     const connects = isAuthenticated && user ? getConnects(user.id) : 0;
+
+    // Tunisia-only marketplace gate
+    if (!hasAccess) {
+        return (
+            <div className="min-h-screen bg-background flex items-center justify-center">
+                <motion.div
+                    initial={{ opacity: 0, y: 24 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="text-center max-w-md mx-auto px-6 space-y-6"
+                >
+                    <div className="flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 mx-auto">
+                        <Lock className="h-9 w-9 text-primary" strokeWidth={1.5} />
+                    </div>
+                    <div>
+                        <div className="text-4xl mb-3">🇹🇳</div>
+                        <h1 className="font-serif text-3xl font-bold tracking-tight mb-2">Tunisia Marketplace Only</h1>
+                        <p className="text-muted-foreground leading-relaxed">
+                            The job marketplace is exclusively available to <strong>Tunisian citizens and residents</strong>.
+                            This keeps the platform focused, payment-friendly, and locally trusted.
+                        </p>
+                    </div>
+                    <div className="p-4 rounded-xl border bg-muted/40 text-sm text-muted-foreground text-left space-y-2">
+                        <p className="font-medium text-foreground">Why this restriction?</p>
+                        <ul className="space-y-1 list-disc list-inside">
+                            <li>Tunisian currency &amp; payment regulations</li>
+                            <li>Local trust and identity verification</li>
+                            <li>Simplified moderation &amp; dispute handling</li>
+                        </ul>
+                    </div>
+                    <div className="flex gap-3 justify-center flex-wrap">
+                        {!isAuthenticated ? (
+                            <>
+                                <Link to="/signup"><Button>Create Account</Button></Link>
+                                <Link to="/login"><Button variant="outline">Log In</Button></Link>
+                            </>
+                        ) : (
+                            <Link to="/explore"><Button variant="outline">Browse Portfolios</Button></Link>
+                        )}
+                    </div>
+                </motion.div>
+            </div>
+        );
+    }
 
     const filtered = jobs.filter(job => {
         if (showOpen && job.status !== 'open') return false;
@@ -41,7 +87,7 @@ export function Jobs() {
                             </div>
                             <h1 className="font-serif text-4xl md:text-5xl font-bold tracking-tight mb-2">Find Jobs</h1>
                             <p className="text-muted-foreground text-lg max-w-xl">
-                                Browse photography jobs from clients worldwide. Apply with Connects.
+                                Browse photography jobs from Tunisian clients. Apply with Connects.
                             </p>
                         </div>
                         <div className="flex items-center gap-3 flex-shrink-0">

@@ -1,15 +1,17 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { ArrowLeft, Briefcase } from "lucide-react";
+import { ArrowLeft, Briefcase, Lock } from "lucide-react";
 import { motion } from "framer-motion";
 import { useMarketplace } from "../context/MarketplaceContext";
 import { useAuth } from "../context/AuthContext";
+import { useTunisianAccess } from "../lib/useTunisianAccess";
 import { JOB_CATEGORIES } from "../data/mockData";
 import { Button } from "../components/ui/button";
 
 export function PostJob() {
     const { postJob } = useMarketplace();
     const { user, isAuthenticated } = useAuth();
+    const { hasAccess } = useTunisianAccess();
     const navigate = useNavigate();
 
     const [form, setForm] = useState({
@@ -26,13 +28,25 @@ export function PostJob() {
     const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState('');
 
-    if (!isAuthenticated) {
+    if (!isAuthenticated || !hasAccess) {
         return (
             <div className="min-h-screen flex items-center justify-center">
-                <div className="text-center space-y-4">
-                    <Briefcase className="h-12 w-12 mx-auto text-muted-foreground opacity-40" strokeWidth={1.5} />
-                    <p className="text-lg font-medium">Sign in to post a job</p>
-                    <Link to="/login"><Button>Log In</Button></Link>
+                <div className="text-center space-y-4 max-w-sm px-6">
+                    <div className="flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mx-auto">
+                        <Lock className="h-7 w-7 text-primary" strokeWidth={1.5} />
+                    </div>
+                    <div className="text-3xl">🇹🇳</div>
+                    <p className="text-lg font-medium">Tunisia Marketplace Only</p>
+                    <p className="text-sm text-muted-foreground">
+                        Posting jobs is restricted to Tunisian citizens and residents.
+                    </p>
+                    <div className="flex gap-2 justify-center flex-wrap">
+                        {!isAuthenticated ? (
+                            <Link to="/signup"><Button>Create Account</Button></Link>
+                        ) : (
+                            <Link to="/jobs"><Button variant="outline">Back to Jobs</Button></Link>
+                        )}
+                    </div>
                 </div>
             </div>
         );

@@ -7,6 +7,7 @@ interface User {
     name: string;
     avatar?: string;
     role: 'photographer' | 'visitor' | 'admin' | 'client';
+    country?: string;
 }
 
 interface AuthContextType {
@@ -22,20 +23,46 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const MOCK_USERS_KEY = 'tunisian_lens_mock_users';
 const CURRENT_USER_KEY = 'tunisian_lens_current_user';
 
-// Seed a default admin account so it's always available
-(function seedAdminAccount() {
+// Seed demo accounts so they're always available
+(function seedDemoAccounts() {
     const mockUsers = JSON.parse(localStorage.getItem(MOCK_USERS_KEY) || '[]');
-    const adminExists = mockUsers.some((u: { email: string }) => u.email === 'admin@tunisianlens.com');
-    if (!adminExists) {
-        mockUsers.push({
+
+    const demos = [
+        {
             id: 'admin-1',
             email: 'admin@tunisianlens.com',
             password: 'admin123',
             name: 'Site Admin',
-            role: 'admin'
-        });
-        localStorage.setItem(MOCK_USERS_KEY, JSON.stringify(mockUsers));
+            role: 'admin',
+        },
+        {
+            id: 'demo-photographer-1',
+            email: 'photographer@tunisianlens.com',
+            password: 'photo123',
+            name: 'Yassine Mansour',
+            role: 'photographer',
+            country: 'TN',
+            avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
+        },
+        {
+            id: 'demo-client-1',
+            email: 'client@tunisianlens.com',
+            password: 'client123',
+            name: 'Nour Ben Ali',
+            role: 'client',
+            country: 'TN',
+            avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
+        },
+    ];
+
+    let changed = false;
+    for (const demo of demos) {
+        if (!mockUsers.some((u: { email: string }) => u.email === demo.email)) {
+            mockUsers.push(demo);
+            changed = true;
+        }
     }
+    if (changed) localStorage.setItem(MOCK_USERS_KEY, JSON.stringify(mockUsers));
 })();
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -132,7 +159,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 email: supabaseUser.email || '',
                 name: (profile?.name as string) || (supabaseUser.user_metadata.full_name as string) || supabaseUser.email?.split('@')[0] || 'User',
                 avatar: (supabaseUser.user_metadata.avatar_url as string) || "https://randomuser.me/api/portraits/lego/1.jpg",
-                role: (profile?.role as 'photographer' | 'visitor' | 'admin' | 'client') || (supabaseUser.user_metadata.role as 'photographer' | 'visitor' | 'admin' | 'client') || 'photographer'
+                role: (profile?.role as 'photographer' | 'visitor' | 'admin' | 'client') || (supabaseUser.user_metadata.role as 'photographer' | 'visitor' | 'admin' | 'client') || 'photographer',
+                country: (profile?.country as string) || (supabaseUser.user_metadata.country as string) || undefined
             };
 
             setUser(userData);
@@ -184,7 +212,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     email: foundUser.email,
                     name: foundUser.name,
                     avatar: "https://randomuser.me/api/portraits/lego/1.jpg",
-                    role: foundUser.role || 'photographer'
+                    role: foundUser.role || 'photographer',
+                    country: foundUser.country || undefined
                 };
                 setUser(userData);
                 localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(userData));
@@ -232,7 +261,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 email: newUser.email,
                 name: newUser.name,
                 avatar: "https://randomuser.me/api/portraits/lego/1.jpg",
-                role: newUser.role as 'photographer' | 'visitor' | 'admin' | 'client'
+                role: newUser.role as 'photographer' | 'visitor' | 'admin' | 'client',
+                country: (newUser as { country?: string }).country || undefined
             };
             setUser(userData);
             localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(userData));

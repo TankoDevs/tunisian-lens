@@ -1,9 +1,16 @@
 import { Link } from "react-router-dom";
-import { Zap, Briefcase, ChevronRight, CheckCircle2, XCircle, AlertCircle, PlusCircle } from "lucide-react";
+import { useState } from "react";
+import { Zap, Briefcase, ChevronRight, CheckCircle2, XCircle, AlertCircle, PlusCircle, ShieldCheck, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import { useMarketplace } from "../context/MarketplaceContext";
 import { useAuth } from "../context/AuthContext";
 import { Button } from "../components/ui/button";
+import {
+    isArtistVerified,
+    getVerificationRequests,
+    submitVerificationRequest,
+    type VerificationRequest,
+} from "../lib/verification";
 
 function StatusBadge({ status }: { status: 'pending' | 'accepted' | 'rejected' }) {
     const config = {
@@ -27,6 +34,10 @@ function formatDate(iso: string): string {
 export function Dashboard() {
     const { user, isAuthenticated } = useAuth();
     const { jobs, getMyApplications, getJobApplications, getConnects } = useMarketplace();
+    const [showRequestForm, setShowRequestForm] = useState(false);
+    const [requestMsg, setRequestMsg] = useState('');
+    const [requestSent, setRequestSent] = useState(false);
+
     if (!isAuthenticated || !user) {
         return (
             <div className="min-h-screen flex items-center justify-center flex-col gap-4 text-muted-foreground">
@@ -44,11 +55,17 @@ export function Dashboard() {
     const isClient = user.role === 'client';
     const isAdmin = user.role === 'admin';
 
-    // Verification check (mock)
-    interface MockUser { id: string; email: string; isVerified?: boolean; }
-    const mockUsers: MockUser[] = JSON.parse(localStorage.getItem('tunisian_lens_mock_users') || '[]');
-    const mockUser = mockUsers.find((u: MockUser) => u.id === user.id);
-    const isVerified = mockUser?.isVerified === true;
+    // Verification status
+    const isVerified = isArtistVerified(user.id);
+    const allRequests: VerificationRequest[] = getVerificationRequests();
+    const myRequest = allRequests.find(r => r.userId === user.id);
+
+    const handleRequestSubmit = () => {
+        if (!requestMsg.trim()) return;
+        submitVerificationRequest(user.id, user.name, user.email, requestMsg.trim());
+        setShowRequestForm(false);
+        setRequestSent(true);
+    };
 
     return (
         <div className="min-h-screen bg-background py-10">
@@ -103,19 +120,86 @@ export function Dashboard() {
                                 </div>
 
                                 {/* Verification */}
-                                <div className={`border rounded-2xl p-5 bg-card ${isVerified ? 'border-green-300 dark:border-green-700' : 'border-amber-300 dark:border-amber-700'}`}>
+                                <div className={`border rounded-2xl p-5 bg-card col-span-1 sm:col-span-1 ${isVerified ? 'border-green-300 dark:border-green-700'
+                                    : myRequest?.status === 'pending' ? 'border-blue-300 dark:border-blue-700'
+                                        : myRequest?.status === 'denied' ? 'border-red-300 dark:border-red-700'
+                                            : 'border-amber-300 dark:border-amber-700'
+                                    }`}>
                                     <div className="flex items-center gap-2 text-muted-foreground text-sm mb-2">
-                                        <CheckCircle2 className={`h-4 w-4 ${isVerified ? 'text-green-600' : 'text-amber-500'}`} strokeWidth={2} />
+                                        {isVerified
+                                            ? <CheckCircle2 className="h-4 w-4 text-green-600" strokeWidth={2} />
+                                            : myRequest?.status === 'pending'
+                                                ? <Clock className="h-4 w-4 text-blue-500" strokeWidth={2} />
+                                                : myRequest?.status === 'denied'
+                                                    ? <XCircle className="h-4 w-4 text-red-500" strokeWidth={2} />
+                                                    : <ShieldCheck className="h-4 w-4 text-amber-500" strokeWidth={2} />
+                                        }
                                         Verification
                                     </div>
-                                    <div className={`text-lg font-bold ${isVerified ? 'text-green-700 dark:text-green-400' : 'text-amber-700 dark:text-amber-400'}`}>
-                                        {isVerified ? 'Verified ✓' : 'Pending'}
+                                    <div className={`text-base font-bold mb-1 ${isVerified ? 'text-green-700 dark:text-green-400'
+                                        : myRequest?.status === 'pending' ? 'text-blue-700 dark:text-blue-400'
+                                            : myRequest?.status === 'denied' ? 'text-red-700 dark:text-red-400'
+                                                : 'text-amber-700 dark:text-amber-400'
+                                        }`}>
+                                        {isVerified ? 'Verified ✓'
+                                            : myRequest?.status === 'pending' ? 'Under Review'
+                                                : myRequest?.status === 'denied' ? 'Request Denied'
+                                                    : 'Not Verified'}
                                     </div>
-                                    <p className="text-xs text-muted-foreground mt-1">
-                                        {isVerified ? 'You can apply to any job' : 'Admin review required to apply'}
+                                    <p className="text-xs text-muted-foreground">
+                                        {isVerified ? 'You can apply to any job'
+                                            : myRequest?.status === 'pending' ? 'Admin will review your request'
+                                                : myRequest?.status === 'denied' ? 'You may resubmit a new request'
+                                                    : 'Request verification to apply to jobs'}
                                     </p>
+                                    {!isVerified && myRequest?.status !== 'pending' && (
+                                        <Button
+                                            size="sm"
+                                            variant="outline"
+                                            className="mt-3 w-full text-xs"
+                                            onClick={() => { setShowRequestForm(true); setRequestSent(false); }}
+                                        >
+                                            Request Verification
+                                        </Button>
+                                    )}
                                 </div>
                             </div>
+
+                            {/* Verification Request Form */}
+                            {showRequestForm && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: -8 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="border rounded-2xl p-5 bg-card space-y-3"
+                                >
+                                    <h3 className="font-semibold flex items-center gap-2">
+                                        <ShieldCheck className="h-4 w-4 text-primary" strokeWidth={2} />
+                                        Request Verification
+                                    </h3>
+                                    <p className="text-sm text-muted-foreground">
+                                        Tell us a bit about yourself and why you'd like to be verified.
+                                    </p>
+                                    <textarea
+                                        className="w-full border rounded-xl px-3 py-2.5 text-sm bg-background resize-none focus:outline-none focus:ring-2 focus:ring-primary/40"
+                                        rows={4}
+                                        placeholder="E.g. I'm a professional wedding photographer based in Tunis with 5 years of experience…"
+                                        value={requestMsg}
+                                        onChange={e => setRequestMsg(e.target.value)}
+                                    />
+                                    <div className="flex gap-2 justify-end">
+                                        <Button variant="ghost" size="sm" onClick={() => setShowRequestForm(false)}>Cancel</Button>
+                                        <Button size="sm" onClick={handleRequestSubmit} disabled={!requestMsg.trim()}>
+                                            Submit Request
+                                        </Button>
+                                    </div>
+                                </motion.div>
+                            )}
+                            {requestSent && (
+                                <div className="border border-blue-300 dark:border-blue-700 rounded-2xl p-4 bg-blue-50 dark:bg-blue-950/20 text-sm text-blue-700 dark:text-blue-400 flex items-center gap-2">
+                                    <Clock className="h-4 w-4 shrink-0" strokeWidth={2} />
+                                    Your verification request has been submitted. The admin will review it shortly.
+                                </div>
+                            )}
 
                             {/* My Applications */}
                             <div>

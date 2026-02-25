@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, MapPin, Clock, Users, Banknote, ShieldCheck, ShieldX, CheckCircle2, ChevronDown, ChevronUp } from "lucide-react";
+import { ArrowLeft, MapPin, Clock, Users, Banknote, ShieldCheck, ShieldX, CheckCircle2, ChevronDown, ChevronUp, Lock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMarketplace } from "../context/MarketplaceContext";
 import { useAuth } from "../context/AuthContext";
+import { useTunisianAccess } from "../lib/useTunisianAccess";
 import { ConnectsBadge } from "../components/ui/ConnectsBadge";
 import { Button } from "../components/ui/button";
 
@@ -42,6 +43,7 @@ export function JobDetail() {
     const already = isAuthenticated && user ? hasApplied(job.id) : false;
     const applications = getJobApplications(job.id);
     const isOwner = user?.id === job.clientId;
+    const { hasAccess } = useTunisianAccess();
 
     // Check if current user is verified (mock mode check)
     interface MockUser { id: string; email: string; isVerified?: boolean; }
@@ -180,6 +182,17 @@ export function JobDetail() {
                                 <div className="flex gap-2 justify-center">
                                     <Link to="/login"><Button variant="outline" size="sm">Log In</Button></Link>
                                     <Link to="/signup"><Button size="sm">Sign Up</Button></Link>
+                                </div>
+                            </div>
+                        ) : !hasAccess ? (
+                            /* Logged in but not Tunisian */
+                            <div className="flex items-start gap-3 p-4 bg-muted/40 border rounded-xl">
+                                <Lock className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" strokeWidth={2} />
+                                <div>
+                                    <p className="font-semibold">Tunisia Marketplace Only</p>
+                                    <p className="text-sm text-muted-foreground mt-0.5">
+                                        Applying to jobs is restricted to Tunisian citizens and residents. This marketplace is currently Tunisia-only.
+                                    </p>
                                 </div>
                             </div>
                         ) : user?.role === 'client' ? (
