@@ -40,6 +40,7 @@ export interface Job {
     status: 'open' | 'closed';
     createdAt: string;
     applicantCount: number;
+    verifiedOnly?: boolean;
 }
 
 export interface JobApplication {

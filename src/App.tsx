@@ -20,7 +20,9 @@ import { PostJob } from "./pages/PostJob";
 import { JobDetail } from "./pages/JobDetail";
 import { Dashboard } from "./pages/Dashboard";
 import { Admin } from "./pages/Admin";
+import { Messages } from "./pages/Messages";
 import { MarketplaceProvider } from "./context/MarketplaceContext";
+import { ChatProvider } from "./context/ChatContext";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -34,31 +36,35 @@ function App() {
 
   return (
     <MarketplaceProvider>
-      <AnimatePresence mode="wait">
-        {isLoading && <LoadingScreen key="loader" />}
-      </AnimatePresence>
+      <ChatProvider>
+        <AnimatePresence mode="wait">
+          {isLoading && <LoadingScreen key="loader" />}
+        </AnimatePresence>
 
-      <Routes>
-        <Route element={<MainLayout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/explore" element={<Explore />} />
-          <Route path="/artist/:id" element={<ArtistProfile />} />
-          <Route path="/project/:id" element={<ProjectDetails />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/submit" element={<SubmitProject />} />
-          <Route path="/client-access" element={<ClientAccess />} />
-          <Route path="/links" element={<Links />} />
-          <Route path="/photographers" element={<Photographers />} />
-          <Route path="/hire/:id" element={<Hire />} />
-          <Route path="/jobs" element={<Jobs />} />
-          <Route path="/jobs/post" element={<PostJob />} />
-          <Route path="/jobs/:id" element={<JobDetail />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/admin" element={<Admin />} />
-        </Route>
-      </Routes>
+        <Routes>
+          <Route element={<MainLayout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/explore" element={<Explore />} />
+            <Route path="/artist/:id" element={<ArtistProfile />} />
+            <Route path="/project/:id" element={<ProjectDetails />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/submit" element={<SubmitProject />} />
+            <Route path="/client-access" element={<ClientAccess />} />
+            <Route path="/links" element={<Links />} />
+            <Route path="/photographers" element={<Photographers />} />
+            <Route path="/hire/:id" element={<Hire />} />
+            <Route path="/jobs" element={<Jobs />} />
+            <Route path="/jobs/post" element={<PostJob />} />
+            <Route path="/jobs/:id" element={<JobDetail />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/messages" element={<Messages />} />
+            <Route path="/messages/:conversationId" element={<Messages />} />
+          </Route>
+        </Routes>
+      </ChatProvider>
     </MarketplaceProvider>
   );
 }

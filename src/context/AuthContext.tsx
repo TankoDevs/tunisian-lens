@@ -8,6 +8,7 @@ interface User {
     avatar?: string;
     role: 'photographer' | 'visitor' | 'admin' | 'client';
     country?: string;
+    createdAt?: string;
 }
 
 interface AuthContextType {
@@ -160,7 +161,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 name: (profile?.name as string) || (supabaseUser.user_metadata.full_name as string) || supabaseUser.email?.split('@')[0] || 'User',
                 avatar: (supabaseUser.user_metadata.avatar_url as string) || "https://randomuser.me/api/portraits/lego/1.jpg",
                 role: (profile?.role as 'photographer' | 'visitor' | 'admin' | 'client') || (supabaseUser.user_metadata.role as 'photographer' | 'visitor' | 'admin' | 'client') || 'photographer',
-                country: (profile?.country as string) || (supabaseUser.user_metadata.country as string) || undefined
+                country: (profile?.country as string) || (supabaseUser.user_metadata.country as string) || undefined,
+                createdAt: (supabaseUser as unknown as { created_at?: string }).created_at || undefined,
             };
 
             setUser(userData);
@@ -213,7 +215,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     name: foundUser.name,
                     avatar: "https://randomuser.me/api/portraits/lego/1.jpg",
                     role: foundUser.role || 'photographer',
-                    country: foundUser.country || undefined
+                    country: foundUser.country || undefined,
+                    createdAt: foundUser.createdAt || undefined,
                 };
                 setUser(userData);
                 localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(userData));
@@ -250,6 +253,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 password,
                 name,
                 role,
+                createdAt: new Date().toISOString(),
                 ...metadata
             };
 
@@ -262,7 +266,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 name: newUser.name,
                 avatar: "https://randomuser.me/api/portraits/lego/1.jpg",
                 role: newUser.role as 'photographer' | 'visitor' | 'admin' | 'client',
-                country: (newUser as { country?: string }).country || undefined
+                country: (newUser as { country?: string }).country || undefined,
+                createdAt: newUser.createdAt,
             };
             setUser(userData);
             localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(userData));

@@ -83,7 +83,14 @@ export function JobDetail() {
                         <ConnectsBadge count={job.connectsRequired} />
                     </div>
                     <h1 className="font-serif text-3xl font-bold leading-snug mb-1">{job.title}</h1>
-                    <p className="text-sm text-muted-foreground mb-6">Posted by <span className="font-medium text-foreground">{job.clientName}</span> · {formatDate(job.createdAt)}</p>
+                    <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground mb-6">
+                        <span>Posted by <span className="font-medium text-foreground">{job.clientName}</span> · {formatDate(job.createdAt)}</span>
+                        {job.verifiedOnly && (
+                            <span className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                                <ShieldCheck className="h-3 w-3" strokeWidth={2} /> Verified Only
+                            </span>
+                        )}
+                    </div>
 
                     {/* Meta row */}
                     <div className="flex flex-wrap gap-4 text-sm mb-8">
@@ -198,14 +205,39 @@ export function JobDetail() {
                         ) : user?.role === 'client' ? (
                             /* Client viewing */
                             <p className="text-sm text-muted-foreground text-center">Client accounts cannot apply to jobs.</p>
+                        ) : user?.role === 'photographer' && user?.createdAt && (Date.now() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24) < 7 ? (
+                            /* Account too new */
+                            <div className="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-xl">
+                                <Clock className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" strokeWidth={2} />
+                                <div>
+                                    <p className="font-semibold text-blue-800 dark:text-blue-300">Account Too New</p>
+                                    <p className="text-sm text-blue-700 dark:text-blue-400 mt-0.5">
+                                        Your account must be at least 7 days old to apply.
+                                        You can apply in <strong>{Math.ceil(7 - (Date.now() - new Date(user.createdAt!).getTime()) / (1000 * 60 * 60 * 24))} days</strong>.
+                                    </p>
+                                </div>
+                            </div>
+                        ) : job.verifiedOnly && !isVerified ? (
+                            /* Verified-only job, unverified photographer */
+                            <div className="flex items-start gap-3 p-4 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-xl">
+                                <ShieldCheck className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" strokeWidth={2} />
+                                <div>
+                                    <p className="font-semibold text-emerald-800 dark:text-emerald-300">Verified Photographers Only</p>
+                                    <p className="text-sm text-emerald-700 dark:text-emerald-400 mt-0.5">
+                                        This client requires a verified photographer.{' '}
+                                        <Link to="/dashboard" className="underline font-medium">Request verification →</Link>
+                                    </p>
+                                </div>
+                            </div>
                         ) : !isVerified ? (
-                            /* Unverified photographer */
+                            /* Unverified photographer, general restriction */
                             <div className="flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl">
                                 <ShieldX className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" strokeWidth={2} />
                                 <div>
                                     <p className="font-semibold text-amber-800 dark:text-amber-400">Verification Required</p>
                                     <p className="text-sm text-amber-700 dark:text-amber-500 mt-0.5">
-                                        Only verified photographers can apply to jobs. Our team will review your profile and verify you manually.
+                                        Only verified photographers can apply to jobs.{' '}
+                                        <Link to="/dashboard" className="underline font-medium">Request verification →</Link>
                                     </p>
                                 </div>
                             </div>
@@ -222,7 +254,7 @@ export function JobDetail() {
 
                                 {/* Connects cost info */}
                                 <div className={`flex items-center justify-between text-sm p-3 rounded-lg border
-                                    ${hasEnoughConnects ? 'bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800' : 'bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800'}`}>
+                                        ${hasEnoughConnects ? 'bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800' : 'bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800'}`}>
                                     <span className={hasEnoughConnects ? 'text-amber-800 dark:text-amber-400' : 'text-red-700 dark:text-red-400'}>
                                         {hasEnoughConnects
                                             ? `Applying costs ${job.connectsRequired} connects. You have ${connects}.`

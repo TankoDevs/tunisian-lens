@@ -157,9 +157,9 @@ export function Dashboard() {
                                             size="sm"
                                             variant="outline"
                                             className="mt-3 w-full text-xs"
-                                            onClick={() => { setShowRequestForm(true); setRequestSent(false); }}
+                                            onClick={() => { setShowRequestForm(true); setRequestSent(false); setRequestMsg(''); }}
                                         >
-                                            Request Verification
+                                            {myRequest?.status === 'denied' ? 'Resubmit Verification Request' : 'Request Verification'}
                                         </Button>
                                     )}
                                 </div>

@@ -1,12 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useMarketplace } from "../context/MarketplaceContext";
 import { Button } from "./ui/button";
-import { Menu, X, Camera, User, LogIn, UserPlus, LogOut, Sun, Moon, Briefcase, ShieldCheck } from "lucide-react";
+import { Menu, X, Camera, User, LogIn, UserPlus, LogOut, Sun, Moon, Briefcase, ShieldCheck, MessageSquare } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { useTunisianAccess } from "../lib/useTunisianAccess";
+import { useChat } from "../context/ChatContext";
 
 export function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
@@ -17,6 +18,7 @@ export function Navbar() {
     const { theme, toggleTheme } = useTheme();
     const { getConnects } = useMarketplace();
     const { hasAccess: hasTunisianAccess } = useTunisianAccess();
+    const { unreadCount } = useChat();
     const navigate = useNavigate();
 
     // Close user menu when clicking outside
@@ -114,6 +116,20 @@ export function Navbar() {
                             <Sun className="h-4 w-4" strokeWidth={2} />
                         )}
                     </Button>
+
+                    {/* Messages Icon */}
+                    {isAuthenticated && (
+                        <Link to="/messages" className="relative">
+                            <Button variant="ghost" size="icon" className="rounded-full w-9 h-9" title="Messages">
+                                <MessageSquare className="h-4 w-4" strokeWidth={2} />
+                                {unreadCount > 0 && (
+                                    <span className="absolute -top-0.5 -right-0.5 h-4 w-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                                        {unreadCount > 9 ? '9+' : unreadCount}
+                                    </span>
+                                )}
+                            </Button>
+                        </Link>
+                    )}
 
                     {/* Account Dropdown */}
                     <div className="relative" ref={userMenuRef}>
@@ -285,6 +301,19 @@ export function Navbar() {
                             <Link to="/admin" className="flex items-center gap-2 text-sm font-bold py-2 text-primary" onClick={() => setIsOpen(false)}>
                                 <ShieldCheck className="h-4 w-4" strokeWidth={2} />
                                 Admin Panel
+                            </Link>
+                        )}
+                        {isAuthenticated && (
+                            <Link to="/messages" className="flex items-center gap-2 text-sm font-medium py-2" onClick={() => setIsOpen(false)}>
+                                <span className="relative inline-block">
+                                    <MessageSquare className="h-4 w-4" strokeWidth={2} />
+                                    {unreadCount > 0 && (
+                                        <span className="absolute -top-1 -right-1 h-3.5 w-3.5 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                                            {unreadCount > 9 ? '9+' : unreadCount}
+                                        </span>
+                                    )}
+                                </span>
+                                Messages {unreadCount > 0 && <span className="text-xs text-red-500 font-bold">({unreadCount} new)</span>}
                             </Link>
                         )}
                         <div className="grid grid-cols-2 gap-3 pt-2">

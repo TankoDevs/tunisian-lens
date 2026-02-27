@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { ArrowLeft, Briefcase, Lock } from "lucide-react";
+import { ArrowLeft, Briefcase, Lock, ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
 import { useMarketplace } from "../context/MarketplaceContext";
 import { useAuth } from "../context/AuthContext";
@@ -24,6 +24,7 @@ export function PostJob() {
         category: JOB_CATEGORIES[0],
         deadline: '',
         connectsRequired: 4,
+        verifiedOnly: false,
     });
     const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState('');
@@ -82,6 +83,7 @@ export function PostJob() {
             category: form.category,
             deadline: form.deadline,
             connectsRequired: form.connectsRequired,
+            verifiedOnly: form.verifiedOnly,
         });
         setSubmitted(true);
         setTimeout(() => navigate('/jobs'), 1800);
@@ -228,6 +230,29 @@ export function PostJob() {
                             <div className="flex justify-between text-xs text-muted-foreground">
                                 <span>1 (low barrier)</span>
                                 <span>10 (high barrier)</span>
+                            </div>
+                        </div>
+
+                        {/* Verified Only Toggle */}
+                        <div className={`flex items-start gap-3 p-4 rounded-xl border cursor-pointer select-none transition-colors ${form.verifiedOnly
+                                ? 'bg-primary/5 border-primary/30 dark:border-primary/40'
+                                : 'bg-muted/30 border-border hover:bg-muted/50'
+                            }`}
+                            onClick={() => setForm(f => ({ ...f, verifiedOnly: !f.verifiedOnly }))}
+                        >
+                            <ShieldCheck className={`h-5 w-5 flex-shrink-0 mt-0.5 ${form.verifiedOnly ? 'text-primary' : 'text-muted-foreground'}`} strokeWidth={2} />
+                            <div className="flex-1">
+                                <p className={`text-sm font-semibold ${form.verifiedOnly ? 'text-foreground' : 'text-muted-foreground'}`}>
+                                    Verified photographers only
+                                </p>
+                                <p className="text-xs text-muted-foreground mt-0.5">
+                                    Only photographers who passed our manual verification can apply.
+                                </p>
+                            </div>
+                            <div className={`w-10 h-5 rounded-full flex-shrink-0 mt-0.5 relative transition-colors ${form.verifiedOnly ? 'bg-primary' : 'bg-muted-foreground/30'
+                                }`}>
+                                <div className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${form.verifiedOnly ? 'translate-x-5' : 'translate-x-0'
+                                    }`} />
                             </div>
                         </div>
 

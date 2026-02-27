@@ -11,6 +11,7 @@ interface MarketplaceContextType {
     isLoading: boolean;
     postJob: (data: Omit<Job, 'id' | 'createdAt' | 'applicantCount' | 'clientId' | 'clientName' | 'status'>) => Promise<void>;
     applyToJob: (jobId: string, coverLetter: string, proposedPrice: number) => Promise<{ success: boolean; message: string }>;
+    acceptApplication: (applicationId: string) => Promise<{ success: boolean; photographerId: string; photographerName: string }>;
     getJobApplications: (jobId: string) => JobApplication[];
     getMyApplications: () => JobApplication[];
     getConnects: (userId: string) => number;
@@ -76,7 +77,8 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
                 clientName: j.client?.name || 'Client',
                 status: j.status,
                 createdAt: j.created_at,
-                applicantCount: proposalsData.filter(p => p.job_id === j.id).length
+                applicantCount: proposalsData.filter(p => p.job_id === j.id).length,
+                verifiedOnly: j.verified_only ?? false,
             }));
 
             // Map Applications
@@ -125,7 +127,8 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
             category: data.category,
             location: data.location,
             deadline: data.deadline,
-            connects_required: data.connectsRequired
+            connects_required: data.connectsRequired,
+            verified_only: data.verifiedOnly ?? false,
         });
 
         if (error) throw error;
@@ -136,8 +139,23 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
         if (!user || !isConfigured) return { success: false, message: 'Supabase not configured or user not logged in.' };
         if (user.role !== 'photographer') return { success: false, message: 'Only photographers can apply.' };
 
+        // ── 7-day account age restriction ─────────────────────────
+        if (user.createdAt) {
+            const ageMs = Date.now() - new Date(user.createdAt).getTime();
+            const ageDays = ageMs / (1000 * 60 * 60 * 24);
+            if (ageDays < 7) {
+                const daysLeft = Math.ceil(7 - ageDays);
+                return {
+                    success: false,
+                    message: `Your account must be at least 7 days old to apply. You can apply in ${daysLeft} day${daysLeft !== 1 ? 's' : ''}.`,
+                };
+            }
+        }
+
+        // ── Verified-only job restriction ──────────────────────────
+        const job = jobs.find(j => j.id === jobId);
+        if (!job) return { success: false, message: 'Job not found.' };
         try {
-            // 1. Get photographer record
             const { data: photo, error: photoError } = await supabase
                 .from('photographers')
                 .select('id, connects_balance, is_verified:users(is_verified)')
@@ -151,18 +169,16 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
                 ? isVerifiedResult[0]?.is_verified
                 : isVerifiedResult?.is_verified;
 
-            if (!isVerified) return { success: false, message: 'You must be verified to apply.' };
-
-            // 2. Get Job
-            const job = jobs.find(j => j.id === jobId);
-            if (!job) return { success: false, message: 'Job not found.' };
+            // Check verified-only restriction (only block if job requires it)
+            if (job.verifiedOnly && !isVerified) {
+                return { success: false, message: 'This job requires a verified photographer.' };
+            }
 
             if (photo.connects_balance < job.connectsRequired) {
                 return { success: false, message: 'Insufficient connects.' };
             }
 
-            // 3. Create Proposal & Deduct Connects (Transaction-like)
-            // In a real app, this should be a DB function or trigger to be atomic.
+            // Create Proposal & Deduct Connects (Transaction-like)
             const { error: propError } = await supabase.from('proposals').insert({
                 job_id: jobId,
                 photographer_id: photo.id,
@@ -175,7 +191,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
                 throw propError;
             }
 
-            // 4. Update Connects
+            // Update Connects
             const { error: updateError } = await supabase
                 .from('photographers')
                 .update({ connects_balance: photo.connects_balance - job.connectsRequired })
@@ -183,7 +199,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
             if (updateError) throw updateError;
 
-            // 5. Log Transaction
+            // Log Transaction
             await supabase.from('connect_transactions').insert({
                 photographer_id: photo.id,
                 amount: -job.connectsRequired,
@@ -210,10 +226,25 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
         await refreshData();
     };
 
+    const acceptApplication = async (applicationId: string): Promise<{ success: boolean; photographerId: string; photographerName: string }> => {
+        const app = applications.find(a => a.id === applicationId);
+        if (!app) return { success: false, photographerId: '', photographerName: '' };
+        if (isConfigured) {
+            await supabase.from('proposals').update({ status: 'accepted' }).eq('id', applicationId);
+            // Reject all other proposals for this job
+            await supabase.from('proposals')
+                .update({ status: 'rejected' })
+                .eq('job_id', app.jobId)
+                .neq('id', applicationId);
+            await refreshData();
+        }
+        return { success: true, photographerId: app.photographerId, photographerName: app.photographerName };
+    };
+
     return (
         <MarketplaceContext.Provider value={{
             jobs, applications, isLoading,
-            postJob, applyToJob,
+            postJob, applyToJob, acceptApplication,
             getJobApplications, getMyApplications,
             getConnects, hasApplied, closeJob,
             refreshData
