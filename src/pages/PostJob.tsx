@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { useMarketplace } from "../context/MarketplaceContext";
 import { useAuth } from "../context/AuthContext";
 import { useTunisianAccess } from "../lib/useTunisianAccess";
-import { JOB_CATEGORIES } from "../data/mockData";
+import { JOB_CATEGORIES, PHOTO_CATEGORIES, VIDEO_CATEGORIES, type CreativeType } from "../data/mockData";
 import { Button } from "../components/ui/button";
 
 export function PostJob() {
@@ -25,6 +25,7 @@ export function PostJob() {
         deadline: '',
         connectsRequired: 4,
         verifiedOnly: false,
+        creativeTypeRequired: 'both' as CreativeType,
     });
     const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState('');
@@ -53,13 +54,13 @@ export function PostJob() {
         );
     }
 
-    if (user?.role === 'photographer') {
+    if (user?.role === 'creative') {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center space-y-4">
                     <Briefcase className="h-12 w-12 mx-auto text-muted-foreground opacity-40" strokeWidth={1.5} />
                     <p className="text-lg font-medium">Only clients can post jobs</p>
-                    <p className="text-sm text-muted-foreground">Photographers can browse and apply to jobs.</p>
+                    <p className="text-sm text-muted-foreground">Creatives can browse and apply to jobs.</p>
                     <Link to="/jobs"><Button variant="outline">Browse Jobs</Button></Link>
                 </div>
             </div>
@@ -84,6 +85,7 @@ export function PostJob() {
             deadline: form.deadline,
             connectsRequired: form.connectsRequired,
             verifiedOnly: form.verifiedOnly,
+            creativeTypeRequired: form.creativeTypeRequired,
         });
         setSubmitted(true);
         setTimeout(() => navigate('/jobs'), 1800);
@@ -117,8 +119,8 @@ export function PostJob() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4 }}
                 >
-                    <h1 className="font-serif text-3xl font-bold mb-1">Post a Photography Job</h1>
-                    <p className="text-muted-foreground mb-8">Verified photographers will apply using their Connects.</p>
+                    <h1 className="font-serif text-3xl font-bold mb-1">Post a Job</h1>
+                    <p className="text-muted-foreground mb-8">Verified creatives will apply using their Connects.</p>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {/* Title */}
@@ -133,6 +135,26 @@ export function PostJob() {
                             />
                         </div>
 
+                        {/* Creative Type Required */}
+                        <div className="space-y-1.5">
+                            <label className="text-sm font-medium">Creative Type Required <span className="text-red-500">*</span></label>
+                            <div className="flex gap-2">
+                                {(['photographer', 'videographer', 'both'] as CreativeType[]).map(t => (
+                                    <button
+                                        key={t}
+                                        type="button"
+                                        onClick={() => setForm(f => ({ ...f, creativeTypeRequired: t, category: '' }))}
+                                        className={`flex-1 h-10 rounded-lg border text-sm font-medium transition-all duration-200 capitalize ${form.creativeTypeRequired === t
+                                                ? 'bg-foreground text-background border-foreground'
+                                                : 'border-border hover:bg-accent text-muted-foreground hover:text-foreground'
+                                            }`}
+                                    >
+                                        {t === 'both' ? 'Both' : t === 'photographer' ? 'Photographer' : 'Videographer'}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
                         {/* Category */}
                         <div className="space-y-1.5">
                             <label className="text-sm font-medium">Category <span className="text-red-500">*</span></label>
@@ -141,7 +163,12 @@ export function PostJob() {
                                 onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
                                 className="w-full h-10 px-3 rounded-lg border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
                             >
-                                {JOB_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                                {(form.creativeTypeRequired === 'photographer'
+                                    ? PHOTO_CATEGORIES
+                                    : form.creativeTypeRequired === 'videographer'
+                                        ? VIDEO_CATEGORIES
+                                        : JOB_CATEGORIES
+                                ).map(c => <option key={c} value={c}>{c}</option>)}
                             </select>
                         </div>
 
@@ -235,18 +262,18 @@ export function PostJob() {
 
                         {/* Verified Only Toggle */}
                         <div className={`flex items-start gap-3 p-4 rounded-xl border cursor-pointer select-none transition-colors ${form.verifiedOnly
-                                ? 'bg-primary/5 border-primary/30 dark:border-primary/40'
-                                : 'bg-muted/30 border-border hover:bg-muted/50'
+                            ? 'bg-primary/5 border-primary/30 dark:border-primary/40'
+                            : 'bg-muted/30 border-border hover:bg-muted/50'
                             }`}
                             onClick={() => setForm(f => ({ ...f, verifiedOnly: !f.verifiedOnly }))}
                         >
                             <ShieldCheck className={`h-5 w-5 flex-shrink-0 mt-0.5 ${form.verifiedOnly ? 'text-primary' : 'text-muted-foreground'}`} strokeWidth={2} />
                             <div className="flex-1">
                                 <p className={`text-sm font-semibold ${form.verifiedOnly ? 'text-foreground' : 'text-muted-foreground'}`}>
-                                    Verified photographers only
+                                    Verified creatives only
                                 </p>
                                 <p className="text-xs text-muted-foreground mt-0.5">
-                                    Only photographers who passed our manual verification can apply.
+                                    Only verified creatives who passed our manual verification can apply.
                                 </p>
                             </div>
                             <div className={`w-10 h-5 rounded-full flex-shrink-0 mt-0.5 relative transition-colors ${form.verifiedOnly ? 'bg-primary' : 'bg-muted-foreground/30'

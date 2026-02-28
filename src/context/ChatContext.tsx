@@ -9,8 +9,8 @@ export interface Conversation {
     jobTitle: string;
     clientId: string;
     clientName: string;
-    photographerId: string;
-    photographerName: string;
+    creativeId: string;
+    creativeName: string;
     createdAt: string;
     lastMessage?: string;
     lastMessageAt?: string;
@@ -78,7 +78,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
         (params: Omit<Conversation, 'id' | 'createdAt' | 'lastMessage' | 'lastMessageAt'>): Conversation => {
             // Avoid duplicate conversations for the same job + photographer pair
             const existing = conversations.find(
-                c => c.jobId === params.jobId && c.photographerId === params.photographerId
+                c => c.jobId === params.jobId && c.creativeId === params.creativeId
             );
             if (existing) return existing;
 
@@ -128,7 +128,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const getMyConversations = useCallback((): Conversation[] => {
         if (!user) return [];
         return conversations.filter(
-            c => c.clientId === user.id || c.photographerId === user.id
+            c => c.clientId === user.id || c.creativeId === user.id
         );
     }, [conversations, user]);
 

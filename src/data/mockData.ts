@@ -1,15 +1,30 @@
-export const CATEGORIES = [
+export type CreativeType = 'photographer' | 'videographer' | 'both';
+
+export const PHOTO_CATEGORIES = [
     "Wedding",
-    "Street",
     "Portrait",
     "Landscape",
     "Fashion",
+    "Product",
+    "Real Estate",
+    "Event",
+    "Documentary",
+    "Street",
     "Architecture",
     "Food",
-    "Documentary",
-    "Event",
     "Commercial",
 ];
+
+export const VIDEO_CATEGORIES = [
+    "Wedding Film",
+    "Commercial Video",
+    "Music Video",
+    "Event Coverage",
+    "Social Media Content",
+    "Documentary Film",
+];
+
+export const CATEGORIES = [...PHOTO_CATEGORIES, ...VIDEO_CATEGORIES];
 
 export const JOB_CATEGORIES = [
     "Wedding",
@@ -21,6 +36,11 @@ export const JOB_CATEGORIES = [
     "Commercial",
     "Documentary",
     "Architecture",
+    "Wedding Film",
+    "Commercial Video",
+    "Music Video",
+    "Event Coverage",
+    "Social Media Content",
     "Other",
 ];
 
@@ -33,7 +53,7 @@ export interface Job {
     location?: string;
     isRemote: boolean;
     category: string;
-    deadline: string; // ISO date string
+    deadline: string;
     connectsRequired: number;
     clientId: string;
     clientName: string;
@@ -41,14 +61,15 @@ export interface Job {
     createdAt: string;
     applicantCount: number;
     verifiedOnly?: boolean;
+    creativeTypeRequired: CreativeType;
 }
 
 export interface JobApplication {
     id: string;
     jobId: string;
-    photographerId: string;
-    photographerName: string;
-    photographerAvatar: string;
+    creativeId: string;
+    creativeName: string;
+    creativeAvatar: string;
     coverLetter: string;
     proposedPrice: number;
     currency: string;
@@ -72,7 +93,8 @@ export const MOCK_JOBS: Job[] = [
         clientName: "Ahmed Mansour",
         status: "open",
         createdAt: "2026-02-20T10:00:00Z",
-        applicantCount: 3
+        applicantCount: 3,
+        creativeTypeRequired: "photographer",
     },
     {
         id: "job-2",
@@ -89,12 +111,13 @@ export const MOCK_JOBS: Job[] = [
         clientName: "Boutique Nour",
         status: "open",
         createdAt: "2026-02-21T14:30:00Z",
-        applicantCount: 7
+        applicantCount: 7,
+        creativeTypeRequired: "photographer",
     },
     {
         id: "job-3",
         title: "Product Photography for E-Commerce Store",
-        description: "Online store selling Tunisian handmade crafts needs clean, professional product photography on white backgrounds. Approximately 50 products. High volume and consistent lighting required. Remote coordination is fine for the brief; shooting happens in our Sousse studio.",
+        description: "Online store selling Tunisian handmade crafts needs clean, professional product photography on white backgrounds. Approximately 50 products. High volume and consistent lighting required.",
         budget: 350,
         currency: "USD",
         location: "Sousse, Tunisia",
@@ -106,7 +129,8 @@ export const MOCK_JOBS: Job[] = [
         clientName: "Artisanat TN",
         status: "open",
         createdAt: "2026-02-22T09:15:00Z",
-        applicantCount: 5
+        applicantCount: 5,
+        creativeTypeRequired: "photographer",
     },
     {
         id: "job-4",
@@ -123,12 +147,13 @@ export const MOCK_JOBS: Job[] = [
         clientName: "TechConf Tunisia",
         status: "open",
         createdAt: "2026-02-23T11:00:00Z",
-        applicantCount: 2
+        applicantCount: 2,
+        creativeTypeRequired: "photographer",
     },
     {
         id: "job-5",
         title: "Landscape Serie — Sahara Desert (Tozeur)",
-        description: "Travel magazine looking for stunning landscape images from the Tozeur region, including the salt flats, palm trees, and dunes. We need a minimum of 40 final edited images delivered in high resolution. Remote coordination possible.",
+        description: "Travel magazine looking for stunning landscape images from the Tozeur region, including the salt flats, palm trees, and dunes. We need a minimum of 40 final edited images delivered in high resolution.",
         budget: 500,
         currency: "USD",
         location: "Tozeur, Tunisia",
@@ -140,44 +165,57 @@ export const MOCK_JOBS: Job[] = [
         clientName: "Voyage Magazine",
         status: "open",
         createdAt: "2026-02-23T16:45:00Z",
-        applicantCount: 9
-    }
+        applicantCount: 9,
+        creativeTypeRequired: "photographer",
+    },
+    {
+        id: "job-6",
+        title: "Wedding Film — Cinematic Highlight Reel",
+        description: "Looking for a talented videographer to capture our wedding day as a cinematic highlight film. 5-8 minute final edit with drone footage, audio from the ceremony, and a modern editing style. Two-day coverage required.",
+        budget: 1500,
+        currency: "USD",
+        location: "Hammamet, Tunisia",
+        isRemote: false,
+        category: "Wedding Film",
+        deadline: "2026-05-20",
+        connectsRequired: 6,
+        clientId: "client-1",
+        clientName: "Ahmed Mansour",
+        status: "open",
+        createdAt: "2026-02-24T08:00:00Z",
+        applicantCount: 2,
+        creativeTypeRequired: "videographer",
+    },
+    {
+        id: "job-7",
+        title: "Commercial Video for Restaurant Launch",
+        description: "New restaurant opening in La Marsa needs a 60-second promotional video for social media. Must include food close-ups, ambiance shots, and chef interview clip. Quick turnaround needed.",
+        budget: 900,
+        currency: "USD",
+        location: "La Marsa, Tunisia",
+        isRemote: false,
+        category: "Commercial Video",
+        deadline: "2026-04-10",
+        connectsRequired: 4,
+        clientId: "client-6",
+        clientName: "La Marsa Kitchen",
+        status: "open",
+        createdAt: "2026-02-25T12:00:00Z",
+        applicantCount: 4,
+        creativeTypeRequired: "videographer",
+    },
 ];
 
 export const CITIES = [
-    "Tunis",
-    "Sfax",
-    "Sousse",
-    "Djerba",
-    "Bizerte",
-    "Nabeul",
-    "Monastir",
-    "Hammamet",
-    "Gabes",
-    "Tozeur",
-    "Paris",
-    "Dubai",
-    "London",
-    "New York",
-    "Berlin",
-    "Casablanca",
-    "Cairo",
-    "Barcelona",
+    "Tunis", "Sfax", "Sousse", "Djerba", "Bizerte", "Nabeul",
+    "Monastir", "Hammamet", "Gabes", "Tozeur",
+    "Paris", "Dubai", "London", "New York", "Berlin",
+    "Casablanca", "Cairo", "Barcelona",
 ];
 
 export const COUNTRIES = [
-    "Tunisia",
-    "France",
-    "UAE",
-    "United Kingdom",
-    "United States",
-    "Germany",
-    "Morocco",
-    "Egypt",
-    "Spain",
-    "Italy",
-    "Turkey",
-    "Lebanon",
+    "Tunisia", "France", "UAE", "United Kingdom", "United States",
+    "Germany", "Morocco", "Egypt", "Spain", "Italy", "Turkey", "Lebanon",
 ];
 
 export interface ServicePackage {
@@ -194,9 +232,10 @@ export interface Artist {
     name: string;
     avatar: string;
     bio: string;
-    location: string; // city
+    location: string;
     country: string;
     categories: string[];
+    creativeType: CreativeType;
     isVerified: boolean;
     languages: string[];
     startingPrice: number;
@@ -217,12 +256,7 @@ export const PROJECTS = [
         image: "https://picsum.photos/seed/tunis-medina/800/600",
         category: "Street",
         likes: 124,
-        artist: {
-            id: "a1",
-            name: "Amine Benali",
-            avatar: "https://i.pravatar.cc/150?u=amine",
-            isVerified: true
-        }
+        artist: { id: "a1", name: "Amine Benali", avatar: "https://i.pravatar.cc/150?u=amine", isVerified: true }
     },
     {
         id: "2",
@@ -230,12 +264,7 @@ export const PROJECTS = [
         image: "https://picsum.photos/seed/sidi-bou-said/800/600",
         category: "Architecture",
         likes: 89,
-        artist: {
-            id: "a2",
-            name: "Sarra Jaziri",
-            avatar: "https://i.pravatar.cc/150?u=sarra",
-            isVerified: false
-        }
+        artist: { id: "a2", name: "Sarra Jaziri", avatar: "https://i.pravatar.cc/150?u=sarra", isVerified: false }
     },
     {
         id: "3",
@@ -243,12 +272,7 @@ export const PROJECTS = [
         image: "https://picsum.photos/seed/tunisia-sahara/800/600",
         category: "Landscape",
         likes: 256,
-        artist: {
-            id: "a3",
-            name: "Karim Tounsi",
-            avatar: "https://i.pravatar.cc/150?u=karim",
-            isVerified: true
-        }
+        artist: { id: "a3", name: "Karim Tounsi", avatar: "https://i.pravatar.cc/150?u=karim", isVerified: true }
     },
     {
         id: "4",
@@ -256,12 +280,7 @@ export const PROJECTS = [
         image: "https://picsum.photos/seed/tunisia-culture/800/600",
         category: "Wedding",
         likes: 312,
-        artist: {
-            id: "a2",
-            name: "Sarra Jaziri",
-            avatar: "https://i.pravatar.cc/150?u=sarra",
-            isVerified: false
-        }
+        artist: { id: "a2", name: "Sarra Jaziri", avatar: "https://i.pravatar.cc/150?u=sarra", isVerified: false }
     },
     {
         id: "5",
@@ -269,12 +288,7 @@ export const PROJECTS = [
         image: "https://picsum.photos/seed/tunis-market/800/600",
         category: "Street",
         likes: 98,
-        artist: {
-            id: "a1",
-            name: "Amine Benali",
-            avatar: "https://i.pravatar.cc/150?u=amine",
-            isVerified: true
-        }
+        artist: { id: "a1", name: "Amine Benali", avatar: "https://i.pravatar.cc/150?u=amine", isVerified: true }
     },
     {
         id: "6",
@@ -282,12 +296,7 @@ export const PROJECTS = [
         image: "https://picsum.photos/seed/el-jem/800/600",
         category: "Architecture",
         likes: 175,
-        artist: {
-            id: "a3",
-            name: "Karim Tounsi",
-            avatar: "https://i.pravatar.cc/150?u=karim",
-            isVerified: true
-        }
+        artist: { id: "a3", name: "Karim Tounsi", avatar: "https://i.pravatar.cc/150?u=karim", isVerified: true }
     },
     {
         id: "7",
@@ -295,12 +304,7 @@ export const PROJECTS = [
         image: "https://picsum.photos/seed/paris-fashion/800/600",
         category: "Fashion",
         likes: 421,
-        artist: {
-            id: "a4",
-            name: "Léa Moreau",
-            avatar: "https://i.pravatar.cc/150?u=lea",
-            isVerified: true
-        }
+        artist: { id: "a4", name: "Léa Moreau", avatar: "https://i.pravatar.cc/150?u=lea", isVerified: true }
     },
     {
         id: "8",
@@ -308,12 +312,7 @@ export const PROJECTS = [
         image: "https://picsum.photos/seed/dubai-skyline/800/600",
         category: "Architecture",
         likes: 538,
-        artist: {
-            id: "a5",
-            name: "Omar Al-Rashid",
-            avatar: "https://i.pravatar.cc/150?u=omar",
-            isVerified: true
-        }
+        artist: { id: "a5", name: "Omar Al-Rashid", avatar: "https://i.pravatar.cc/150?u=omar", isVerified: true }
     },
     {
         id: "9",
@@ -321,12 +320,7 @@ export const PROJECTS = [
         image: "https://picsum.photos/seed/london-market/800/600",
         category: "Food",
         likes: 203,
-        artist: {
-            id: "a6",
-            name: "Emily Clarke",
-            avatar: "https://i.pravatar.cc/150?u=emily",
-            isVerified: false
-        }
+        artist: { id: "a6", name: "Emily Clarke", avatar: "https://i.pravatar.cc/150?u=emily", isVerified: false }
     }
 ];
 
@@ -339,42 +333,18 @@ export const ARTISTS: Artist[] = [
         location: "Tunis",
         country: "Tunisia",
         categories: ["Street", "Documentary"],
+        creativeType: "photographer",
         isVerified: true,
         languages: ["Arabic", "French", "English"],
         startingPrice: 120,
         currency: "USD",
         deliveryDays: 5,
         packages: [
-            {
-                name: "Basic",
-                price: 120,
-                currency: "USD",
-                description: "Half-day street photography session",
-                deliveryDays: 5,
-                includes: ["2-hour session", "20 edited photos", "Digital delivery"]
-            },
-            {
-                name: "Standard",
-                price: 250,
-                currency: "USD",
-                description: "Full-day documentary shoot",
-                deliveryDays: 7,
-                includes: ["6-hour session", "60 edited photos", "Digital delivery", "Location scouting"]
-            },
-            {
-                name: "Premium",
-                price: 450,
-                currency: "USD",
-                description: "Multi-day visual story",
-                deliveryDays: 14,
-                includes: ["2-day session", "100+ edited photos", "Print-ready files", "Online gallery", "Commercial license"]
-            }
+            { name: "Basic", price: 120, currency: "USD", description: "Half-day street photography session", deliveryDays: 5, includes: ["2-hour session", "20 edited photos", "Digital delivery"] },
+            { name: "Standard", price: 250, currency: "USD", description: "Full-day documentary shoot", deliveryDays: 7, includes: ["6-hour session", "60 edited photos", "Digital delivery", "Location scouting"] },
+            { name: "Premium", price: 450, currency: "USD", description: "Multi-day visual story", deliveryDays: 14, includes: ["2-day session", "100+ edited photos", "Print-ready files", "Online gallery", "Commercial license"] }
         ],
-        contact: {
-            email: "amine.b@example.com",
-            instagram: "@aminelens",
-            phone: "+216 00 000 000"
-        }
+        contact: { email: "amine.b@example.com", instagram: "@aminelens", phone: "+216 00 000 000" }
     },
     {
         id: "a2",
@@ -384,42 +354,18 @@ export const ARTISTS: Artist[] = [
         location: "Sousse",
         country: "Tunisia",
         categories: ["Wedding", "Architecture"],
+        creativeType: "photographer",
         isVerified: false,
         languages: ["Arabic", "French"],
         startingPrice: 400,
         currency: "USD",
         deliveryDays: 14,
         packages: [
-            {
-                name: "Basic",
-                price: 400,
-                currency: "USD",
-                description: "Wedding ceremony coverage",
-                deliveryDays: 14,
-                includes: ["4-hour coverage", "100 edited photos", "Online gallery"]
-            },
-            {
-                name: "Standard",
-                price: 800,
-                currency: "USD",
-                description: "Full wedding day",
-                deliveryDays: 21,
-                includes: ["8-hour coverage", "200 edited photos", "Online gallery", "Printed album (20 pages)"]
-            },
-            {
-                name: "Premium",
-                price: 1400,
-                currency: "USD",
-                description: "Complete wedding package",
-                deliveryDays: 30,
-                includes: ["2-day coverage", "350+ edited photos", "Drone footage", "Luxury album", "USB drive"]
-            }
+            { name: "Basic", price: 400, currency: "USD", description: "Wedding ceremony coverage", deliveryDays: 14, includes: ["4-hour coverage", "100 edited photos", "Online gallery"] },
+            { name: "Standard", price: 800, currency: "USD", description: "Full wedding day", deliveryDays: 21, includes: ["8-hour coverage", "200 edited photos", "Online gallery", "Printed album (20 pages)"] },
+            { name: "Premium", price: 1400, currency: "USD", description: "Complete wedding package", deliveryDays: 30, includes: ["2-day coverage", "350+ edited photos", "Drone footage", "Luxury album", "USB drive"] }
         ],
-        contact: {
-            email: "sarra.j@example.com",
-            instagram: "@sarraphoto",
-            phone: "+216 11 111 111"
-        }
+        contact: { email: "sarra.j@example.com", instagram: "@sarraphoto", phone: "+216 11 111 111" }
     },
     {
         id: "a3",
@@ -429,42 +375,18 @@ export const ARTISTS: Artist[] = [
         location: "Tozeur",
         country: "Tunisia",
         categories: ["Landscape", "Documentary"],
+        creativeType: "photographer",
         isVerified: true,
         languages: ["Arabic", "French", "English"],
         startingPrice: 200,
         currency: "USD",
         deliveryDays: 10,
         packages: [
-            {
-                name: "Basic",
-                price: 200,
-                currency: "USD",
-                description: "Single location landscape session",
-                deliveryDays: 7,
-                includes: ["Sunrise or sunset shoot", "15 edited photos", "Digital delivery"]
-            },
-            {
-                name: "Standard",
-                price: 500,
-                currency: "USD",
-                description: "Multi-location day tour",
-                deliveryDays: 10,
-                includes: ["Full-day shoot", "40 edited photos", "Drone aerial shots", "Digital delivery"]
-            },
-            {
-                name: "Premium",
-                price: 900,
-                currency: "USD",
-                description: "Desert expedition series",
-                deliveryDays: 21,
-                includes: ["3-day expedition", "80+ edited photos", "Drone footage", "Commercial license", "Print-ready files"]
-            }
+            { name: "Basic", price: 200, currency: "USD", description: "Single location landscape session", deliveryDays: 7, includes: ["Sunrise or sunset shoot", "15 edited photos", "Digital delivery"] },
+            { name: "Standard", price: 500, currency: "USD", description: "Multi-location day tour", deliveryDays: 10, includes: ["Full-day shoot", "40 edited photos", "Drone aerial shots", "Digital delivery"] },
+            { name: "Premium", price: 900, currency: "USD", description: "Desert expedition series", deliveryDays: 21, includes: ["3-day expedition", "80+ edited photos", "Drone footage", "Commercial license", "Print-ready files"] }
         ],
-        contact: {
-            email: "karim.t@example.com",
-            instagram: "@karimscapes",
-            phone: "+216 22 222 222"
-        }
+        contact: { email: "karim.t@example.com", instagram: "@karimscapes", phone: "+216 22 222 222" }
     },
     {
         id: "a4",
@@ -474,42 +396,18 @@ export const ARTISTS: Artist[] = [
         location: "Paris",
         country: "France",
         categories: ["Fashion", "Portrait"],
+        creativeType: "photographer",
         isVerified: true,
         languages: ["French", "English", "Italian"],
         startingPrice: 350,
         currency: "USD",
         deliveryDays: 7,
         packages: [
-            {
-                name: "Basic",
-                price: 350,
-                currency: "USD",
-                description: "Portrait or headshot session",
-                deliveryDays: 5,
-                includes: ["2-hour studio session", "15 retouched photos", "Digital delivery"]
-            },
-            {
-                name: "Standard",
-                price: 750,
-                currency: "USD",
-                description: "Editorial fashion shoot",
-                deliveryDays: 7,
-                includes: ["Half-day shoot", "30 retouched photos", "Styling consultation", "Digital delivery"]
-            },
-            {
-                name: "Premium",
-                price: 1800,
-                currency: "USD",
-                description: "Full editorial campaign",
-                deliveryDays: 14,
-                includes: ["Full-day shoot", "60+ retouched photos", "Creative direction", "Lookbook layout", "Commercial license"]
-            }
+            { name: "Basic", price: 350, currency: "USD", description: "Portrait or headshot session", deliveryDays: 5, includes: ["2-hour studio session", "15 retouched photos", "Digital delivery"] },
+            { name: "Standard", price: 750, currency: "USD", description: "Editorial fashion shoot", deliveryDays: 7, includes: ["Half-day shoot", "30 retouched photos", "Styling consultation", "Digital delivery"] },
+            { name: "Premium", price: 1800, currency: "USD", description: "Full editorial campaign", deliveryDays: 14, includes: ["Full-day shoot", "60+ retouched photos", "Creative direction", "Lookbook layout", "Commercial license"] }
         ],
-        contact: {
-            email: "lea.moreau@example.com",
-            instagram: "@leamorphoto",
-            phone: "+33 6 00 00 00 00"
-        }
+        contact: { email: "lea.moreau@example.com", instagram: "@leamorphoto", phone: "+33 6 00 00 00 00" }
     },
     {
         id: "a5",
@@ -519,42 +417,18 @@ export const ARTISTS: Artist[] = [
         location: "Dubai",
         country: "UAE",
         categories: ["Architecture", "Commercial"],
+        creativeType: "photographer",
         isVerified: true,
         languages: ["Arabic", "English"],
         startingPrice: 500,
         currency: "USD",
         deliveryDays: 7,
         packages: [
-            {
-                name: "Basic",
-                price: 500,
-                currency: "USD",
-                description: "Interior or exterior shoot",
-                deliveryDays: 5,
-                includes: ["Half-day shoot", "20 edited photos", "Digital delivery"]
-            },
-            {
-                name: "Standard",
-                price: 1200,
-                currency: "USD",
-                description: "Full property or project shoot",
-                deliveryDays: 7,
-                includes: ["Full-day shoot", "50 edited photos", "Twilight shots", "Digital delivery"]
-            },
-            {
-                name: "Premium",
-                price: 2500,
-                currency: "USD",
-                description: "Complete commercial campaign",
-                deliveryDays: 14,
-                includes: ["2-day shoot", "100+ edited photos", "Drone aerials", "Virtual tour content", "Commercial license"]
-            }
+            { name: "Basic", price: 500, currency: "USD", description: "Interior or exterior shoot", deliveryDays: 5, includes: ["Half-day shoot", "20 edited photos", "Digital delivery"] },
+            { name: "Standard", price: 1200, currency: "USD", description: "Full property or project shoot", deliveryDays: 7, includes: ["Full-day shoot", "50 edited photos", "Twilight shots", "Digital delivery"] },
+            { name: "Premium", price: 2500, currency: "USD", description: "Complete commercial campaign", deliveryDays: 14, includes: ["2-day shoot", "100+ edited photos", "Drone aerials", "Virtual tour content", "Commercial license"] }
         ],
-        contact: {
-            email: "omar.rashid@example.com",
-            instagram: "@omarscapes",
-            phone: "+971 50 000 0000"
-        }
+        contact: { email: "omar.rashid@example.com", instagram: "@omarscapes", phone: "+971 50 000 0000" }
     },
     {
         id: "a6",
@@ -564,41 +438,59 @@ export const ARTISTS: Artist[] = [
         location: "London",
         country: "United Kingdom",
         categories: ["Food", "Commercial"],
+        creativeType: "photographer",
         isVerified: false,
         languages: ["English"],
         startingPrice: 300,
         currency: "USD",
         deliveryDays: 5,
         packages: [
-            {
-                name: "Basic",
-                price: 300,
-                currency: "USD",
-                description: "Menu or product shoot",
-                deliveryDays: 5,
-                includes: ["3-hour session", "15 edited photos", "Digital delivery"]
-            },
-            {
-                name: "Standard",
-                price: 650,
-                currency: "USD",
-                description: "Restaurant full shoot",
-                deliveryDays: 7,
-                includes: ["Full-day session", "35 edited photos", "Styling props", "Digital delivery"]
-            },
-            {
-                name: "Premium",
-                price: 1200,
-                currency: "USD",
-                description: "Cookbook or brand campaign",
-                deliveryDays: 14,
-                includes: ["2-day session", "70+ edited photos", "Creative direction", "Social media cuts", "Commercial license"]
-            }
+            { name: "Basic", price: 300, currency: "USD", description: "Menu or product shoot", deliveryDays: 5, includes: ["3-hour session", "15 edited photos", "Digital delivery"] },
+            { name: "Standard", price: 650, currency: "USD", description: "Restaurant full shoot", deliveryDays: 7, includes: ["Full-day session", "35 edited photos", "Styling props", "Digital delivery"] },
+            { name: "Premium", price: 1200, currency: "USD", description: "Cookbook or brand campaign", deliveryDays: 14, includes: ["2-day session", "70+ edited photos", "Creative direction", "Social media cuts", "Commercial license"] }
         ],
-        contact: {
-            email: "emily.clarke@example.com",
-            instagram: "@emilyfoodlens",
-            phone: "+44 7700 000000"
-        }
-    }
+        contact: { email: "emily.clarke@example.com", instagram: "@emilyfoodlens", phone: "+44 7700 000000" }
+    },
+    {
+        id: "a7",
+        name: "Youssef Khelifi",
+        avatar: "https://randomuser.me/api/portraits/men/75.jpg",
+        bio: "Cinematic wedding and event videographer based in Tunis. I create emotional, story-driven films that couples treasure forever. Equipped with 4K cameras, drones, and professional audio.",
+        location: "Tunis",
+        country: "Tunisia",
+        categories: ["Wedding Film", "Event Coverage"],
+        creativeType: "videographer",
+        isVerified: true,
+        languages: ["Arabic", "French", "English"],
+        startingPrice: 500,
+        currency: "USD",
+        deliveryDays: 14,
+        packages: [
+            { name: "Basic", price: 500, currency: "USD", description: "Wedding highlight reel (3-5 min)", deliveryDays: 14, includes: ["Full-day coverage", "3-5 min highlight film", "Digital delivery"] },
+            { name: "Standard", price: 1200, currency: "USD", description: "Full wedding film", deliveryDays: 21, includes: ["Full-day coverage", "8-12 min film", "Highlight reel", "Drone footage", "Raw footage"] },
+            { name: "Premium", price: 2200, currency: "USD", description: "Cinematic wedding package", deliveryDays: 30, includes: ["2-day coverage", "15+ min film", "Highlight reel", "Drone", "Same-day edit", "USB delivery"] }
+        ],
+        contact: { email: "youssef.k@example.com", instagram: "@yousseffilms", phone: "+216 33 333 333" }
+    },
+    {
+        id: "a8",
+        name: "Nadia Bouazizi",
+        avatar: "https://randomuser.me/api/portraits/women/35.jpg",
+        bio: "Commercial and social media videographer specializing in brand storytelling. I help businesses in Tunisia and beyond create compelling video content that drives engagement and conversions.",
+        location: "Sfax",
+        country: "Tunisia",
+        categories: ["Commercial Video", "Social Media Content", "Music Video"],
+        creativeType: "videographer",
+        isVerified: true,
+        languages: ["Arabic", "French"],
+        startingPrice: 350,
+        currency: "USD",
+        deliveryDays: 7,
+        packages: [
+            { name: "Basic", price: 350, currency: "USD", description: "Social media video (30-60s)", deliveryDays: 5, includes: ["Half-day shoot", "1 edited video", "Vertical + horizontal cuts", "Digital delivery"] },
+            { name: "Standard", price: 800, currency: "USD", description: "Brand promo video (1-2 min)", deliveryDays: 7, includes: ["Full-day shoot", "1-2 min edited video", "Social cuts", "Color grading", "Background music"] },
+            { name: "Premium", price: 1800, currency: "USD", description: "Full video campaign", deliveryDays: 14, includes: ["2-day shoot", "3 edited videos", "Drone footage", "Motion graphics", "Commercial license"] }
+        ],
+        contact: { email: "nadia.b@example.com", instagram: "@nadiafilms", phone: "+216 44 444 444" }
+    },
 ];

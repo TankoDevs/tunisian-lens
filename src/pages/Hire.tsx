@@ -36,10 +36,10 @@ export function Hire() {
     if (!artist) {
         return (
             <div className="container mx-auto px-4 py-20 text-center space-y-4">
-                <h1 className="text-2xl font-serif font-bold">Photographer Not Found</h1>
+                <h1 className="text-2xl font-serif font-bold">Creative Not Found</h1>
                 <p className="text-muted-foreground">The profile you are looking for does not exist.</p>
-                <Link to="/photographers">
-                    <Button>Browse Photographers</Button>
+                <Link to="/creatives">
+                    <Button>Browse Creatives</Button>
                 </Link>
             </div>
         );
@@ -58,15 +58,15 @@ export function Hire() {
         <div className="min-h-screen">
             {/* Back */}
             <div className="container mx-auto px-4 pt-6">
-                <Link to="/photographers" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
-                    <ChevronLeft className="h-4 w-4" strokeWidth={2} /> Back to Photographers
+                <Link to="/creatives" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    <ChevronLeft className="h-4 w-4" strokeWidth={2} /> Back to Creatives
                 </Link>
             </div>
 
             <div className="container mx-auto px-4 py-6">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-                    {/* LEFT: Photographer Info */}
+                    {/* LEFT: Creative Info */}
                     <div className="lg:col-span-2 space-y-8">
 
                         {/* Profile Header */}

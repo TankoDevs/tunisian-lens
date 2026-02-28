@@ -59,7 +59,7 @@ export function JobDetail() {
         setLoading(false);
     };
 
-    const canApply = isAuthenticated && user?.role === 'photographer' && !already && job.status === 'open';
+    const canApply = isAuthenticated && user?.role === 'creative' && !already && job.status === 'open';
     const hasEnoughConnects = connects >= job.connectsRequired;
 
     return (
@@ -154,9 +154,9 @@ export function JobDetail() {
                                             ) : applications.map(app => (
                                                 <div key={app.id} className="border rounded-xl p-4 space-y-2">
                                                     <div className="flex items-center gap-3">
-                                                        <img src={app.photographerAvatar} alt={app.photographerName} className="h-8 w-8 rounded-full object-cover" />
+                                                        <img src={app.creativeAvatar} alt={app.creativeName} className="h-8 w-8 rounded-full object-cover" />
                                                         <div>
-                                                            <p className="text-sm font-medium">{app.photographerName}</p>
+                                                            <p className="text-sm font-medium">{app.creativeName}</p>
                                                             <p className="text-xs text-muted-foreground">Proposed: <span className="font-semibold text-foreground">${app.proposedPrice}</span></p>
                                                         </div>
                                                         <span className={`ml-auto text-xs px-2 py-0.5 rounded-full font-medium
@@ -185,7 +185,7 @@ export function JobDetail() {
                         ) : !isAuthenticated ? (
                             /* Not logged in */
                             <div className="text-center space-y-3">
-                                <p className="text-sm text-muted-foreground">Log in as a photographer to apply.</p>
+                                <p className="text-sm text-muted-foreground">Log in as a creative to apply.</p>
                                 <div className="flex gap-2 justify-center">
                                     <Link to="/login"><Button variant="outline" size="sm">Log In</Button></Link>
                                     <Link to="/signup"><Button size="sm">Sign Up</Button></Link>
@@ -205,7 +205,7 @@ export function JobDetail() {
                         ) : user?.role === 'client' ? (
                             /* Client viewing */
                             <p className="text-sm text-muted-foreground text-center">Client accounts cannot apply to jobs.</p>
-                        ) : user?.role === 'photographer' && user?.createdAt && (Date.now() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24) < 7 ? (
+                        ) : user?.role === 'creative' && user?.createdAt && (Date.now() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24) < 7 ? (
                             /* Account too new */
                             <div className="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-xl">
                                 <Clock className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" strokeWidth={2} />
@@ -218,25 +218,25 @@ export function JobDetail() {
                                 </div>
                             </div>
                         ) : job.verifiedOnly && !isVerified ? (
-                            /* Verified-only job, unverified photographer */
+                            /* Verified-only job, unverified creative */
                             <div className="flex items-start gap-3 p-4 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-xl">
                                 <ShieldCheck className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" strokeWidth={2} />
                                 <div>
-                                    <p className="font-semibold text-emerald-800 dark:text-emerald-300">Verified Photographers Only</p>
+                                    <p className="font-semibold text-emerald-800 dark:text-emerald-300">Verified Creatives Only</p>
                                     <p className="text-sm text-emerald-700 dark:text-emerald-400 mt-0.5">
-                                        This client requires a verified photographer.{' '}
+                                        This client requires a verified creative.{' '}
                                         <Link to="/dashboard" className="underline font-medium">Request verification →</Link>
                                     </p>
                                 </div>
                             </div>
                         ) : !isVerified ? (
-                            /* Unverified photographer, general restriction */
+                            /* Unverified creative, general restriction */
                             <div className="flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl">
                                 <ShieldX className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" strokeWidth={2} />
                                 <div>
                                     <p className="font-semibold text-amber-800 dark:text-amber-400">Verification Required</p>
                                     <p className="text-sm text-amber-700 dark:text-amber-500 mt-0.5">
-                                        Only verified photographers can apply to jobs.{' '}
+                                        Only verified creatives can apply to jobs.{' '}
                                         <Link to="/dashboard" className="underline font-medium">Request verification →</Link>
                                     </p>
                                 </div>
@@ -245,7 +245,7 @@ export function JobDetail() {
                             /* Job closed */
                             <p className="text-sm text-muted-foreground text-center">This job is no longer accepting applications.</p>
                         ) : (
-                            /* Verified photographer: Apply form */
+                            /* Verified creative: Apply form */
                             <div className="space-y-4">
                                 <div className="flex items-center gap-2">
                                     <ShieldCheck className="h-5 w-5 text-green-600" strokeWidth={2} />

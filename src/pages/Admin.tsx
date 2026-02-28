@@ -23,9 +23,9 @@ const STATUS_CONFIG = {
     pending: {
         icon: Clock,
         label: 'Under Review',
-        dot: 'bg-sky-400',
-        badge: 'text-sky-700 bg-sky-50 border-sky-200 dark:text-sky-300 dark:bg-sky-950/40 dark:border-sky-800',
-        card: 'border-sky-200/60 dark:border-sky-800/40',
+        dot: 'bg-sand-400',
+        badge: 'text-sand-700 bg-sand-50 border-sand-200 dark:text-sand-400 dark:bg-sand-900/20 dark:border-sand-800',
+        card: 'border-sand-200/60 dark:border-sand-800/40',
     },
     approved: {
         icon: CheckCircle2,
@@ -65,25 +65,25 @@ function RequestCard({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.97 }}
             transition={{ duration: 0.25 }}
-            className={`group rounded-2xl border bg-card overflow-hidden transition-shadow hover:shadow-md dark:hover:shadow-black/40 ${cfg.card}`}
+            className={`group rounded-lg border bg-card overflow-hidden transition-all duration-300 card-hover ${cfg.card}`}
         >
             {/* Top accent line */}
-            <div className={`h-0.5 w-full ${cfg.dot}`} />
+            <div className={`h-[1.5px] w-full ${cfg.dot}`} />
 
             <div className="p-5">
                 {/* Header row */}
                 <div className="flex items-start gap-4">
                     {/* Avatar */}
                     <div className="relative flex-shrink-0">
-                        <div className="w-11 h-11 rounded-full bg-gradient-to-br from-muted to-muted/50 border border-border flex items-center justify-center overflow-hidden">
-                            <User className="h-5 w-5 text-muted-foreground" strokeWidth={1.5} />
+                        <div className="w-10 h-10 rounded-full bg-muted border border-border flex items-center justify-center overflow-hidden">
+                            <User className="h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
                         </div>
                         <span className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-background ${cfg.dot}`} />
                     </div>
 
                     {/* Name + email */}
                     <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-sm leading-tight truncate">{req.userName}</p>
+                        <p className="font-serif font-semibold text-sm leading-tight truncate">{req.userName}</p>
                         <p className="text-xs text-muted-foreground truncate mt-0.5">{req.userEmail}</p>
                         <p className="text-[10px] text-muted-foreground/60 mt-1">
                             Submitted {formatDate(req.submittedAt)}
@@ -91,7 +91,7 @@ function RequestCard({
                     </div>
 
                     {/* Status badge */}
-                    <span className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full border whitespace-nowrap ${cfg.badge}`}>
+                    <span className={`inline-flex items-center gap-1.5 text-[10px] font-semibold px-2 py-0.5 rounded border whitespace-nowrap ${cfg.badge}`}>
                         <Icon className="h-3 w-3" strokeWidth={2} />
                         {cfg.label}
                     </span>
@@ -113,7 +113,7 @@ function RequestCard({
                             animate={{ height: expanded ? 'auto' : '3.5rem' }}
                             className="overflow-hidden"
                         >
-                            <p className={`text-sm text-foreground/75 leading-relaxed italic bg-muted/40 rounded-xl px-4 py-3 border border-border/50 ${!expanded ? 'line-clamp-2' : ''}`}>
+                            <p className={`text-sm text-foreground/75 leading-relaxed italic bg-muted/40 rounded-lg px-4 py-3 border border-border/50 ${!expanded ? 'line-clamp-2' : ''}`}>
                                 "{req.message}"
                             </p>
                         </motion.div>
@@ -230,30 +230,25 @@ export function Admin() {
                     <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent dark:from-black" />
                 </div>
 
-                <div className="container mx-auto px-4 py-16 max-w-5xl">
-                    <div className="flex items-start gap-5">
-                        <div className="hidden sm:flex w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 items-center justify-center flex-shrink-0 mt-1">
-                            <ShieldCheck className="h-7 w-7 text-primary" strokeWidth={1.5} />
-                        </div>
-                        <div>
-                            <p className="text-xs font-bold tracking-widest uppercase text-primary/70 mb-2">Administration</p>
-                            <h1 className="font-serif text-4xl md:text-5xl font-bold tracking-tight mb-3">
-                                Verification Panel
-                            </h1>
-                            <p className="text-muted-foreground max-w-lg text-sm leading-relaxed">
-                                Review and manage photographer verification requests. Approve deserving talent to unlock their access to the job marketplace.
-                            </p>
-                        </div>
+                <div className="container mx-auto px-6 py-16 max-w-4xl">
+                    <div>
+                        <p className="text-xs font-semibold tracking-[0.2em] uppercase text-sand-500 mb-3">Administration</p>
+                        <h1 className="font-serif text-4xl md:text-5xl font-bold tracking-tight mb-3">
+                            Verification Panel
+                        </h1>
+                        <p className="text-muted-foreground max-w-lg text-sm leading-relaxed">
+                            Review and manage creative verification requests.
+                        </p>
                     </div>
 
                     {/* Stat pills */}
                     <div className="flex flex-wrap gap-3 mt-8">
                         {[
-                            { label: 'Pending Review', value: pendingCount, color: 'text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/40 border-sky-200 dark:border-sky-800' },
+                            { label: 'Pending Review', value: pendingCount, color: 'text-sand-700 dark:text-sand-400 bg-sand-50 dark:bg-sand-900/20 border-sand-200 dark:border-sand-800' },
                             { label: 'Approved', value: approvedCount, color: 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800' },
                             { label: 'Denied', value: deniedCount, color: 'text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800' },
                         ].map(s => (
-                            <div key={s.label} className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-semibold ${s.color}`}>
+                            <div key={s.label} className={`flex items-center gap-2 px-4 py-2 rounded-md border text-sm font-semibold ${s.color}`}>
                                 <span className="text-xl font-bold">{s.value}</span>
                                 <span className="text-xs font-medium opacity-75">{s.label}</span>
                             </div>
@@ -263,7 +258,7 @@ export function Admin() {
             </div>
 
             {/* ── Main Content ─────────────────────────────────────── */}
-            <div className="container mx-auto px-4 py-8 max-w-5xl">
+            <div className="container mx-auto px-6 py-10 max-w-4xl">
 
                 {/* Toolbar */}
                 <div className="flex flex-col sm:flex-row gap-3 mb-6">
@@ -275,7 +270,7 @@ export function Admin() {
                             placeholder="Search by name or email…"
                             value={search}
                             onChange={e => setSearch(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-border bg-card focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
+                            className="w-full pl-10 pr-4 py-2.5 text-sm rounded-md border border-border bg-card focus:outline-none focus:ring-2 focus:ring-sand-400/30 focus:border-sand-400 transition-all duration-300"
                         />
                     </div>
 
@@ -286,18 +281,18 @@ export function Admin() {
                             <button
                                 key={f.key}
                                 onClick={() => setFilter(f.key)}
-                                className={`inline-flex items-center gap-1.5 h-9 px-3.5 rounded-full text-xs font-semibold border transition-all ${filter === f.key
-                                        ? 'bg-foreground text-background border-foreground shadow-sm'
-                                        : 'border-border hover:bg-accent text-muted-foreground hover:text-foreground'
+                                className={`inline-flex items-center gap-1.5 h-9 px-3.5 rounded-md text-xs font-semibold border transition-all duration-300 ${filter === f.key
+                                    ? 'bg-foreground text-background border-foreground shadow-sm'
+                                    : 'border-border hover:bg-accent text-muted-foreground hover:text-foreground'
                                     }`}
                             >
                                 {f.label}
                                 {f.count !== undefined && f.count > 0 && (
                                     <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${filter === f.key
-                                            ? 'bg-background/20 text-background'
-                                            : f.key === 'pending'
-                                                ? 'bg-sky-500 text-white'
-                                                : 'bg-muted text-muted-foreground'
+                                        ? 'bg-background/20 text-background'
+                                        : f.key === 'pending'
+                                            ? 'bg-sky-500 text-white'
+                                            : 'bg-muted text-muted-foreground'
                                         }`}>
                                         {f.count}
                                     </span>
@@ -309,11 +304,11 @@ export function Admin() {
 
                 {/* Card grid */}
                 {filtered.length === 0 ? (
-                    <div className="rounded-2xl border border-dashed border-border p-16 text-center bg-card/40">
+                    <div className="rounded-lg border border-dashed border-border p-16 text-center bg-card/40">
                         <div className="w-16 h-16 rounded-2xl bg-muted mx-auto mb-4 flex items-center justify-center">
                             <ShieldCheck className="h-8 w-8 text-muted-foreground opacity-40" strokeWidth={1.5} />
                         </div>
-                        <p className="text-base font-semibold mb-1">No requests found</p>
+                        <p className="font-serif text-base font-semibold mb-1">No requests found</p>
                         <p className="text-sm text-muted-foreground">
                             {search ? 'Try a different search query' : filter === 'pending' ? 'All caught up — no pending requests' : `No ${filter} requests yet`}
                         </p>
@@ -342,7 +337,7 @@ export function Admin() {
                         initial={{ opacity: 0, y: 12 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
-                        className="mt-12 relative rounded-3xl overflow-hidden"
+                        className="mt-12 relative rounded-lg overflow-hidden"
                     >
                         <img
                             src="https://picsum.photos/seed/photography-inspiration/1200/300"
@@ -356,6 +351,6 @@ export function Admin() {
                     </motion.div>
                 )}
             </div>
-        </div>
+        </div >
     );
 }

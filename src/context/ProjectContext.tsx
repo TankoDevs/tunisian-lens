@@ -31,6 +31,9 @@ export interface Project {
     isPrivate?: boolean;
     isDownloadable?: boolean;
     accessCode?: string;
+    mediaType?: 'image' | 'video';
+    videoUrl?: string;
+    thumbnailUrl?: string;
 }
 
 interface ProjectContextType {

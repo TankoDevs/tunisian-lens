@@ -31,55 +31,55 @@ export function JobCard({ job }: JobCardProps) {
     return (
         <Link
             to={`/jobs/${job.id}`}
-            className="group block bg-card border rounded-2xl p-5 hover:border-primary/40 hover:shadow-lg transition-all duration-200"
+            className="group block bg-card border border-border rounded-lg p-6 card-hover transition-all duration-300 hover:border-sand-300 dark:hover:border-sand-700"
         >
             {/* Header */}
             <div className="flex items-start justify-between gap-3 mb-3">
                 <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-semibold uppercase tracking-wide text-primary/70 bg-primary/5 border border-primary/10 px-2 py-0.5 rounded-full">
+                    <div className="flex items-center gap-2 mb-2">
+                        <span className="text-[10px] font-semibold uppercase tracking-widest text-sand-600 dark:text-sand-400 bg-sand-50 dark:bg-sand-900/20 px-2 py-0.5 rounded">
                             {job.category}
                         </span>
                         {job.status === 'closed' && (
-                            <span className="text-xs font-semibold text-muted-foreground bg-muted px-2 py-0.5 rounded-full border">
+                            <span className="text-[10px] font-semibold text-muted-foreground bg-muted px-2 py-0.5 rounded">
                                 Closed
                             </span>
                         )}
                     </div>
-                    <h3 className="font-semibold text-base leading-snug group-hover:text-primary transition-colors line-clamp-2">
+                    <h3 className="font-serif font-semibold text-lg leading-snug line-clamp-2">
                         {job.title}
                     </h3>
-                    <p className="text-xs text-muted-foreground mt-0.5">by {job.clientName}</p>
+                    <p className="text-xs text-muted-foreground mt-1">by {job.clientName}</p>
                 </div>
                 <ConnectsBadge count={job.connectsRequired} size="sm" />
             </div>
 
-            {/* Description preview */}
-            <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
+            {/* Description */}
+            <p className="text-sm text-muted-foreground line-clamp-2 mb-5 leading-relaxed">
                 {job.description}
             </p>
 
             {/* Footer */}
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1 font-semibold text-foreground">
-                    <Banknote className="h-3.5 w-3.5" strokeWidth={2} />
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground pt-4 border-t border-border">
+                <span className="flex items-center gap-1.5 font-medium text-foreground">
+                    <Banknote className="h-3.5 w-3.5 text-sand-500" strokeWidth={1.5} />
                     ${job.budget.toLocaleString()} {job.currency}
                 </span>
                 {job.location && (
                     <span className="flex items-center gap-1">
-                        <MapPin className="h-3.5 w-3.5" strokeWidth={2} />
+                        <MapPin className="h-3.5 w-3.5" strokeWidth={1.5} />
                         {job.location}
                     </span>
                 )}
                 <span className={`flex items-center gap-1 ${isUrgent ? 'text-red-500 font-medium' : ''}`}>
-                    <Clock className="h-3.5 w-3.5" strokeWidth={2} />
+                    <Clock className="h-3.5 w-3.5" strokeWidth={1.5} />
                     {daysLeft}
                 </span>
                 <span className="flex items-center gap-1 ml-auto">
-                    <Users className="h-3.5 w-3.5" strokeWidth={2} />
-                    {job.applicantCount} applicant{job.applicantCount !== 1 ? 's' : ''}
+                    <Users className="h-3.5 w-3.5" strokeWidth={1.5} />
+                    {job.applicantCount}
                 </span>
-                <span className="text-muted-foreground/60">{timeAgo(job.createdAt)}</span>
+                <span className="text-muted-foreground/50">{timeAgo(job.createdAt)}</span>
             </div>
         </Link>
     );

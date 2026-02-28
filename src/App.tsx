@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { MainLayout } from "./layouts/MainLayout";
 import { Home } from "./pages/Home";
@@ -53,7 +53,8 @@ function App() {
             <Route path="/submit" element={<SubmitProject />} />
             <Route path="/client-access" element={<ClientAccess />} />
             <Route path="/links" element={<Links />} />
-            <Route path="/photographers" element={<Photographers />} />
+            <Route path="/creatives" element={<Photographers />} />
+            <Route path="/photographers" element={<Navigate to="/creatives" replace />} />
             <Route path="/hire/:id" element={<Hire />} />
             <Route path="/jobs" element={<Jobs />} />
             <Route path="/jobs/post" element={<PostJob />} />

@@ -6,7 +6,7 @@ interface User {
     email: string;
     name: string;
     avatar?: string;
-    role: 'photographer' | 'visitor' | 'admin' | 'client';
+    role: 'creative' | 'visitor' | 'admin' | 'client';
     country?: string;
     createdAt?: string;
 }
@@ -15,7 +15,7 @@ interface AuthContextType {
     user: User | null;
     isAuthenticated: boolean;
     login: (email: string, password: string) => Promise<void>;
-    signup: (email: string, password: string, name: string, role?: 'photographer' | 'visitor' | 'admin' | 'client', metadata?: Record<string, unknown>) => Promise<void>;
+    signup: (email: string, password: string, name: string, role?: 'creative' | 'visitor' | 'admin' | 'client', metadata?: Record<string, unknown>) => Promise<void>;
     logout: () => void;
 }
 
@@ -37,11 +37,11 @@ const CURRENT_USER_KEY = 'tunisian_lens_current_user';
             role: 'admin',
         },
         {
-            id: 'demo-photographer-1',
-            email: 'photographer@tunisianlens.com',
-            password: 'photo123',
+            id: 'demo-creative-1',
+            email: 'creative@tunisianlens.com',
+            password: 'creative123',
             name: 'Yassine Mansour',
-            role: 'photographer',
+            role: 'creative',
             country: 'TN',
             avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
         },
@@ -102,7 +102,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                         id: supabaseUser.id,
                         email: supabaseUser.email,
                         name: supabaseUser.user_metadata.full_name || supabaseUser.email?.split('@')[0],
-                        role: supabaseUser.user_metadata.role || 'photographer'
+                        role: supabaseUser.user_metadata.role || 'creative'
                     })
                     .select()
                     .single();
@@ -111,7 +111,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             }
 
             // 2. If photographer, ensure photographer record exists
-            if (profile?.role === 'photographer') {
+            if (profile?.role === 'creative') {
                 const { data: photo, error: _photoError } = await supabase
                     .from('photographers')
                     .select('*')
@@ -160,7 +160,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 email: supabaseUser.email || '',
                 name: (profile?.name as string) || (supabaseUser.user_metadata.full_name as string) || supabaseUser.email?.split('@')[0] || 'User',
                 avatar: (supabaseUser.user_metadata.avatar_url as string) || "https://randomuser.me/api/portraits/lego/1.jpg",
-                role: (profile?.role as 'photographer' | 'visitor' | 'admin' | 'client') || (supabaseUser.user_metadata.role as 'photographer' | 'visitor' | 'admin' | 'client') || 'photographer',
+                role: (profile?.role as 'creative' | 'visitor' | 'admin' | 'client') || (supabaseUser.user_metadata.role as 'creative' | 'visitor' | 'admin' | 'client') || 'creative',
                 country: (profile?.country as string) || (supabaseUser.user_metadata.country as string) || undefined,
                 createdAt: (supabaseUser as unknown as { created_at?: string }).created_at || undefined,
             };
@@ -214,7 +214,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     email: foundUser.email,
                     name: foundUser.name,
                     avatar: "https://randomuser.me/api/portraits/lego/1.jpg",
-                    role: foundUser.role || 'photographer',
+                    role: foundUser.role || 'creative',
                     country: foundUser.country || undefined,
                     createdAt: foundUser.createdAt || undefined,
                 };
@@ -226,7 +226,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     };
 
-    const signup = async (email: string, password: string, name: string, role: 'photographer' | 'visitor' | 'admin' | 'client' = 'photographer', metadata?: Record<string, unknown>) => {
+    const signup = async (email: string, password: string, name: string, role: 'creative' | 'visitor' | 'admin' | 'client' = 'creative', metadata?: Record<string, unknown>) => {
         if (isConfigured) {
             const { error } = await supabase.auth.signUp({
                 email,
@@ -265,7 +265,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 email: newUser.email,
                 name: newUser.name,
                 avatar: "https://randomuser.me/api/portraits/lego/1.jpg",
-                role: newUser.role as 'photographer' | 'visitor' | 'admin' | 'client',
+                role: newUser.role as 'creative' | 'visitor' | 'admin' | 'client',
                 country: (newUser as { country?: string }).country || undefined,
                 createdAt: newUser.createdAt,
             };

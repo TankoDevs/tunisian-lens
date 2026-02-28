@@ -33,13 +33,13 @@ export function ProjectCard({ id, image, title, artist, category, likes, classNa
 
     return (
         <div className={cn("group relative break-inside-avoid", className)}>
-            <div className="relative overflow-hidden rounded-lg bg-muted">
+            <div className="relative overflow-hidden rounded-lg bg-muted img-hover-zoom">
                 <Link to={`/project/${id}`} className="block">
                     <div className="relative aspect-[4/3] overflow-hidden">
                         <img
                             src={image || "https://picsum.photos/seed/fallback/800/600"}
                             alt={title}
-                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                             loading="lazy"
                             onError={(e) => {
                                 const target = e.target as HTMLImageElement;
@@ -48,40 +48,42 @@ export function ProjectCard({ id, image, title, artist, category, likes, classNa
                                 }
                             }}
                         />
-                        {/* Overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                        {/* Subtle gradient overlay on hover */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
-                        <div className="absolute bottom-0 left-0 w-full p-4 text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                            <h3 className="font-medium truncate">{title}</h3>
-                            <p className="text-xs text-white/80">{category}</p>
+                        {/* Hover metadata */}
+                        <div className="absolute bottom-0 left-0 w-full p-4 text-white opacity-0 transition-all duration-500 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0">
+                            <h3 className="font-serif font-semibold text-base truncate">{title}</h3>
+                            <p className="text-xs text-white/70 mt-0.5">{category}</p>
                         </div>
                     </div>
                 </Link>
 
-                {/* Delete Button - Moved OUTSIDE the Link for reliability */}
+                {/* Delete Button */}
                 {isOwner && onDelete && (
                     <Button
                         variant="destructive"
                         size="icon"
-                        className="absolute top-2 right-2 h-8 w-8 rounded-full shadow-lg z-20 hover:scale-110 transition-transform"
+                        className="absolute top-3 right-3 h-8 w-8 rounded-full shadow-lg z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                         onClick={handleDelete}
                         title="Delete Project"
                     >
-                        <Trash2 className="h-4 w-4" strokeWidth={2} />
+                        <Trash2 className="h-3.5 w-3.5" strokeWidth={2} />
                     </Button>
                 )}
             </div>
 
+            {/* Artist info */}
             <div className="mt-3 flex items-center justify-between">
                 <Link to={`/artist/${artist.id}`} className="flex items-center space-x-2 group/artist">
-                    <img src={artist.avatar} alt={artist.name} className="h-6 w-6 rounded-full object-cover" />
+                    <img src={artist.avatar} alt={artist.name} className="h-6 w-6 rounded-full object-cover ring-1 ring-border" />
                     <div className="flex items-center space-x-1">
-                        <span className="text-sm font-medium text-foreground group-hover/artist:underline">{artist.name}</span>
-                        {artist.isVerified && <VerificationBadge size={14} />}
+                        <span className="text-sm text-foreground/80 group-hover/artist:text-foreground transition-colors duration-300">{artist.name}</span>
+                        {artist.isVerified && <VerificationBadge size={13} />}
                     </div>
                 </Link>
                 <div className="flex items-center space-x-1 text-muted-foreground">
-                    <Heart className="h-4 w-4" strokeWidth={2} />
+                    <Heart className="h-3.5 w-3.5" strokeWidth={1.5} />
                     <span className="text-xs">{likes}</span>
                 </div>
             </div>

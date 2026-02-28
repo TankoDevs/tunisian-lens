@@ -91,7 +91,7 @@ export function Messages() {
                                     {conversations.map(conv => {
                                         const isActive = conv.id === conversationId;
                                         const isMe = user.role === 'client';
-                                        const otherName = isMe ? conv.photographerName : conv.clientName;
+                                        const otherName = isMe ? conv.creativeName : conv.clientName;
 
                                         return (
                                             <li key={conv.id}>
@@ -137,7 +137,7 @@ export function Messages() {
                                     </button>
                                     <div className="flex-1 min-w-0">
                                         <p className="font-semibold text-sm truncate">
-                                            {user.role === 'client' ? activeConv.photographerName : activeConv.clientName}
+                                            {user.role === 'client' ? activeConv.creativeName : activeConv.clientName}
                                         </p>
                                         <p className="text-xs text-muted-foreground truncate">{activeConv.jobTitle}</p>
                                     </div>

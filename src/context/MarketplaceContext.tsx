@@ -11,7 +11,7 @@ interface MarketplaceContextType {
     isLoading: boolean;
     postJob: (data: Omit<Job, 'id' | 'createdAt' | 'applicantCount' | 'clientId' | 'clientName' | 'status'>) => Promise<void>;
     applyToJob: (jobId: string, coverLetter: string, proposedPrice: number) => Promise<{ success: boolean; message: string }>;
-    acceptApplication: (applicationId: string) => Promise<{ success: boolean; photographerId: string; photographerName: string }>;
+    acceptApplication: (applicationId: string) => Promise<{ success: boolean; creativeId: string; creativeName: string }>;
     getJobApplications: (jobId: string) => JobApplication[];
     getMyApplications: () => JobApplication[];
     getConnects: (userId: string) => number;
@@ -79,15 +79,16 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
                 createdAt: j.created_at,
                 applicantCount: proposalsData.filter(p => p.job_id === j.id).length,
                 verifiedOnly: j.verified_only ?? false,
+                creativeTypeRequired: j.creative_type_required || 'both',
             }));
 
             // Map Applications
             const mappedApps: JobApplication[] = proposalsData.map(p => ({
                 id: p.id,
                 jobId: p.job_id,
-                photographerId: p.photographer?.user_id,
-                photographerName: p.photographer?.users?.name || 'Photographer',
-                photographerAvatar: p.photographer?.users?.avatar_url || "https://randomuser.me/api/portraits/lego/1.jpg",
+                creativeId: p.photographer?.user_id,
+                creativeName: p.photographer?.users?.name || 'Creative',
+                creativeAvatar: p.photographer?.users?.avatar_url || "https://randomuser.me/api/portraits/lego/1.jpg",
                 coverLetter: p.cover_letter || '',
                 proposedPrice: p.proposed_price,
                 currency: 'USD',
@@ -137,7 +138,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
     const applyToJob = async (jobId: string, coverLetter: string, proposedPrice: number): Promise<{ success: boolean; message: string }> => {
         if (!user || !isConfigured) return { success: false, message: 'Supabase not configured or user not logged in.' };
-        if (user.role !== 'photographer') return { success: false, message: 'Only photographers can apply.' };
+        if (user.role !== 'creative') return { success: false, message: 'Only creatives can apply.' };
 
         // ── 7-day account age restriction ─────────────────────────
         if (user.createdAt) {
@@ -171,7 +172,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
             // Check verified-only restriction (only block if job requires it)
             if (job.verifiedOnly && !isVerified) {
-                return { success: false, message: 'This job requires a verified photographer.' };
+                return { success: false, message: 'This job requires a verified creative.' };
             }
 
             if (photo.connects_balance < job.connectsRequired) {
@@ -216,9 +217,9 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
     };
 
     const getJobApplications = (jobId: string) => applications.filter(a => a.jobId === jobId);
-    const getMyApplications = () => applications.filter(a => a.photographerId === user?.id);
+    const getMyApplications = () => applications.filter(a => a.creativeId === user?.id);
     const getConnects = (userId: string) => connectsBalance[userId] ?? INITIAL_CONNECTS;
-    const hasApplied = (jobId: string) => applications.some(a => a.jobId === jobId && a.photographerId === user?.id);
+    const hasApplied = (jobId: string) => applications.some(a => a.jobId === jobId && a.creativeId === user?.id);
 
     const closeJob = async (jobId: string) => {
         if (!isConfigured) return;
@@ -226,9 +227,9 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
         await refreshData();
     };
 
-    const acceptApplication = async (applicationId: string): Promise<{ success: boolean; photographerId: string; photographerName: string }> => {
+    const acceptApplication = async (applicationId: string): Promise<{ success: boolean; creativeId: string; creativeName: string }> => {
         const app = applications.find(a => a.id === applicationId);
-        if (!app) return { success: false, photographerId: '', photographerName: '' };
+        if (!app) return { success: false, creativeId: '', creativeName: '' };
         if (isConfigured) {
             await supabase.from('proposals').update({ status: 'accepted' }).eq('id', applicationId);
             // Reject all other proposals for this job
@@ -238,7 +239,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
                 .neq('id', applicationId);
             await refreshData();
         }
-        return { success: true, photographerId: app.photographerId, photographerName: app.photographerName };
+        return { success: true, creativeId: app.creativeId, creativeName: app.creativeName };
     };
 
     return (
