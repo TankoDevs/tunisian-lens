@@ -119,7 +119,7 @@ export function PostJob() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4 }}
                 >
-                    <h1 className="font-serif text-3xl font-bold mb-1">Post a Job</h1>
+                    <h1 className="font-sans text-3xl font-bold mb-1">Post a Job</h1>
                     <p className="text-muted-foreground mb-8">Verified creatives will apply using their Connects.</p>
 
                     <form onSubmit={handleSubmit} className="space-y-6">

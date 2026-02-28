@@ -57,7 +57,7 @@ export function Photographers() {
             <section className="border-b border-border">
                 <div className="container mx-auto px-6 py-16 text-center space-y-5">
                     <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sand-500">Directory</p>
-                    <h1 className="text-4xl md:text-5xl font-serif font-bold tracking-tight">
+                    <h1 className="text-4xl md:text-5xl font-sans font-bold tracking-tight">
                         Find Your Creative
                     </h1>
                     <p className="text-muted-foreground max-w-xl mx-auto">
@@ -189,7 +189,7 @@ export function Photographers() {
                                         />
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2">
-                                                <h3 className="font-serif font-semibold text-base truncate">{artist.name}</h3>
+                                                <h3 className="font-sans font-semibold text-base truncate">{artist.name}</h3>
                                                 {verified && <VerificationBadge size={14} />}
                                             </div>
                                             <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
@@ -224,7 +224,7 @@ export function Photographers() {
                                     <div className="flex items-center justify-between pt-4 border-t border-border mt-auto">
                                         <div>
                                             <span className="text-[10px] text-muted-foreground uppercase tracking-wider">From</span>
-                                            <p className="text-lg font-serif font-bold">
+                                            <p className="text-lg font-sans font-bold">
                                                 ${artist.startingPrice}
                                                 <span className="text-xs font-sans font-normal text-muted-foreground ml-1">{artist.currency}</span>
                                             </p>
@@ -245,7 +245,7 @@ export function Photographers() {
                 ) : (
                     <div className="py-32 text-center space-y-4 text-muted-foreground">
                         <Globe size={40} strokeWidth={1} className="mx-auto opacity-20" />
-                        <p className="font-serif text-lg font-semibold text-foreground">No creatives found</p>
+                        <p className="font-sans text-lg font-semibold text-foreground">No creatives found</p>
                         <p className="text-sm">Try adjusting your filters or search terms.</p>
                         <Button variant="outline" onClick={clearFilters} className="mt-2 text-xs">Clear all filters</Button>
                     </div>

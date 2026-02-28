@@ -242,7 +242,7 @@ export function SubmitProject() {
         <div className="container mx-auto px-4 py-12 max-w-2xl bg-background min-h-screen relative">
             <div className="space-y-6">
                 <div className="space-y-2">
-                    <h1 className="text-3xl font-serif font-bold">Upload Project</h1>
+                    <h1 className="text-3xl font-sans font-bold">Upload Project</h1>
                     <p className="text-muted-foreground">Share your visual story with the community.</p>
                 </div>
 

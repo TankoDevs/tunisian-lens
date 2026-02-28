@@ -83,7 +83,7 @@ function RequestCard({
 
                     {/* Name + email */}
                     <div className="flex-1 min-w-0">
-                        <p className="font-serif font-semibold text-sm leading-tight truncate">{req.userName}</p>
+                        <p className="font-sans font-semibold text-sm leading-tight truncate">{req.userName}</p>
                         <p className="text-xs text-muted-foreground truncate mt-0.5">{req.userEmail}</p>
                         <p className="text-[10px] text-muted-foreground/60 mt-1">
                             Submitted {formatDate(req.submittedAt)}
@@ -179,7 +179,7 @@ export function Admin() {
                     <ShieldCheck className="h-8 w-8 text-muted-foreground" strokeWidth={1.5} />
                 </div>
                 <div>
-                    <h1 className="text-2xl font-bold font-serif mb-2">Admin Access Only</h1>
+                    <h1 className="text-2xl font-bold font-sans mb-2">Admin Access Only</h1>
                     <p className="text-muted-foreground text-sm">You need admin privileges to view this page.</p>
                 </div>
                 <Link to="/"><Button variant="outline">Go Back Home</Button></Link>
@@ -233,7 +233,7 @@ export function Admin() {
                 <div className="container mx-auto px-6 py-16 max-w-4xl">
                     <div>
                         <p className="text-xs font-semibold tracking-[0.2em] uppercase text-sand-500 mb-3">Administration</p>
-                        <h1 className="font-serif text-4xl md:text-5xl font-bold tracking-tight mb-3">
+                        <h1 className="font-sans text-4xl md:text-5xl font-bold tracking-tight mb-3">
                             Verification Panel
                         </h1>
                         <p className="text-muted-foreground max-w-lg text-sm leading-relaxed">
@@ -308,7 +308,7 @@ export function Admin() {
                         <div className="w-16 h-16 rounded-2xl bg-muted mx-auto mb-4 flex items-center justify-center">
                             <ShieldCheck className="h-8 w-8 text-muted-foreground opacity-40" strokeWidth={1.5} />
                         </div>
-                        <p className="font-serif text-base font-semibold mb-1">No requests found</p>
+                        <p className="font-sans text-base font-semibold mb-1">No requests found</p>
                         <p className="text-sm text-muted-foreground">
                             {search ? 'Try a different search query' : filter === 'pending' ? 'All caught up — no pending requests' : `No ${filter} requests yet`}
                         </p>
@@ -345,7 +345,7 @@ export function Admin() {
                             className="w-full h-44 object-cover"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex flex-col items-center justify-end pb-8 text-center px-4">
-                            <p className="font-serif text-white text-xl font-bold">"Every great photograph begins with a single shutter click."</p>
+                            <p className="font-sans text-white text-xl font-bold">"Every great photograph begins with a single shutter click."</p>
                             <p className="text-white/60 text-sm mt-1">Keep verifying the talent that captures the world.</p>
                         </div>
                     </motion.div>

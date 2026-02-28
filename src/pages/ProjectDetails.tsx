@@ -64,7 +64,7 @@ export function ProjectDetails() {
                 {/* Main Info */}
                 <div className="lg:col-span-2 space-y-6">
                     <div className="space-y-2">
-                        <h1 className="text-3xl md:text-4xl font-serif font-bold">{project.title}</h1>
+                        <h1 className="text-3xl md:text-4xl font-sans font-bold">{project.title}</h1>
                         <div className="flex items-center space-x-4 text-muted-foreground">
                             <span className="px-3 py-1 bg-secondary rounded-full text-sm">{project.category}</span>
                             <span className="text-sm">Published on {project.date ? new Date(project.date).toLocaleDateString() : 'Feb 14, 2026'}</span>
@@ -132,7 +132,7 @@ export function ProjectDetails() {
             {/* More from Artist */}
             {moreProjects.length > 0 && (
                 <div className="container mx-auto px-4 mt-12 pt-12 border-t">
-                    <h2 className="text-2xl font-serif font-bold mb-6">More from {project.artist.name}</h2>
+                    <h2 className="text-2xl font-sans font-bold mb-6">More from {project.artist.name}</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {moreProjects.map(p => (
                             <ProjectCard key={p.id} {...p} />

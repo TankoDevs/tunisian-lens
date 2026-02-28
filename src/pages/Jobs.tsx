@@ -36,7 +36,7 @@ export function Jobs() {
                     </div>
                     <div>
                         <div className="text-4xl mb-4">🇹🇳</div>
-                        <h1 className="font-serif text-3xl font-bold tracking-tight mb-3">Tunisia Marketplace Only</h1>
+                        <h1 className="font-sans text-3xl font-bold tracking-tight mb-3">Tunisia Marketplace Only</h1>
                         <p className="text-muted-foreground leading-relaxed text-sm">
                             The job marketplace is exclusively available to <strong>Tunisian citizens and residents</strong>.
                             This keeps the platform focused, payment-friendly, and locally trusted.
@@ -82,7 +82,7 @@ export function Jobs() {
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                         <div>
                             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sand-500 mb-2">Marketplace</p>
-                            <h1 className="font-serif text-4xl md:text-5xl font-bold tracking-tight mb-2">Find Jobs</h1>
+                            <h1 className="font-sans text-4xl md:text-5xl font-bold tracking-tight mb-2">Find Jobs</h1>
                             <p className="text-muted-foreground max-w-xl">
                                 Browse photography jobs from Tunisian clients. Apply with Connects.
                             </p>
@@ -169,7 +169,7 @@ export function Jobs() {
                 {filtered.length === 0 ? (
                     <div className="text-center py-32 text-muted-foreground">
                         <Briefcase className="h-10 w-10 mx-auto mb-4 opacity-20" strokeWidth={1.2} />
-                        <p className="font-serif text-lg font-semibold mb-1">No jobs match your filters</p>
+                        <p className="font-sans text-lg font-semibold mb-1">No jobs match your filters</p>
                         <p className="text-sm">Try adjusting the category or search term</p>
                     </div>
                 ) : (

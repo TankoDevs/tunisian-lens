@@ -42,7 +42,7 @@ export function Dashboard() {
         return (
             <div className="min-h-screen flex items-center justify-center flex-col gap-6 text-muted-foreground">
                 <div className="w-12 h-[1.5px] bg-sand-400" />
-                <p className="font-serif text-xl font-semibold text-foreground">Please log in to view your dashboard</p>
+                <p className="font-sans text-xl font-semibold text-foreground">Please log in to view your dashboard</p>
                 <Link to="/login"><Button>Log In</Button></Link>
             </div>
         );
@@ -75,7 +75,7 @@ export function Dashboard() {
                     <div className="flex items-start justify-between flex-wrap gap-4 mb-12">
                         <div>
                             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sand-500 mb-2">Dashboard</p>
-                            <h1 className="font-serif text-3xl font-bold mb-1">Welcome back, {user.name}</h1>
+                            <h1 className="font-sans text-3xl font-bold mb-1">Welcome back, {user.name}</h1>
                             <span className="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded bg-sand-400/10 text-sand-600 dark:text-sand-400">
                                 {user.role}
                             </span>
@@ -103,7 +103,7 @@ export function Dashboard() {
                                         <Zap className="h-4 w-4 text-sand-500" strokeWidth={1.5} fill="currentColor" />
                                         Connects Balance
                                     </div>
-                                    <div className="text-4xl font-serif font-bold text-sand-600 dark:text-sand-400">{connects}</div>
+                                    <div className="text-4xl font-sans font-bold text-sand-600 dark:text-sand-400">{connects}</div>
                                     <p className="text-xs text-muted-foreground mt-1">Used to apply to jobs</p>
                                 </div>
 
@@ -113,7 +113,7 @@ export function Dashboard() {
                                         <Briefcase className="h-4 w-4" strokeWidth={1.5} />
                                         Applications Sent
                                     </div>
-                                    <div className="text-4xl font-serif font-bold">{myApplications.length}</div>
+                                    <div className="text-4xl font-sans font-bold">{myApplications.length}</div>
                                     <p className="text-xs text-muted-foreground mt-1">
                                         {myApplications.filter(a => a.status === 'accepted').length} accepted
                                     </p>
@@ -171,7 +171,7 @@ export function Dashboard() {
                                     animate={{ opacity: 1, y: 0 }}
                                     className="border border-border rounded-lg p-6 bg-card space-y-4"
                                 >
-                                    <h3 className="font-serif font-semibold text-lg flex items-center gap-2">
+                                    <h3 className="font-sans font-semibold text-lg flex items-center gap-2">
                                         <ShieldCheck className="h-4 w-4 text-sand-500" strokeWidth={1.5} />
                                         Request Verification
                                     </h3>
@@ -202,7 +202,7 @@ export function Dashboard() {
 
                             {/* My Applications */}
                             <div>
-                                <h2 className="font-serif font-semibold text-lg mb-4">My Applications</h2>
+                                <h2 className="font-sans font-semibold text-lg mb-4">My Applications</h2>
                                 {myApplications.length === 0 ? (
                                     <div className="border border-border rounded-lg p-12 text-center text-muted-foreground bg-card">
                                         <Briefcase className="h-8 w-8 mx-auto mb-3 opacity-20" strokeWidth={1.2} />
@@ -250,7 +250,7 @@ export function Dashboard() {
 
                             {/* Connects Info */}
                             <div className="border border-border rounded-lg p-6 bg-card">
-                                <h2 className="font-serif font-semibold mb-3 flex items-center gap-2">
+                                <h2 className="font-sans font-semibold mb-3 flex items-center gap-2">
                                     <Zap className="h-4 w-4 text-sand-500" strokeWidth={1.5} fill="currentColor" />
                                     About Connects
                                 </h2>
@@ -274,20 +274,20 @@ export function Dashboard() {
                                         <Briefcase className="h-4 w-4" strokeWidth={1.5} />
                                         Jobs Posted
                                     </div>
-                                    <div className="text-4xl font-serif font-bold">{myJobs.length}</div>
+                                    <div className="text-4xl font-sans font-bold">{myJobs.length}</div>
                                 </div>
                                 <div className="border border-border rounded-lg p-6 bg-card">
                                     <div className="flex items-center gap-2 text-muted-foreground text-xs mb-3">
                                         <CheckCircle2 className="h-4 w-4 text-green-600" strokeWidth={1.5} />
                                         Total Applicants
                                     </div>
-                                    <div className="text-4xl font-serif font-bold">{myJobs.reduce((s, j) => s + j.applicantCount, 0)}</div>
+                                    <div className="text-4xl font-sans font-bold">{myJobs.reduce((s, j) => s + j.applicantCount, 0)}</div>
                                 </div>
                             </div>
 
                             {/* My Jobs */}
                             <div>
-                                <h2 className="font-serif font-semibold text-lg mb-4">My Posted Jobs</h2>
+                                <h2 className="font-sans font-semibold text-lg mb-4">My Posted Jobs</h2>
                                 {myJobs.length === 0 ? (
                                     <div className="border border-border rounded-lg p-12 text-center text-muted-foreground bg-card">
                                         <Briefcase className="h-8 w-8 mx-auto mb-3 opacity-20" strokeWidth={1.2} />

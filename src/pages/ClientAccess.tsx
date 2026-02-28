@@ -36,7 +36,7 @@ export function ClientAccess() {
                     <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 mb-4">
                         <Lock className="h-6 w-6" strokeWidth={2} />
                     </div>
-                    <h1 className="text-2xl font-serif font-bold">Client Access</h1>
+                    <h1 className="text-2xl font-sans font-bold">Client Access</h1>
                     <p className="text-muted-foreground">
                         Enter your unique access code to view and download your private gallery.
                     </p>

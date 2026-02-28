@@ -36,7 +36,7 @@ export function Hire() {
     if (!artist) {
         return (
             <div className="container mx-auto px-4 py-20 text-center space-y-4">
-                <h1 className="text-2xl font-serif font-bold">Creative Not Found</h1>
+                <h1 className="text-2xl font-sans font-bold">Creative Not Found</h1>
                 <p className="text-muted-foreground">The profile you are looking for does not exist.</p>
                 <Link to="/creatives">
                     <Button>Browse Creatives</Button>
@@ -78,7 +78,7 @@ export function Hire() {
                             />
                             <div className="space-y-2 flex-1">
                                 <div className="flex flex-wrap items-center gap-2">
-                                    <h1 className="text-2xl font-serif font-bold">{artist.name}</h1>
+                                    <h1 className="text-2xl font-sans font-bold">{artist.name}</h1>
                                     {isVerified && <VerificationBadge size={20} />}
                                 </div>
                                 <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
@@ -108,13 +108,13 @@ export function Hire() {
 
                         {/* About */}
                         <div className="space-y-2">
-                            <h2 className="text-xl font-serif font-semibold">About</h2>
+                            <h2 className="text-xl font-sans font-semibold">About</h2>
                             <p className="text-muted-foreground leading-relaxed">{artist.bio}</p>
                         </div>
 
                         {/* Service Packages */}
                         <div className="space-y-4">
-                            <h2 className="text-xl font-serif font-semibold">Service Packages</h2>
+                            <h2 className="text-xl font-sans font-semibold">Service Packages</h2>
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 {artist.packages.map((pkg, i) => (
                                     <button
@@ -160,7 +160,7 @@ export function Hire() {
                         {artistProjects.length > 0 && (
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
-                                    <h2 className="text-xl font-serif font-semibold">Portfolio Preview</h2>
+                                    <h2 className="text-xl font-sans font-semibold">Portfolio Preview</h2>
                                     <Link to={`/artist/${artist.id}`} className="text-sm text-muted-foreground hover:text-foreground underline underline-offset-2">
                                         View full profile
                                     </Link>

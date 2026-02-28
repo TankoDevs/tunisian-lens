@@ -46,7 +46,7 @@ export function JobCard({ job }: JobCardProps) {
                             </span>
                         )}
                     </div>
-                    <h3 className="font-serif font-semibold text-lg leading-snug line-clamp-2">
+                    <h3 className="font-sans font-semibold text-lg leading-snug line-clamp-2">
                         {job.title}
                     </h3>
                     <p className="text-xs text-muted-foreground mt-1">by {job.clientName}</p>

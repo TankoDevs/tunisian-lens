@@ -41,7 +41,7 @@ export function Home() {
                             <div className="w-12 h-[1.5px] bg-[#C8A97E]" />
                         </div>
 
-                        <h1 className="text-5xl md:text-7xl font-serif font-bold tracking-tight leading-[1.05]">
+                        <h1 className="text-5xl md:text-7xl font-sans font-bold tracking-tight leading-[1.05]">
                             Where Vision<br />Meets Opportunity
                         </h1>
 
@@ -80,7 +80,7 @@ export function Home() {
                 <div className="container mx-auto px-6">
                     <div className="text-center mb-16 space-y-3">
                         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sand-500">How It Works</p>
-                        <h2 className="text-3xl md:text-4xl font-serif font-bold">Simple. Curated. Professional.</h2>
+                        <h2 className="text-3xl md:text-4xl font-sans font-bold">Simple. Curated. Professional.</h2>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-16 max-w-4xl mx-auto">
@@ -110,7 +110,7 @@ export function Home() {
                                 className="text-center space-y-4"
                             >
                                 <p className="text-xs font-semibold tracking-[0.2em] text-sand-400">{num}</p>
-                                <h3 className="text-xl font-serif font-semibold">{title}</h3>
+                                <h3 className="text-xl font-sans font-semibold">{title}</h3>
                                 <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
                             </motion.div>
                         ))}
@@ -125,7 +125,7 @@ export function Home() {
                         <div className="flex items-end justify-between mb-12">
                             <div>
                                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sand-500 mb-2">Featured</p>
-                                <h2 className="text-3xl font-serif font-bold">Selected Works</h2>
+                                <h2 className="text-3xl font-sans font-bold">Selected Works</h2>
                             </div>
                             <Link to="/explore">
                                 <Button variant="ghost" className="hidden sm:flex items-center gap-2 text-muted-foreground hover:text-foreground">
@@ -162,7 +162,7 @@ export function Home() {
                     <div className="flex justify-center">
                         <Camera className="h-8 w-8 text-sand-400" strokeWidth={1.2} />
                     </div>
-                    <h2 className="text-3xl md:text-4xl font-serif font-bold text-white leading-tight">
+                    <h2 className="text-3xl md:text-4xl font-sans font-bold text-white leading-tight">
                         Are You a Professional<br />Creative?
                     </h2>
                     <p className="text-white/50 leading-relaxed">

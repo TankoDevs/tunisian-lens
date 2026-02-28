@@ -53,7 +53,7 @@ export function ProjectCard({ id, image, title, artist, category, likes, classNa
 
                         {/* Hover metadata */}
                         <div className="absolute bottom-0 left-0 w-full p-4 text-white opacity-0 transition-all duration-500 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0">
-                            <h3 className="font-serif font-semibold text-base truncate">{title}</h3>
+                            <h3 className="font-sans font-semibold text-base truncate">{title}</h3>
                             <p className="text-xs text-white/70 mt-0.5">{category}</p>
                         </div>
                     </div>

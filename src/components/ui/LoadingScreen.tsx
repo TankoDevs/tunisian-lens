@@ -30,7 +30,7 @@ export function LoadingScreen({ onFinished }: LoadingScreenProps) {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, ease: "easeOut", delay: 0.4 }}
-                className="font-serif text-2xl md:text-3xl text-white/90 tracking-tight font-bold"
+                className="font-sans text-2xl md:text-3xl text-white/90 tracking-tight font-bold"
             >
                 Tunisian Lens
             </motion.h1>

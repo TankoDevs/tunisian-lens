@@ -36,7 +36,7 @@ export function Explore() {
                     <div className="flex flex-col md:flex-row gap-6 items-start md:items-end justify-between">
                         <div>
                             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sand-500 mb-2">Gallery</p>
-                            <h1 className="text-3xl md:text-4xl font-serif font-bold">Explore Work</h1>
+                            <h1 className="text-3xl md:text-4xl font-sans font-bold">Explore Work</h1>
                         </div>
                         <div className="relative w-full md:w-80">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
@@ -136,7 +136,7 @@ export function Explore() {
                         <div className="col-span-full py-32 flex flex-col items-center gap-6 text-center text-muted-foreground">
                             <Camera size={40} strokeWidth={1} className="opacity-20" />
                             <div>
-                                <p className="font-serif text-xl font-semibold text-foreground">No work here yet</p>
+                                <p className="font-sans text-xl font-semibold text-foreground">No work here yet</p>
                                 <p className="text-sm mt-2">Be the first to share your photography.</p>
                             </div>
                             <Link to="/submit">
@@ -145,7 +145,7 @@ export function Explore() {
                         </div>
                     ) : (
                         <div className="col-span-full py-24 text-center text-muted-foreground">
-                            <p className="font-serif text-lg text-foreground">No projects match your criteria.</p>
+                            <p className="font-sans text-lg text-foreground">No projects match your criteria.</p>
                             <Button variant="link" className="text-sand-500 mt-2" onClick={() => { setSelectedCategory(null); setSearchQuery(""); setSelectedCountry(null); setVerifiedOnly(false); }}>
                                 Clear all filters
                             </Button>

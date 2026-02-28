@@ -62,7 +62,7 @@ export function ArtistProfile() {
         return (
             <div className="container mx-auto px-6 py-32 text-center space-y-6">
                 <div className="w-12 h-[1.5px] bg-sand-400 mx-auto mb-6" />
-                <h1 className="text-3xl font-serif font-bold">Artist Not Found</h1>
+                <h1 className="text-3xl font-sans font-bold">Artist Not Found</h1>
                 <p className="text-muted-foreground">The profile you are looking for does not exist or is private.</p>
                 <Button variant="outline" onClick={() => window.history.back()}>Go Back</Button>
             </div>
@@ -109,7 +109,7 @@ export function ArtistProfile() {
                             />
                             <div>
                                 <div className="flex items-center justify-center lg:justify-start gap-2">
-                                    <h1 className="text-2xl font-serif font-bold">{artist.name}</h1>
+                                    <h1 className="text-2xl font-sans font-bold">{artist.name}</h1>
                                     {isVerified && <VerificationBadge size={18} />}
                                 </div>
                                 <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 mt-2 text-sm text-muted-foreground">
@@ -203,7 +203,7 @@ export function ArtistProfile() {
                                 <div className="flex items-end justify-between mb-8">
                                     <div>
                                         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sand-500 mb-1">Services</p>
-                                        <h2 className="text-2xl font-serif font-bold">Packages</h2>
+                                        <h2 className="text-2xl font-sans font-bold">Packages</h2>
                                     </div>
                                     <Link to={`/hire/${id}`}>
                                         <Button variant="outline" size="sm" className="gap-1.5 text-xs">
@@ -220,7 +220,7 @@ export function ArtistProfile() {
                                             {i === 1 && <span className="text-[9px] font-bold uppercase tracking-widest bg-sand-400 text-white px-2 py-0.5 rounded">Popular</span>}
                                             <div>
                                                 <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">{pkg.name}</p>
-                                                <p className="text-2xl font-serif font-bold mt-1">${pkg.price} <span className="text-sm font-sans font-normal text-muted-foreground">{currency}</span></p>
+                                                <p className="text-2xl font-sans font-bold mt-1">${pkg.price} <span className="text-sm font-sans font-normal text-muted-foreground">{currency}</span></p>
                                             </div>
                                             <p className="text-sm text-muted-foreground leading-relaxed">{pkg.description}</p>
                                             <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -245,7 +245,7 @@ export function ArtistProfile() {
                         <div>
                             <div className="mb-8">
                                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sand-500 mb-1">Portfolio</p>
-                                <h2 className="text-2xl font-serif font-bold">Selected Work</h2>
+                                <h2 className="text-2xl font-sans font-bold">Selected Work</h2>
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                 {artistProjects.map((project) => (

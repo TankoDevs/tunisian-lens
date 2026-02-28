@@ -10,7 +10,7 @@ export function Footer() {
                     <div className="md:col-span-2 space-y-4">
                         <Link to="/" className="flex items-center space-x-2.5">
                             <Camera className="h-5 w-5 text-sand-400" strokeWidth={1.8} />
-                            <span className="font-serif text-xl font-bold tracking-tight">Tunisian Lens</span>
+                            <span className="font-sans text-xl font-bold tracking-tight">Tunisian Lens</span>
                         </Link>
                         <p className="text-sm text-muted-foreground leading-relaxed max-w-sm">
                             A curated photography marketplace connecting clients with world-class visual artists. Where vision meets opportunity.

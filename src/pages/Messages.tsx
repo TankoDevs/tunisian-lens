@@ -73,7 +73,7 @@ export function Messages() {
                     {/* ── Conversation List ─────────────────────────────── */}
                     <div className={`${showList ? 'flex' : 'hidden'} md:flex flex-col w-full md:w-80 border-r bg-card flex-shrink-0`}>
                         <div className="p-4 border-b">
-                            <h1 className="font-serif text-xl font-bold flex items-center gap-2">
+                            <h1 className="font-sans text-xl font-bold flex items-center gap-2">
                                 <MessageSquare className="h-5 w-5" strokeWidth={2} />
                                 Messages
                             </h1>

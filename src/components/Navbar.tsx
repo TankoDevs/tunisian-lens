@@ -90,7 +90,7 @@ export function Navbar() {
                 {/* Logo */}
                 <Link to="/" className="flex items-center space-x-2.5 group">
                     <Camera className="h-5 w-5 text-sand-400 transition-transform duration-300 group-hover:rotate-12" strokeWidth={1.8} />
-                    <span className="font-serif text-xl font-bold tracking-tight">Tunisian Lens</span>
+                    <span className="font-sans text-xl font-bold tracking-tight">Tunisian Lens</span>
                 </Link>
 
                 {/* Desktop Nav */}

@@ -61,7 +61,7 @@ export function Signup() {
                 />
                 <div className="absolute inset-0 bg-black/30" />
                 <div className="absolute bottom-10 left-10 right-10 text-white">
-                    <p className="text-lg font-serif font-medium leading-relaxed">Join the community of world-class visual artists.</p>
+                    <p className="text-lg font-sans font-medium leading-relaxed">Join the community of world-class visual artists.</p>
                     <p className="text-xs mt-3 text-white/60 tracking-wider uppercase">Tunisian Lens</p>
                 </div>
             </div>
@@ -72,10 +72,10 @@ export function Signup() {
                     <div className="space-y-3">
                         <Link to="/" className="inline-flex items-center space-x-2 md:hidden mb-4">
                             <Camera className="h-5 w-5 text-sand-400" strokeWidth={1.8} />
-                            <span className="font-serif text-xl font-bold">Tunisian Lens</span>
+                            <span className="font-sans text-xl font-bold">Tunisian Lens</span>
                         </Link>
                         <div className="hidden md:block w-10 h-[1.5px] bg-sand-400 mb-4" />
-                        <h1 className="text-3xl font-serif font-bold tracking-tight">Create an account</h1>
+                        <h1 className="text-3xl font-sans font-bold tracking-tight">Create an account</h1>
                         <p className="text-sm text-muted-foreground">Showcase your work to the world</p>
                     </div>
 

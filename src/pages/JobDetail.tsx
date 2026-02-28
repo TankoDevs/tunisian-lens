@@ -82,7 +82,7 @@ export function JobDetail() {
                         </div>
                         <ConnectsBadge count={job.connectsRequired} />
                     </div>
-                    <h1 className="font-serif text-3xl font-bold leading-snug mb-1">{job.title}</h1>
+                    <h1 className="font-sans text-3xl font-bold leading-snug mb-1">{job.title}</h1>
                     <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground mb-6">
                         <span>Posted by <span className="font-medium text-foreground">{job.clientName}</span> · {formatDate(job.createdAt)}</span>
                         {job.verifiedOnly && (

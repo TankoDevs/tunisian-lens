@@ -16,7 +16,7 @@ export function About() {
                             <Camera className="h-8 w-8 text-sand-400" strokeWidth={1.2} />
                         </div>
                         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sand-500 mb-4">Our Story</p>
-                        <h1 className="text-4xl md:text-5xl font-serif font-bold tracking-tight leading-tight">About Tunisian Lens</h1>
+                        <h1 className="text-4xl md:text-5xl font-sans font-bold tracking-tight leading-tight">About Tunisian Lens</h1>
                         <p className="text-lg text-muted-foreground mt-4">Connecting the visual storytellers of Tunisia with the world.</p>
                     </motion.div>
                 </div>
@@ -57,7 +57,7 @@ export function About() {
                                 className="text-center space-y-3"
                             >
                                 <Icon className="h-5 w-5 text-sand-400 mx-auto" strokeWidth={1.5} />
-                                <h3 className="text-4xl font-serif font-bold">{num}</h3>
+                                <h3 className="text-4xl font-sans font-bold">{num}</h3>
                                 <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{label}</p>
                             </motion.div>
                         ))}
