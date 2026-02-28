@@ -63,7 +63,28 @@ const CURRENT_USER_KEY = 'tunisian_lens_current_user';
             changed = true;
         }
     }
+
+    // Migrate: upgrade any old 'photographer' roles to 'creative'
+    for (const u of mockUsers) {
+        if ((u as { role: string }).role === 'photographer') {
+            (u as { role: string }).role = 'creative';
+            changed = true;
+        }
+    }
+
     if (changed) localStorage.setItem(MOCK_USERS_KEY, JSON.stringify(mockUsers));
+
+    // Also migrate the currently logged-in user if they have the old role
+    const currentRaw = localStorage.getItem(CURRENT_USER_KEY);
+    if (currentRaw) {
+        try {
+            const current = JSON.parse(currentRaw);
+            if (current.role === 'photographer') {
+                current.role = 'creative';
+                localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(current));
+            }
+        } catch { /* ignore */ }
+    }
 })();
 
 export function AuthProvider({ children }: { children: ReactNode }) {
