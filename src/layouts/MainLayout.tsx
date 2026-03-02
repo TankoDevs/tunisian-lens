@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/Footer";
 import { GlobalAlert } from "../components/ui/GlobalAlert";
+import { ScrollButton } from "../components/ui/ScrollButton";
 
 export function MainLayout() {
     return (
@@ -12,6 +13,7 @@ export function MainLayout() {
                 <Outlet />
             </main>
             <Footer />
+            <ScrollButton />
         </div>
     );
 }
