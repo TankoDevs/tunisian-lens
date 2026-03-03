@@ -1,4 +1,4 @@
-import { ArrowRight, Camera, Video, CheckCircle, Shield, Star, Zap, Users } from "lucide-react";
+import { ArrowRight, Camera, Video, CheckCircle, Shield, Star, Zap, Users, Crown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { ARTISTS, MOCK_JOBS } from "../data/mockData";
@@ -253,7 +253,47 @@ export function Home() {
                 </div>
             </section>
 
-            {/* ──────── RECENT PROJECTS ──────── */}
+            {/* ──────── CREATIVE OF THE MONTH ──────── */}
+            {(() => {
+                const cotmId = localStorage.getItem('tunisian_lens_cotm');
+                const cotmArtist = cotmId ? ARTISTS.find(a => a.id === cotmId) : null;
+                if (!cotmArtist) return null;
+                const coverImg = cotmArtist.portfolioImages?.[0] ?? `https://picsum.photos/seed/${cotmArtist.id}/1200/600`;
+                return (
+                    <section className="py-24 bg-[#0d0d0d]">
+                        <div className="container mx-auto px-6 max-w-5xl">
+                            <FadeUp className="flex items-center gap-3 mb-10">
+                                <Crown className="h-5 w-5 text-amber-400" strokeWidth={1.5} />
+                                <div>
+                                    <p className="text-xs font-semibold uppercase tracking-[0.25em] text-amber-400">Spotlight</p>
+                                    <h2 className="text-2xl font-bold text-white">Creative of the Month</h2>
+                                </div>
+                            </FadeUp>
+                            <FadeUp>
+                                <Link to={`/artist/${cotmArtist.id}`} className="group block">
+                                    <div className="relative rounded-2xl overflow-hidden">
+                                        <img src={coverImg} alt={cotmArtist.name}
+                                            className="w-full h-72 md:h-96 object-cover transition-transform duration-700 group-hover:scale-105" />
+                                        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
+                                        <div className="absolute inset-0 flex items-end p-8">
+                                            <div className="flex items-end gap-5">
+                                                <img src={cotmArtist.avatar} alt={cotmArtist.name}
+                                                    className="w-16 h-16 rounded-full object-cover ring-2 ring-amber-400/60 flex-shrink-0" />
+                                                <div>
+                                                    <p className="text-amber-400 text-xs font-semibold uppercase tracking-widest mb-1">This Month's Featured Creative</p>
+                                                    <h3 className="text-white text-2xl font-bold">{cotmArtist.name}</h3>
+                                                    <p className="text-white/60 text-sm">{cotmArtist.location} · {cotmArtist.categories.slice(0, 2).join(" / ")}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Link>
+                            </FadeUp>
+                        </div>
+                    </section>
+                );
+            })()}
+
             {RECENT_JOBS.length > 0 && (
                 <section className="py-28 bg-background">
                     <div className="container mx-auto px-6">

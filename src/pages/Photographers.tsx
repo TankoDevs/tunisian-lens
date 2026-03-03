@@ -9,6 +9,7 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { ARTISTS, COUNTRIES, CATEGORIES } from "../data/mockData";
 import { VerificationBadge } from "../components/ui/VerificationBadge";
+import { BadgePill } from "../components/ui/BadgePill";
 import { isArtistVerified } from "../lib/verification";
 import { cn } from "../lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
@@ -467,7 +468,12 @@ export function Photographers() {
                                                     className="w-10 h-10 rounded-full object-cover ring-2 ring-white/80 flex-shrink-0"
                                                 />
                                                 <div>
-                                                    <p className="text-white font-semibold text-sm leading-tight">{artist.name}</p>
+                                                    <div className="flex items-center gap-1.5 flex-wrap">
+                                                        <p className="text-white font-semibold text-sm leading-tight">{artist.name}</p>
+                                                        {artist.badgeLevel && (
+                                                            <BadgePill level={artist.badgeLevel} size="sm" />
+                                                        )}
+                                                    </div>
                                                     <p className="text-white/70 text-xs flex items-center gap-1">
                                                         <MapPin className="h-2.5 w-2.5" strokeWidth={1.5} />
                                                         {artist.location}, {COUNTRY_FLAGS[artist.country] || ""} {artist.country}

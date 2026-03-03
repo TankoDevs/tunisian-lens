@@ -3,10 +3,13 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     ShieldCheck, Clock, CheckCircle2, XCircle, User,
-    ChevronDown, ChevronUp, Search, SlidersHorizontal
+    ChevronDown, ChevronUp, Search, SlidersHorizontal, Crown, Star
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { Button } from "../components/ui/button";
+import { ARTISTS } from "../data/mockData";
+import { BadgePill } from "../components/ui/BadgePill";
+import { type BadgeLevel } from "../data/mockData";
 import {
     getVerificationRequests,
     updateVerificationRequest,
@@ -163,6 +166,27 @@ export function Admin() {
     const [filter, setFilter] = useState<Filter>('pending');
     const [search, setSearch] = useState('');
     const [requests, setRequests] = useState<VerificationRequest[]>(getVerificationRequests);
+
+    // COTM state
+    const [cotmId, setCotmId] = useState<string>(() => localStorage.getItem('tunisian_lens_cotm') || '');
+
+    // Badge override state: {[artistId]: BadgeLevel | 'none'}
+    const [badgeOverrides, setBadgeOverrides] = useState<Record<string, string>>(() => {
+        try { return JSON.parse(localStorage.getItem('tunisian_lens_badge_overrides') || '{}'); } catch { return {}; }
+    });
+
+    function setCOTM(id: string) {
+        setCotmId(id);
+        if (id) localStorage.setItem('tunisian_lens_cotm', id);
+        else localStorage.removeItem('tunisian_lens_cotm');
+    }
+
+    function setBadge(artistId: string, level: string) {
+        const next = { ...badgeOverrides, [artistId]: level };
+        if (level === 'none') delete next[artistId];
+        setBadgeOverrides(next);
+        localStorage.setItem('tunisian_lens_badge_overrides', JSON.stringify(next));
+    }
 
     if (!isAuthenticated || user?.role !== 'admin') {
         return (
@@ -350,6 +374,82 @@ export function Admin() {
                         </div>
                     </motion.div>
                 )}
+
+                {/* ── CREATIVE OF THE MONTH PICKER ── */}
+                <div className="mt-16 border-t border-border pt-10">
+                    <div className="flex items-center gap-2 mb-6">
+                        <Crown className="h-5 w-5 text-amber-400" strokeWidth={1.5} />
+                        <div>
+                            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sand-500">Spotlight</p>
+                            <h2 className="font-sans text-xl font-bold">Creative of the Month</h2>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-3 flex-wrap">
+                        <select
+                            value={cotmId}
+                            onChange={e => setCOTM(e.target.value)}
+                            className="h-10 px-3 rounded-lg border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 min-w-[240px]"
+                        >
+                            <option value="">-- No Creative of the Month --</option>
+                            {ARTISTS.map(a => (
+                                <option key={a.id} value={a.id}>{a.name} – {a.location}</option>
+                            ))}
+                        </select>
+                        {cotmId && (
+                            <Button variant="outline" size="sm" onClick={() => setCOTM('')}>Clear</Button>
+                        )}
+                    </div>
+                    {cotmId && (() => {
+                        const cotm = ARTISTS.find(a => a.id === cotmId);
+                        return cotm ? (
+                            <div className="mt-4 flex items-center gap-3 p-3 rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/20">
+                                <img src={cotm.avatar} className="w-10 h-10 rounded-full object-cover" alt={cotm.name} />
+                                <div>
+                                    <p className="text-sm font-semibold">{cotm.name}</p>
+                                    <p className="text-xs text-muted-foreground">{cotm.location} · {cotm.categories.join(', ')}</p>
+                                </div>
+                                <Crown className="h-4 w-4 text-amber-400 ml-auto" strokeWidth={1.5} />
+                            </div>
+                        ) : null;
+                    })()}
+                </div>
+
+                {/* ── BADGE OVERRIDE PANEL ── */}
+                <div className="mt-12 border-t border-border pt-10">
+                    <div className="flex items-center gap-2 mb-6">
+                        <Star className="h-5 w-5 text-violet-400" strokeWidth={1.5} />
+                        <div>
+                            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sand-500">Badges</p>
+                            <h2 className="font-sans text-xl font-bold">Creative Badge Manager</h2>
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {ARTISTS.map(a => {
+                            const current = (badgeOverrides[a.id] || a.badgeLevel || 'none') as string;
+                            return (
+                                <div key={a.id} className="flex items-center gap-3 p-3 rounded-lg border border-border bg-card">
+                                    <img src={a.avatar} className="w-9 h-9 rounded-full object-cover flex-shrink-0" alt={a.name} />
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium truncate">{a.name}</p>
+                                        <p className="text-xs text-muted-foreground truncate">{a.location}</p>
+                                    </div>
+                                    {current !== 'none' && <BadgePill level={current as BadgeLevel} size="sm" />}
+                                    <select
+                                        value={current}
+                                        onChange={e => setBadge(a.id, e.target.value)}
+                                        className="h-8 px-2 rounded border bg-background text-xs focus:outline-none focus:ring-1 focus:ring-primary/30"
+                                    >
+                                        <option value="none">No Badge</option>
+                                        <option value="verified">Verified</option>
+                                        <option value="pro">Pro</option>
+                                        <option value="elite">Elite</option>
+                                    </select>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+
             </div>
         </div >
     );

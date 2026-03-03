@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Search, PlusCircle, Briefcase, Lock } from "lucide-react";
+import { Search, PlusCircle, Briefcase, Lock, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 import { useMarketplace } from "../context/MarketplaceContext";
 import { useAuth } from "../context/AuthContext";
@@ -73,6 +73,12 @@ export function Jobs() {
             !job.description.toLowerCase().includes(search.toLowerCase())) return false;
         return true;
     });
+
+    // Sort urgent to top
+    const sortedJobs = [
+        ...filtered.filter(j => j.isUrgent),
+        ...filtered.filter(j => !j.isUrgent),
+    ];
 
     return (
         <div className="min-h-screen bg-background">
@@ -163,10 +169,15 @@ export function Jobs() {
 
                 {/* Results */}
                 <p className="text-xs text-muted-foreground mb-6 uppercase tracking-wider">
-                    {filtered.length} job{filtered.length !== 1 ? 's' : ''} found
+                    {sortedJobs.length} job{sortedJobs.length !== 1 ? 's' : ''} found
+                    {sortedJobs.filter(j => j.isUrgent).length > 0 && (
+                        <span className="ml-3 text-red-500 font-semibold">
+                            · {sortedJobs.filter(j => j.isUrgent).length} urgent
+                        </span>
+                    )}
                 </p>
 
-                {filtered.length === 0 ? (
+                {sortedJobs.length === 0 ? (
                     <div className="text-center py-32 text-muted-foreground">
                         <Briefcase className="h-10 w-10 mx-auto mb-4 opacity-20" strokeWidth={1.2} />
                         <p className="font-sans text-lg font-semibold mb-1">No jobs match your filters</p>
@@ -174,13 +185,20 @@ export function Jobs() {
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                        {filtered.map((job, i) => (
+                        {sortedJobs.map((job, i) => (
                             <motion.div
                                 key={job.id}
                                 initial={{ opacity: 0, y: 16 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.3, delay: i * 0.04 }}
+                                className="relative"
                             >
+                                {job.isUrgent && (
+                                    <div className="absolute -top-2 left-4 z-10 flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-white bg-red-500 px-2.5 py-1 rounded-full shadow">
+                                        <Zap className="h-2.5 w-2.5" strokeWidth={2} fill="currentColor" />
+                                        Urgent
+                                    </div>
+                                )}
                                 <JobCard job={job} />
                             </motion.div>
                         ))}

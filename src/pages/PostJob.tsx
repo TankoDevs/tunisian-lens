@@ -1,12 +1,30 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { ArrowLeft, Briefcase, Lock, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Briefcase, Lock, ShieldCheck, Zap, Info } from "lucide-react";
 import { motion } from "framer-motion";
 import { useMarketplace } from "../context/MarketplaceContext";
 import { useAuth } from "../context/AuthContext";
 import { useTunisianAccess } from "../lib/useTunisianAccess";
 import { JOB_CATEGORIES, PHOTO_CATEGORIES, VIDEO_CATEGORIES, type CreativeType } from "../data/mockData";
 import { Button } from "../components/ui/button";
+
+// Smart budget guidance lookup
+const BUDGET_RANGES: Record<string, [number, number]> = {
+    "Wedding": [500, 1200],
+    "Fashion": [400, 1500],
+    "Portrait": [150, 400],
+    "Event": [200, 600],
+    "Product": [200, 800],
+    "Commercial": [600, 2500],
+    "Documentary": [300, 900],
+    "Architecture": [400, 1800],
+    "Landscape": [150, 500],
+    "Wedding Film": [700, 2000],
+    "Commercial Video": [800, 3000],
+    "Music Video": [500, 2000],
+    "Event Coverage": [300, 800],
+    "Social Media Content": [200, 600],
+};
 
 export function PostJob() {
     const { postJob } = useMarketplace();
@@ -26,9 +44,12 @@ export function PostJob() {
         connectsRequired: 4,
         verifiedOnly: false,
         creativeTypeRequired: 'both' as CreativeType,
+        isUrgent: false,
     });
     const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState('');
+
+    const budgetRange = useMemo(() => BUDGET_RANGES[form.category], [form.category]);
 
     if (!isAuthenticated || !hasAccess) {
         return (
@@ -86,6 +107,7 @@ export function PostJob() {
             connectsRequired: form.connectsRequired,
             verifiedOnly: form.verifiedOnly,
             creativeTypeRequired: form.creativeTypeRequired,
+            isUrgent: form.isUrgent,
         });
         setSubmitted(true);
         setTimeout(() => navigate('/jobs'), 1800);
@@ -145,8 +167,8 @@ export function PostJob() {
                                         type="button"
                                         onClick={() => setForm(f => ({ ...f, creativeTypeRequired: t, category: '' }))}
                                         className={`flex-1 h-10 rounded-lg border text-sm font-medium transition-all duration-200 capitalize ${form.creativeTypeRequired === t
-                                                ? 'bg-foreground text-background border-foreground'
-                                                : 'border-border hover:bg-accent text-muted-foreground hover:text-foreground'
+                                            ? 'bg-foreground text-background border-foreground'
+                                            : 'border-border hover:bg-accent text-muted-foreground hover:text-foreground'
                                             }`}
                                     >
                                         {t === 'both' ? 'Both' : t === 'photographer' ? 'Photographer' : 'Videographer'}
@@ -204,6 +226,15 @@ export function PostJob() {
                                     {['USD', 'EUR', 'TND', 'GBP', 'AED'].map(c => <option key={c} value={c}>{c}</option>)}
                                 </select>
                             </div>
+                            {/* Budget Guidance */}
+                            {budgetRange && (
+                                <div className="flex items-start gap-2 mt-2 p-3 rounded-lg bg-sky-50 dark:bg-sky-950/20 border border-sky-200 dark:border-sky-800 text-xs text-sky-700 dark:text-sky-300">
+                                    <Info className="h-3.5 w-3.5 flex-shrink-0 mt-0.5" strokeWidth={2} />
+                                    <span>
+                                        Typical <strong>{form.category}</strong> shoot in Tunisia: <strong>${budgetRange[0]}–${budgetRange[1]}</strong>. Helps attract the right creatives.
+                                    </span>
+                                </div>
+                            )}
                         </div>
 
                         {/* Location */}
@@ -257,6 +288,29 @@ export function PostJob() {
                             <div className="flex justify-between text-xs text-muted-foreground">
                                 <span>1 (low barrier)</span>
                                 <span>10 (high barrier)</span>
+                            </div>
+                        </div>
+
+                        {/* Urgent Job Toggle */}
+                        <div
+                            className={`flex items-start gap-3 p-4 rounded-xl border cursor-pointer select-none transition-colors ${form.isUrgent
+                                    ? 'bg-red-50 dark:bg-red-950/20 border-red-300 dark:border-red-800'
+                                    : 'bg-muted/30 border-border hover:bg-muted/50'
+                                }`}
+                            onClick={() => setForm(f => ({ ...f, isUrgent: !f.isUrgent }))}
+                        >
+                            <Zap className={`h-5 w-5 flex-shrink-0 mt-0.5 ${form.isUrgent ? 'text-red-500' : 'text-muted-foreground'}`} strokeWidth={2} fill={form.isUrgent ? 'currentColor' : 'none'} />
+                            <div className="flex-1">
+                                <p className={`text-sm font-semibold ${form.isUrgent ? 'text-red-600 dark:text-red-400' : 'text-muted-foreground'}`}>
+                                    Urgent — 24h Boost
+                                </p>
+                                <p className="text-xs text-muted-foreground mt-0.5">
+                                    Urgent jobs appear at the top of the listing with a visibility badge.
+                                </p>
+                            </div>
+                            <div className={`w-10 h-5 rounded-full flex-shrink-0 mt-0.5 relative transition-colors ${form.isUrgent ? 'bg-red-500' : 'bg-muted-foreground/30'
+                                }`}>
+                                <div className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${form.isUrgent ? 'translate-x-5' : 'translate-x-0'}`} />
                             </div>
                         </div>
 
