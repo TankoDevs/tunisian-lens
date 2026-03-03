@@ -21,6 +21,7 @@ import { JobDetail } from "./pages/JobDetail";
 import { Dashboard } from "./pages/Dashboard";
 import { Admin } from "./pages/Admin";
 import { Messages } from "./pages/Messages";
+import { BuyConnects } from "./pages/BuyConnects";
 import { MarketplaceProvider } from "./context/MarketplaceContext";
 import { ChatProvider } from "./context/ChatContext";
 
@@ -63,6 +64,7 @@ function App() {
             <Route path="/admin" element={<Admin />} />
             <Route path="/messages" element={<Messages />} />
             <Route path="/messages/:conversationId" element={<Messages />} />
+            <Route path="/buy-connects" element={<BuyConnects />} />
           </Route>
         </Routes>
       </ChatProvider>

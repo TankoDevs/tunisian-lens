@@ -98,14 +98,19 @@ export function Dashboard() {
                             {/* Stats row */}
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 {/* Connects */}
-                                <div className="border border-border rounded-lg p-6 bg-card">
-                                    <div className="flex items-center gap-2 text-muted-foreground text-xs mb-3">
-                                        <Zap className="h-4 w-4 text-sand-500" strokeWidth={1.5} fill="currentColor" />
-                                        Connects Balance
+                                <Link to="/buy-connects" className="block group">
+                                    <div className="border border-border rounded-lg p-6 bg-card group-hover:border-[hsl(var(--accent))/40] transition-all duration-300 cursor-pointer">
+                                        <div className="flex items-center gap-2 text-muted-foreground text-xs mb-3">
+                                            <Zap className="h-4 w-4 text-sand-500" strokeWidth={1.5} fill="currentColor" />
+                                            Connects Balance
+                                        </div>
+                                        <div className="text-4xl font-sans font-bold text-sand-600 dark:text-sand-400">{connects}</div>
+                                        <p className="text-xs text-muted-foreground mt-1">Used to apply to jobs</p>
+                                        <p className="text-[10px] text-[hsl(var(--accent))] font-semibold mt-3 flex items-center gap-1">
+                                            Buy more →
+                                        </p>
                                     </div>
-                                    <div className="text-4xl font-sans font-bold text-sand-600 dark:text-sand-400">{connects}</div>
-                                    <p className="text-xs text-muted-foreground mt-1">Used to apply to jobs</p>
-                                </div>
+                                </Link>
 
                                 {/* Applications */}
                                 <div className="border border-border rounded-lg p-6 bg-card">
@@ -248,18 +253,56 @@ export function Dashboard() {
                                 )}
                             </div>
 
-                            {/* Connects Info */}
-                            <div className="border border-border rounded-lg p-6 bg-card">
-                                <h2 className="font-sans font-semibold mb-3 flex items-center gap-2">
-                                    <Zap className="h-4 w-4 text-sand-500" strokeWidth={1.5} fill="currentColor" />
-                                    About Connects
-                                </h2>
+                            {/* Connects Section */}
+                            <div className="border border-border rounded-lg p-6 bg-card space-y-5">
+                                <div className="flex items-center justify-between">
+                                    <h2 className="font-sans font-semibold flex items-center gap-2">
+                                        <Zap className="h-4 w-4 text-sand-500" strokeWidth={1.5} fill="currentColor" />
+                                        Connects
+                                    </h2>
+                                    <Link to="/buy-connects">
+                                        <Button size="sm" className="gap-1.5 text-xs h-8">
+                                            <Zap className="h-3 w-3" strokeWidth={2} fill="currentColor" />
+                                            Buy More
+                                        </Button>
+                                    </Link>
+                                </div>
                                 <ul className="text-sm text-muted-foreground space-y-2 list-disc list-inside">
                                     <li>Each job lists how many Connects it costs to apply</li>
-                                    <li>New creatives receive {20} free Connects</li>
+                                    <li>New verified creatives receive {20} free Connects</li>
                                     <li>Connects are deducted when you submit an application</li>
-                                    <li>Paid Connects packages coming soon</li>
+                                    <li>Connects never expire once purchased</li>
                                 </ul>
+                                {/* Mock transaction history */}
+                                <div className="pt-3 border-t border-border space-y-1">
+                                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Recent Activity</p>
+                                    {[
+                                        { type: 'bonus', label: 'Welcome Bonus', amount: +20, date: 'Today' },
+                                    ].map((tx, i) => (
+                                        <div key={i} className="flex items-center justify-between py-2 text-sm">
+                                            <div>
+                                                <p className="font-medium">{tx.label}</p>
+                                                <p className="text-xs text-muted-foreground">{tx.date}</p>
+                                            </div>
+                                            <span className={`font-semibold text-sm ${tx.amount > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-500'}`}>
+                                                {tx.amount > 0 ? '+' : ''}{tx.amount} ⚡
+                                            </span>
+                                        </div>
+                                    ))}
+                                    {myApplications.map(app => {
+                                        const job = jobs.find(j => j.id === app.jobId);
+                                        if (!job) return null;
+                                        return (
+                                            <div key={app.id} className="flex items-center justify-between py-2 text-sm border-t border-border/50">
+                                                <div>
+                                                    <p className="font-medium line-clamp-1">Applied: {job.title}</p>
+                                                    <p className="text-xs text-muted-foreground">{new Date(app.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</p>
+                                                </div>
+                                                <span className="font-semibold text-sm text-red-500">-{job.connectsRequired} ⚡</span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
                             </div>
                         </div>
                     )}

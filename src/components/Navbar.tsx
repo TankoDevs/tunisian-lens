@@ -1,7 +1,7 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useMarketplace } from "../context/MarketplaceContext";
 import { Button } from "./ui/button";
-import { Menu, X, Camera, User, LogIn, UserPlus, LogOut, Sun, Moon, Briefcase, ShieldCheck, MessageSquare } from "lucide-react";
+import { Menu, X, Camera, User, LogIn, UserPlus, LogOut, Sun, Moon, Briefcase, ShieldCheck, MessageSquare, Zap } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
@@ -208,14 +208,24 @@ export function Navbar() {
                                                     </Link>
                                                 )}
                                                 {user?.role === 'creative' && (
-                                                    <Link
-                                                        to={`/artist/${user.id}`}
-                                                        className="flex items-center gap-2.5 px-3 py-2 text-sm rounded-md hover:bg-muted transition-colors duration-200"
-                                                        onClick={() => setIsUserMenuOpen(false)}
-                                                    >
-                                                        <User className="h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
-                                                        My Profile
-                                                    </Link>
+                                                    <>
+                                                        <Link
+                                                            to={`/artist/${user.id}`}
+                                                            className="flex items-center gap-2.5 px-3 py-2 text-sm rounded-md hover:bg-muted transition-colors duration-200"
+                                                            onClick={() => setIsUserMenuOpen(false)}
+                                                        >
+                                                            <User className="h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
+                                                            My Profile
+                                                        </Link>
+                                                        <Link
+                                                            to="/buy-connects"
+                                                            className="flex items-center gap-2.5 px-3 py-2 text-sm rounded-md hover:bg-muted transition-colors duration-200"
+                                                            onClick={() => setIsUserMenuOpen(false)}
+                                                        >
+                                                            <Zap className="h-4 w-4 text-[hsl(var(--accent))]" strokeWidth={1.5} fill="currentColor" />
+                                                            Buy Connects
+                                                        </Link>
+                                                    </>
                                                 )}
                                                 <button
                                                     className="w-full flex items-center gap-2.5 px-3 py-2 text-sm rounded-md text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors duration-200"
@@ -341,6 +351,12 @@ export function Navbar() {
                                                 {unreadCount}
                                             </span>
                                         )}
+                                    </Link>
+                                )}
+                                {isAuthenticated && user?.role === 'creative' && (
+                                    <Link to="/buy-connects" className="flex items-center gap-2 py-2.5 text-sm text-[hsl(var(--accent))] font-medium" onClick={() => setIsOpen(false)}>
+                                        <Zap className="h-4 w-4" strokeWidth={1.5} fill="currentColor" />
+                                        Buy Connects · ⚡ {getConnects(user.id)}
                                     </Link>
                                 )}
                             </div>
