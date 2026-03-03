@@ -241,6 +241,7 @@ export interface Artist {
     startingPrice: number;
     currency: string;
     deliveryDays: number;
+    portfolioImages: string[];
     packages: ServicePackage[];
     contact: {
         email: string;
@@ -339,6 +340,11 @@ export const ARTISTS: Artist[] = [
         startingPrice: 120,
         currency: "USD",
         deliveryDays: 5,
+        portfolioImages: [
+            "https://images.unsplash.com/photo-1534430480872-3498386e7856?w=400&q=70",
+            "https://images.unsplash.com/photo-1518982054-56f90e37e4e6?w=400&q=70",
+            "https://images.unsplash.com/photo-1490077476659-095159692ab5?w=400&q=70"
+        ],
         packages: [
             { name: "Basic", price: 120, currency: "USD", description: "Half-day street photography session", deliveryDays: 5, includes: ["2-hour session", "20 edited photos", "Digital delivery"] },
             { name: "Standard", price: 250, currency: "USD", description: "Full-day documentary shoot", deliveryDays: 7, includes: ["6-hour session", "60 edited photos", "Digital delivery", "Location scouting"] },
@@ -360,6 +366,11 @@ export const ARTISTS: Artist[] = [
         startingPrice: 400,
         currency: "USD",
         deliveryDays: 14,
+        portfolioImages: [
+            "https://images.unsplash.com/photo-1519741497674-611481863552?w=400&q=70",
+            "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=400&q=70",
+            "https://images.unsplash.com/photo-1605722243979-fe0be8158232?w=400&q=70"
+        ],
         packages: [
             { name: "Basic", price: 400, currency: "USD", description: "Wedding ceremony coverage", deliveryDays: 14, includes: ["4-hour coverage", "100 edited photos", "Online gallery"] },
             { name: "Standard", price: 800, currency: "USD", description: "Full wedding day", deliveryDays: 21, includes: ["8-hour coverage", "200 edited photos", "Online gallery", "Printed album (20 pages)"] },
@@ -381,6 +392,11 @@ export const ARTISTS: Artist[] = [
         startingPrice: 200,
         currency: "USD",
         deliveryDays: 10,
+        portfolioImages: [
+            "https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=400&q=70",
+            "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=400&q=70",
+            "https://images.unsplash.com/photo-1482938289607-e9573fc25ebb?w=400&q=70"
+        ],
         packages: [
             { name: "Basic", price: 200, currency: "USD", description: "Single location landscape session", deliveryDays: 7, includes: ["Sunrise or sunset shoot", "15 edited photos", "Digital delivery"] },
             { name: "Standard", price: 500, currency: "USD", description: "Multi-location day tour", deliveryDays: 10, includes: ["Full-day shoot", "40 edited photos", "Drone aerial shots", "Digital delivery"] },
@@ -402,6 +418,11 @@ export const ARTISTS: Artist[] = [
         startingPrice: 350,
         currency: "USD",
         deliveryDays: 7,
+        portfolioImages: [
+            "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=400&q=70",
+            "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=400&q=70",
+            "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=70"
+        ],
         packages: [
             { name: "Basic", price: 350, currency: "USD", description: "Portrait or headshot session", deliveryDays: 5, includes: ["2-hour studio session", "15 retouched photos", "Digital delivery"] },
             { name: "Standard", price: 750, currency: "USD", description: "Editorial fashion shoot", deliveryDays: 7, includes: ["Half-day shoot", "30 retouched photos", "Styling consultation", "Digital delivery"] },
@@ -423,6 +444,11 @@ export const ARTISTS: Artist[] = [
         startingPrice: 500,
         currency: "USD",
         deliveryDays: 7,
+        portfolioImages: [
+            "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=400&q=70",
+            "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=400&q=70",
+            "https://images.unsplash.com/photo-1582648257702-0e19fb53e8b5?w=400&q=70"
+        ],
         packages: [
             { name: "Basic", price: 500, currency: "USD", description: "Interior or exterior shoot", deliveryDays: 5, includes: ["Half-day shoot", "20 edited photos", "Digital delivery"] },
             { name: "Standard", price: 1200, currency: "USD", description: "Full property or project shoot", deliveryDays: 7, includes: ["Full-day shoot", "50 edited photos", "Twilight shots", "Digital delivery"] },
@@ -444,6 +470,11 @@ export const ARTISTS: Artist[] = [
         startingPrice: 300,
         currency: "USD",
         deliveryDays: 5,
+        portfolioImages: [
+            "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400&q=70",
+            "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&q=70",
+            "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=400&q=70"
+        ],
         packages: [
             { name: "Basic", price: 300, currency: "USD", description: "Menu or product shoot", deliveryDays: 5, includes: ["3-hour session", "15 edited photos", "Digital delivery"] },
             { name: "Standard", price: 650, currency: "USD", description: "Restaurant full shoot", deliveryDays: 7, includes: ["Full-day session", "35 edited photos", "Styling props", "Digital delivery"] },
@@ -465,6 +496,11 @@ export const ARTISTS: Artist[] = [
         startingPrice: 500,
         currency: "USD",
         deliveryDays: 14,
+        portfolioImages: [
+            "https://images.unsplash.com/photo-1519741497674-611481863552?w=400&q=70",
+            "https://images.unsplash.com/photo-1564419320408-38e75470aed8?w=400&q=70",
+            "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=70"
+        ],
         packages: [
             { name: "Basic", price: 500, currency: "USD", description: "Wedding highlight reel (3-5 min)", deliveryDays: 14, includes: ["Full-day coverage", "3-5 min highlight film", "Digital delivery"] },
             { name: "Standard", price: 1200, currency: "USD", description: "Full wedding film", deliveryDays: 21, includes: ["Full-day coverage", "8-12 min film", "Highlight reel", "Drone footage", "Raw footage"] },
@@ -486,6 +522,11 @@ export const ARTISTS: Artist[] = [
         startingPrice: 350,
         currency: "USD",
         deliveryDays: 7,
+        portfolioImages: [
+            "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=400&q=70",
+            "https://images.unsplash.com/photo-1536240478700-b869ad10e128?w=400&q=70",
+            "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=400&q=70"
+        ],
         packages: [
             { name: "Basic", price: 350, currency: "USD", description: "Social media video (30-60s)", deliveryDays: 5, includes: ["Half-day shoot", "1 edited video", "Vertical + horizontal cuts", "Digital delivery"] },
             { name: "Standard", price: 800, currency: "USD", description: "Brand promo video (1-2 min)", deliveryDays: 7, includes: ["Full-day shoot", "1-2 min edited video", "Social cuts", "Color grading", "Background music"] },

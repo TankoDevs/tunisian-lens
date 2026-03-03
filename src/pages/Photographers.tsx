@@ -1,13 +1,17 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Search, SlidersHorizontal, MapPin, Globe, Star, CheckCircle2, X } from "lucide-react";
+import {
+    Search, SlidersHorizontal, MapPin, Star, CheckCircle2, X,
+    Camera, Video, Blend, ChevronLeft, ChevronRight, ArrowUpDown,
+    Sparkles
+} from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { ARTISTS, COUNTRIES, CATEGORIES } from "../data/mockData";
 import { VerificationBadge } from "../components/ui/VerificationBadge";
 import { isArtistVerified } from "../lib/verification";
 import { cn } from "../lib/utils";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 const COUNTRY_FLAGS: Record<string, string> = {
     "Tunisia": "🇹🇳", "France": "🇫🇷", "UAE": "🇦🇪", "United Kingdom": "🇬🇧",
@@ -15,240 +19,606 @@ const COUNTRY_FLAGS: Record<string, string> = {
     "Spain": "🇪🇸", "Italy": "🇮🇹", "Turkey": "🇹🇷", "Lebanon": "🇱🇧",
 };
 
+const CREATIVE_TYPE_ICONS: Record<string, React.ReactNode> = {
+    photographer: <Camera className="h-3.5 w-3.5" strokeWidth={1.5} />,
+    videographer: <Video className="h-3.5 w-3.5" strokeWidth={1.5} />,
+    both: <Blend className="h-3.5 w-3.5" strokeWidth={1.5} />,
+};
+
+const SORT_OPTIONS = [
+    { value: "relevance", label: "Relevance" },
+    { value: "price_asc", label: "Lowest Price" },
+    { value: "price_desc", label: "Highest Price" },
+    { value: "rating_desc", label: "Highest Rated" },
+];
+
+const PAGE_SIZE = 9;
+
+// deterministic rating from artist data
+function getArtistRating(_artistId: string, name: string) {
+    const rating = parseFloat((4.5 + (name.length % 5) * 0.1).toFixed(1));
+    const reviews = (name.charCodeAt(0) % 80) + 20;
+    return { rating, reviews };
+}
+
+// Cover image: first portfolio image
+function getCoverImage(artist: typeof ARTISTS[number]) {
+    return artist.portfolioImages?.[0] ?? artist.avatar;
+}
+
 export function Photographers() {
     const [searchQuery, setSearchQuery] = useState("");
+    const [showSuggestions, setShowSuggestions] = useState(false);
     const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+    const [selectedType, setSelectedType] = useState<string | null>(null);
     const [minPrice, setMinPrice] = useState("");
     const [maxPrice, setMaxPrice] = useState("");
     const [verifiedOnly, setVerifiedOnly] = useState(false);
     const [showFilters, setShowFilters] = useState(false);
+    const [sortBy, setSortBy] = useState("relevance");
+    const [showSortMenu, setShowSortMenu] = useState(false);
+    const [page, setPage] = useState(1);
+    const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+
+    const searchRef = useRef<HTMLDivElement>(null);
+    const sortRef = useRef<HTMLDivElement>(null);
+
+    // Close dropdowns on outside click
+    useEffect(() => {
+        function handle(e: MouseEvent) {
+            if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+                setShowSuggestions(false);
+            }
+            if (sortRef.current && !sortRef.current.contains(e.target as Node)) {
+                setShowSortMenu(false);
+            }
+        }
+        document.addEventListener("mousedown", handle);
+        return () => document.removeEventListener("mousedown", handle);
+    }, []);
+
+    // Autosuggestions — match artist names
+    const suggestions = useMemo(() => {
+        if (!searchQuery || searchQuery.length < 2) return [];
+        const q = searchQuery.toLowerCase();
+        return ARTISTS
+            .filter(a =>
+                a.name.toLowerCase().includes(q) ||
+                a.categories.some(c => c.toLowerCase().includes(q)) ||
+                a.country.toLowerCase().includes(q)
+            )
+            .slice(0, 5);
+    }, [searchQuery]);
 
     const filteredArtists = useMemo(() => {
-        return ARTISTS.filter((artist) => {
-            const lowerQuery = searchQuery.toLowerCase();
+        let list = ARTISTS.filter((artist) => {
+            const lq = searchQuery.toLowerCase();
             const matchesSearch = !searchQuery ||
-                artist.name.toLowerCase().includes(lowerQuery) ||
-                artist.bio.toLowerCase().includes(lowerQuery) ||
-                artist.categories.some(c => c.toLowerCase().includes(lowerQuery)) ||
-                artist.country.toLowerCase().includes(lowerQuery);
+                artist.name.toLowerCase().includes(lq) ||
+                artist.bio.toLowerCase().includes(lq) ||
+                artist.categories.some(c => c.toLowerCase().includes(lq)) ||
+                artist.country.toLowerCase().includes(lq);
             const matchesCountry = !selectedCountry || artist.country === selectedCountry;
             const matchesCategory = !selectedCategory || artist.categories.includes(selectedCategory);
-            const isVerified = isArtistVerified(artist.id);
-            const matchesVerified = !verifiedOnly || isVerified;
+            const matchesType = !selectedType || artist.creativeType === selectedType || (selectedType === "both" && artist.creativeType === "both");
+            const matchesVerified = !verifiedOnly || isArtistVerified(artist.id);
             const min = minPrice ? parseInt(minPrice) : 0;
             const max = maxPrice ? parseInt(maxPrice) : Infinity;
             const matchesPrice = artist.startingPrice >= min && artist.startingPrice <= max;
-            return matchesSearch && matchesCountry && matchesCategory && matchesVerified && matchesPrice;
+            return matchesSearch && matchesCountry && matchesCategory && matchesType && matchesVerified && matchesPrice;
         });
-    }, [searchQuery, selectedCountry, selectedCategory, verifiedOnly, minPrice, maxPrice]);
+
+        // Sorting
+        if (sortBy === "price_asc") list = [...list].sort((a, b) => a.startingPrice - b.startingPrice);
+        else if (sortBy === "price_desc") list = [...list].sort((a, b) => b.startingPrice - a.startingPrice);
+        else if (sortBy === "rating_desc") list = [...list].sort((a, b) => getArtistRating(b.id, b.name).rating - getArtistRating(a.id, a.name).rating);
+
+        return list;
+    }, [searchQuery, selectedCountry, selectedCategory, selectedType, verifiedOnly, minPrice, maxPrice, sortBy]);
+
+    const totalPages = Math.ceil(filteredArtists.length / PAGE_SIZE);
+    const pagedArtists = filteredArtists.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
     const clearFilters = () => {
-        setSelectedCountry(null); setSelectedCategory(null);
-        setMinPrice(""); setMaxPrice("");
-        setVerifiedOnly(false); setSearchQuery("");
+        setSelectedCountry(null); setSelectedCategory(null); setSelectedType(null);
+        setMinPrice(""); setMaxPrice(""); setVerifiedOnly(false); setSearchQuery(""); setPage(1);
     };
 
-    const hasActiveFilters = !!(selectedCountry || selectedCategory || verifiedOnly || minPrice || maxPrice);
+    const hasActiveFilters = !!(selectedCountry || selectedCategory || selectedType || verifiedOnly || minPrice || maxPrice);
+    const currentSortLabel = SORT_OPTIONS.find(s => s.value === sortBy)?.label ?? "Relevance";
+
+    // Reset page on filter/sort change
+    useEffect(() => { setPage(1); }, [searchQuery, selectedCountry, selectedCategory, selectedType, verifiedOnly, minPrice, maxPrice, sortBy]);
 
     return (
         <div className="min-h-screen bg-background">
-            {/* Header */}
-            <section className="border-b border-border">
-                <div className="container mx-auto px-6 py-16 text-center space-y-5">
-                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sand-500">Directory</p>
-                    <h1 className="text-4xl md:text-5xl font-sans font-bold tracking-tight">
-                        Find Your Creative
-                    </h1>
-                    <p className="text-muted-foreground max-w-xl mx-auto">
-                        Browse verified photography talent worldwide. Filter by style, location, and budget.
-                    </p>
-                    <div className="max-w-xl mx-auto relative pt-2">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 mt-1 h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
+            {/* ── Hero Header ── */}
+            <section className="relative overflow-hidden border-b border-border">
+                {/* Subtle background pattern */}
+                <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]"
+                    style={{ backgroundImage: "radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)", backgroundSize: "28px 28px" }}
+                />
+                <div className="container mx-auto px-6 py-20 text-center relative z-10 space-y-6">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6 }}
+                        className="space-y-4"
+                    >
+                        <div className="flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-[hsl(var(--accent))]">
+                            <Sparkles className="h-3 w-3" strokeWidth={2} />
+                            <span>Creative Directory</span>
+                        </div>
+                        <h1 className="text-5xl md:text-6xl font-bold tracking-tight">
+                            Find Your Creative
+                        </h1>
+                        <p className="text-muted-foreground max-w-lg mx-auto text-base leading-relaxed">
+                            Browse world-class photographers and videographers. Filter by style, location, and budget to find your perfect match.
+                        </p>
+                    </motion.div>
+
+                    {/* Search with autosuggestions */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 16 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.15 }}
+                        className="max-w-xl mx-auto relative"
+                        ref={searchRef}
+                    >
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none z-10" strokeWidth={1.5} />
                         <Input
                             placeholder="Search by name, style, or country…"
-                            className="pl-11 h-12 text-sm"
+                            className="pl-11 h-13 text-sm h-12 pr-10 shadow-sm"
                             value={searchQuery}
-                            onChange={e => setSearchQuery(e.target.value)}
+                            onChange={e => { setSearchQuery(e.target.value); setShowSuggestions(true); }}
+                            onFocus={() => setShowSuggestions(true)}
+                            autoComplete="off"
                         />
-                    </div>
+                        {searchQuery && (
+                            <button
+                                onClick={() => { setSearchQuery(""); setShowSuggestions(false); }}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                            >
+                                <X className="h-4 w-4" />
+                            </button>
+                        )}
+
+                        {/* Suggestion Dropdown */}
+                        <AnimatePresence>
+                            {showSuggestions && suggestions.length > 0 && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: -8 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -8 }}
+                                    transition={{ duration: 0.15 }}
+                                    className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-lg shadow-lg z-50 overflow-hidden"
+                                >
+                                    {suggestions.map(s => (
+                                        <button
+                                            key={s.id}
+                                            onClick={() => { setSearchQuery(s.name); setShowSuggestions(false); }}
+                                            className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-muted text-left transition-colors"
+                                        >
+                                            <img src={s.avatar} alt={s.name} className="w-7 h-7 rounded-full object-cover flex-shrink-0" />
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-medium truncate">{s.name}</p>
+                                                <p className="text-xs text-muted-foreground truncate">{s.categories.slice(0, 2).join(" · ")} · {s.country}</p>
+                                            </div>
+                                            {CREATIVE_TYPE_ICONS[s.creativeType]}
+                                        </button>
+                                    ))}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </motion.div>
+
+                    {/* Quick stats */}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.3 }}
+                        className="flex items-center justify-center gap-6 text-xs text-muted-foreground"
+                    >
+                        {[
+                            { label: "creatives", value: ARTISTS.length },
+                            { label: "countries", value: COUNTRIES.length },
+                            { label: "specialities", value: CATEGORIES.length },
+                        ].map(({ label, value }) => (
+                            <div key={label} className="flex items-center gap-1.5">
+                                <span className="font-semibold text-foreground text-sm">{value}+</span>
+                                <span>{label}</span>
+                            </div>
+                        ))}
+                    </motion.div>
                 </div>
             </section>
 
-            <div className="container mx-auto px-6 py-10">
-                {/* Filter Bar */}
-                <div className="flex items-center justify-between mb-8">
-                    <div className="flex items-center gap-3">
-                        <p className="text-xs text-muted-foreground uppercase tracking-wider">
-                            <span className="font-semibold text-foreground">{filteredArtists.length}</span> creative{filteredArtists.length !== 1 ? "s" : ""}
-                        </p>
-                        {hasActiveFilters && (
-                            <button
-                                onClick={clearFilters}
-                                className="flex items-center gap-1 text-xs text-sand-600 hover:text-sand-700 dark:text-sand-400"
-                            >
-                                <X className="h-3 w-3" /> Clear
-                            </button>
-                        )}
-                    </div>
-                    <Button variant="outline" size="sm" className="gap-2 text-xs" onClick={() => setShowFilters(!showFilters)}>
-                        <SlidersHorizontal className="h-3.5 w-3.5" strokeWidth={1.5} />
-                        Filters
-                    </Button>
-                </div>
-
-                {/* Expanded Filters */}
-                {showFilters && (
-                    <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        className="mb-8 p-6 border border-border rounded-lg bg-card space-y-5 overflow-hidden"
-                    >
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            <div className="space-y-2">
-                                <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Country</label>
-                                <div className="flex flex-wrap gap-1.5">
-                                    {COUNTRIES.map(country => (
-                                        <button
-                                            key={country}
-                                            onClick={() => setSelectedCountry(selectedCountry === country ? null : country)}
-                                            className={cn(
-                                                "text-xs px-2.5 py-1 rounded-md border transition-all duration-200",
-                                                selectedCountry === country
-                                                    ? "bg-foreground text-background border-foreground"
-                                                    : "hover:bg-muted border-border"
-                                            )}
-                                        >
-                                            {COUNTRY_FLAGS[country] || "🌍"} {country}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Category</label>
-                                <div className="flex flex-wrap gap-1.5">
-                                    {CATEGORIES.map(cat => (
-                                        <button
-                                            key={cat}
-                                            onClick={() => setSelectedCategory(selectedCategory === cat ? null : cat)}
-                                            className={cn(
-                                                "text-xs px-2.5 py-1 rounded-md border transition-all duration-200",
-                                                selectedCategory === cat
-                                                    ? "bg-foreground text-background border-foreground"
-                                                    : "hover:bg-muted border-border"
-                                            )}
-                                        >
-                                            {cat}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Price Range (USD)</label>
-                                <div className="flex gap-2 items-center">
-                                    <Input type="number" placeholder="Min" value={minPrice} onChange={e => setMinPrice(e.target.value)} className="h-9 text-sm" />
-                                    <span className="text-muted-foreground text-xs">–</span>
-                                    <Input type="number" placeholder="Max" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} className="h-9 text-sm" />
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Verification</label>
+            <div className="container mx-auto px-6 py-8">
+                {/* ── Sticky Toolbar ── */}
+                <div className="sticky top-0 z-30 bg-background/90 backdrop-blur-sm border-b border-border -mx-6 px-6 py-3 mb-6">
+                    <div className="flex items-center justify-between gap-4 flex-wrap">
+                        {/* Left: Count + clear */}
+                        <div className="flex items-center gap-3">
+                            <p className="text-xs text-muted-foreground">
+                                <span className="font-semibold text-foreground text-sm">{filteredArtists.length}</span>
+                                {" "}creative{filteredArtists.length !== 1 ? "s" : ""}
+                            </p>
+                            {hasActiveFilters && (
                                 <button
-                                    onClick={() => setVerifiedOnly(!verifiedOnly)}
+                                    onClick={clearFilters}
+                                    className="flex items-center gap-1 text-xs text-[hsl(var(--accent))] hover:opacity-80 transition-opacity"
+                                >
+                                    <X className="h-3 w-3" /> Clear filters
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Right: Type pills + Sort + Filter toggle */}
+                        <div className="flex items-center gap-2 flex-wrap">
+                            {/* Creative type quick filters */}
+                            {["photographer", "videographer", "both"].map(type => (
+                                <button
+                                    key={type}
+                                    onClick={() => setSelectedType(selectedType === type ? null : type)}
                                     className={cn(
-                                        "flex items-center gap-2 text-xs px-3 py-2 rounded-md border transition-all duration-200 w-full",
-                                        verifiedOnly ? "bg-foreground text-background border-foreground" : "hover:bg-muted border-border"
+                                        "flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border transition-all duration-200 capitalize",
+                                        selectedType === type
+                                            ? "bg-foreground text-background border-foreground"
+                                            : "border-border hover:bg-muted"
                                     )}
                                 >
-                                    <CheckCircle2 className="h-3.5 w-3.5" strokeWidth={1.5} />
-                                    Verified Only
+                                    {CREATIVE_TYPE_ICONS[type]} {type}
                                 </button>
+                            ))}
+
+                            {/* Sort dropdown */}
+                            <div className="relative" ref={sortRef}>
+                                <button
+                                    onClick={() => setShowSortMenu(v => !v)}
+                                    className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md border border-border hover:bg-muted transition-colors"
+                                >
+                                    <ArrowUpDown className="h-3 w-3" strokeWidth={2} />
+                                    {currentSortLabel}
+                                </button>
+                                <AnimatePresence>
+                                    {showSortMenu && (
+                                        <motion.div
+                                            initial={{ opacity: 0, scale: 0.95, y: -4 }}
+                                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                                            exit={{ opacity: 0, scale: 0.95, y: -4 }}
+                                            transition={{ duration: 0.12 }}
+                                            className="absolute right-0 top-full mt-1 w-40 bg-card border border-border rounded-md shadow-lg z-50 py-1 overflow-hidden"
+                                        >
+                                            {SORT_OPTIONS.map(opt => (
+                                                <button
+                                                    key={opt.value}
+                                                    onClick={() => { setSortBy(opt.value); setShowSortMenu(false); }}
+                                                    className={cn(
+                                                        "w-full text-left px-3 py-2 text-xs hover:bg-muted transition-colors",
+                                                        sortBy === opt.value ? "font-semibold text-foreground" : "text-muted-foreground"
+                                                    )}
+                                                >
+                                                    {opt.label}
+                                                </button>
+                                            ))}
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
                             </div>
+
+                            {/* Filters toggle */}
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className={cn("gap-2 text-xs", hasActiveFilters && "border-[hsl(var(--accent))] text-[hsl(var(--accent))]")}
+                                onClick={() => setShowFilters(!showFilters)}
+                            >
+                                <SlidersHorizontal className="h-3.5 w-3.5" strokeWidth={1.5} />
+                                Filters {hasActiveFilters ? "·" : ""}
+                                {hasActiveFilters && (
+                                    <span className="bg-[hsl(var(--accent))] text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px]">
+                                        {[selectedCountry, selectedCategory, verifiedOnly || undefined, minPrice || undefined, maxPrice || undefined].filter(Boolean).length}
+                                    </span>
+                                )}
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+
+                {/* ── Expanded Filters ── */}
+                <AnimatePresence>
+                    {showFilters && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.25 }}
+                            className="mb-6 overflow-hidden"
+                        >
+                            <div className="p-5 border border-border rounded-xl bg-card space-y-5">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                                    {/* Country */}
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Country</label>
+                                        <div className="flex flex-wrap gap-1.5">
+                                            {COUNTRIES.map(country => (
+                                                <button
+                                                    key={country}
+                                                    onClick={() => setSelectedCountry(selectedCountry === country ? null : country)}
+                                                    className={cn(
+                                                        "text-xs px-2.5 py-1 rounded-md border transition-all duration-200",
+                                                        selectedCountry === country
+                                                            ? "bg-foreground text-background border-foreground"
+                                                            : "hover:bg-muted border-border"
+                                                    )}
+                                                >
+                                                    {COUNTRY_FLAGS[country] || "🌍"} {country}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    {/* Category */}
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Category</label>
+                                        <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto scrollbar-hide">
+                                            {CATEGORIES.map(cat => (
+                                                <button
+                                                    key={cat}
+                                                    onClick={() => setSelectedCategory(selectedCategory === cat ? null : cat)}
+                                                    className={cn(
+                                                        "text-xs px-2.5 py-1 rounded-md border transition-all duration-200 whitespace-nowrap",
+                                                        selectedCategory === cat
+                                                            ? "bg-foreground text-background border-foreground"
+                                                            : "hover:bg-muted border-border"
+                                                    )}
+                                                >
+                                                    {cat}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    {/* Price Range */}
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Price Range (USD)</label>
+                                        <div className="flex gap-2 items-center">
+                                            <Input type="number" placeholder="Min" value={minPrice} onChange={e => setMinPrice(e.target.value)} className="h-9 text-sm" />
+                                            <span className="text-muted-foreground text-xs">–</span>
+                                            <Input type="number" placeholder="Max" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} className="h-9 text-sm" />
+                                        </div>
+                                    </div>
+                                    {/* Verification */}
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Verification</label>
+                                        <button
+                                            onClick={() => setVerifiedOnly(!verifiedOnly)}
+                                            className={cn(
+                                                "flex items-center gap-2 text-xs px-3 py-2 rounded-md border transition-all duration-200 w-full",
+                                                verifiedOnly ? "bg-foreground text-background border-foreground" : "hover:bg-muted border-border"
+                                            )}
+                                        >
+                                            <CheckCircle2 className="h-3.5 w-3.5" strokeWidth={1.5} />
+                                            Verified Only
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                {/* ── Gallery Grid ── */}
+                {pagedArtists.length > 0 ? (
+                    <>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {pagedArtists.map((artist, i) => {
+                                const verified = isArtistVerified(artist.id);
+                                const { rating, reviews } = getArtistRating(artist.id, artist.name);
+                                const coverImg = getCoverImage(artist);
+                                const isHovered = hoveredCard === artist.id;
+
+                                return (
+                                    <motion.div
+                                        key={artist.id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.35, delay: i * 0.05 }}
+                                        className="group relative bg-card border border-border rounded-2xl overflow-hidden cursor-pointer"
+                                        style={{
+                                            transform: isHovered ? "translateY(-6px)" : "translateY(0)",
+                                            boxShadow: isHovered
+                                                ? "0 20px 60px rgba(0,0,0,0.15), 0 4px 20px rgba(0,0,0,0.08)"
+                                                : "0 1px 4px rgba(0,0,0,0.04)",
+                                            transition: "transform 0.3s cubic-bezier(.25,.8,.25,1), box-shadow 0.3s cubic-bezier(.25,.8,.25,1)"
+                                        }}
+                                        onMouseEnter={() => setHoveredCard(artist.id)}
+                                        onMouseLeave={() => setHoveredCard(null)}
+                                    >
+                                        {/* ── Cover Image ── */}
+                                        <div className="relative h-52 overflow-hidden">
+                                            <img
+                                                src={coverImg}
+                                                alt={artist.name}
+                                                loading="lazy"
+                                                className="w-full h-full object-cover transition-transform duration-700"
+                                                style={{ transform: isHovered ? "scale(1.06)" : "scale(1)" }}
+                                            />
+                                            {/* Gradient overlay */}
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+
+                                            {/* Creative type badge */}
+                                            <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-black/50 backdrop-blur-sm text-white text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full capitalize">
+                                                {CREATIVE_TYPE_ICONS[artist.creativeType]}
+                                                {artist.creativeType}
+                                            </div>
+
+                                            {/* Verified badge */}
+                                            {verified && (
+                                                <div className="absolute top-3 right-3">
+                                                    <VerificationBadge size={16} />
+                                                </div>
+                                            )}
+
+                                            {/* Bottom of cover: avatar + name */}
+                                            <div className="absolute bottom-3 left-4 flex items-center gap-3">
+                                                <img
+                                                    src={artist.avatar}
+                                                    alt={artist.name}
+                                                    className="w-10 h-10 rounded-full object-cover ring-2 ring-white/80 flex-shrink-0"
+                                                />
+                                                <div>
+                                                    <p className="text-white font-semibold text-sm leading-tight">{artist.name}</p>
+                                                    <p className="text-white/70 text-xs flex items-center gap-1">
+                                                        <MapPin className="h-2.5 w-2.5" strokeWidth={1.5} />
+                                                        {artist.location}, {COUNTRY_FLAGS[artist.country] || ""} {artist.country}
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            {/* Hover portfolio strip */}
+                                            <AnimatePresence>
+                                                {isHovered && artist.portfolioImages?.length > 1 && (
+                                                    <motion.div
+                                                        initial={{ opacity: 0, y: 8 }}
+                                                        animate={{ opacity: 1, y: 0 }}
+                                                        exit={{ opacity: 0, y: 8 }}
+                                                        transition={{ duration: 0.2 }}
+                                                        className="absolute bottom-0 left-0 right-0 flex gap-0.5 p-0.5"
+                                                    >
+                                                        {artist.portfolioImages.slice(1).map((img, idx) => (
+                                                            <div key={idx} className="flex-1 h-12 overflow-hidden rounded">
+                                                                <img
+                                                                    src={img}
+                                                                    alt="portfolio"
+                                                                    className="w-full h-full object-cover"
+                                                                    loading="lazy"
+                                                                />
+                                                            </div>
+                                                        ))}
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
+                                        </div>
+
+                                        {/* ── Card Body ── */}
+                                        <div className="p-4 space-y-3">
+                                            {/* Categories */}
+                                            <div className="flex flex-wrap gap-1">
+                                                {artist.categories.map(cat => (
+                                                    <span
+                                                        key={cat}
+                                                        className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 bg-muted text-muted-foreground rounded-md"
+                                                    >
+                                                        {cat}
+                                                    </span>
+                                                ))}
+                                            </div>
+
+                                            {/* Bio */}
+                                            <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                                                {artist.bio}
+                                            </p>
+
+                                            {/* Footer: rating + price + actions */}
+                                            <div className="flex items-center justify-between pt-2 border-t border-border">
+                                                <div className="flex items-center gap-3">
+                                                    {/* Rating */}
+                                                    <div className="flex items-center gap-1">
+                                                        <Star className="h-3 w-3 fill-[hsl(var(--accent))] text-[hsl(var(--accent))]" strokeWidth={0} />
+                                                        <span className="text-xs font-semibold">{rating}</span>
+                                                        <span className="text-[10px] text-muted-foreground">({reviews})</span>
+                                                    </div>
+                                                    {/* Price */}
+                                                    <div className="text-xs text-muted-foreground">
+                                                        from <span className="font-bold text-foreground text-sm">${artist.startingPrice}</span>
+                                                    </div>
+                                                </div>
+
+                                                {/* Actions */}
+                                                <div className="flex gap-1.5">
+                                                    <Link to={`/artist/${artist.id}`}>
+                                                        <Button variant="outline" size="sm" className="text-[11px] h-7 px-2.5">
+                                                            Profile
+                                                        </Button>
+                                                    </Link>
+                                                    <Link to={`/hire/${artist.id}`}>
+                                                        <Button size="sm" className="text-[11px] h-7 px-2.5">
+                                                            Hire
+                                                        </Button>
+                                                    </Link>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                );
+                            })}
+                        </div>
+
+                        {/* ── Pagination ── */}
+                        {totalPages > 1 && (
+                            <div className="flex items-center justify-center gap-3 mt-12">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setPage(p => Math.max(1, p - 1))}
+                                    disabled={page === 1}
+                                    className="gap-1.5 text-xs"
+                                >
+                                    <ChevronLeft className="h-3.5 w-3.5" /> Prev
+                                </Button>
+                                <div className="flex items-center gap-1.5">
+                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                                        <button
+                                            key={p}
+                                            onClick={() => setPage(p)}
+                                            className={cn(
+                                                "w-8 h-8 rounded-full text-xs font-medium transition-all",
+                                                p === page
+                                                    ? "bg-foreground text-background"
+                                                    : "hover:bg-muted text-muted-foreground"
+                                            )}
+                                        >
+                                            {p}
+                                        </button>
+                                    ))}
+                                </div>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                                    disabled={page === totalPages}
+                                    className="gap-1.5 text-xs"
+                                >
+                                    Next <ChevronRight className="h-3.5 w-3.5" />
+                                </Button>
+                            </div>
+                        )}
+                    </>
+                ) : (
+                    /* ── Empty State ── */
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.97 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="py-24 flex flex-col items-center text-center space-y-5 max-w-sm mx-auto"
+                    >
+                        <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
+                            <Search className="h-7 w-7 text-muted-foreground" strokeWidth={1.2} />
+                        </div>
+                        <div className="space-y-2">
+                            <p className="text-lg font-semibold">No creatives found</p>
+                            <p className="text-sm text-muted-foreground leading-relaxed">
+                                We couldn't find any creatives matching your search. Try adjusting your filters or explore all available talent.
+                            </p>
+                        </div>
+                        <div className="flex gap-2 pt-2">
+                            <Button variant="outline" onClick={clearFilters} className="text-xs">
+                                Clear all filters
+                            </Button>
+                            <Button onClick={() => { setSearchQuery(""); setShowFilters(false); }} className="text-xs">
+                                Browse all
+                            </Button>
                         </div>
                     </motion.div>
-                )}
-
-                {/* Creative Cards */}
-                {filteredArtists.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                        {filteredArtists.map((artist, i) => {
-                            const verified = isArtistVerified(artist.id);
-                            return (
-                                <motion.div
-                                    key={artist.id}
-                                    initial={{ opacity: 0, y: 16 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.3, delay: i * 0.04 }}
-                                    className="group bg-card border border-border rounded-lg p-6 card-hover flex flex-col gap-4"
-                                >
-                                    <div className="flex items-start gap-4">
-                                        <img
-                                            src={artist.avatar}
-                                            alt={artist.name}
-                                            className="w-14 h-14 rounded-full object-cover ring-2 ring-sand-100 dark:ring-sand-900 flex-shrink-0"
-                                        />
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center gap-2">
-                                                <h3 className="font-sans font-semibold text-base truncate">{artist.name}</h3>
-                                                {verified && <VerificationBadge size={14} />}
-                                            </div>
-                                            <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
-                                                <MapPin className="h-3 w-3 flex-shrink-0" strokeWidth={1.5} />
-                                                <span className="truncate">{artist.location}</span>
-                                                <span className="mx-0.5">·</span>
-                                                <Globe className="h-3 w-3 flex-shrink-0" strokeWidth={1.5} />
-                                                <span>{COUNTRY_FLAGS[artist.country] || ""} {artist.country}</span>
-                                            </div>
-                                            <div className="flex items-center gap-1 mt-1.5">
-                                                <Star className="h-3 w-3 fill-sand-400 text-sand-400" strokeWidth={0} />
-                                                <span className="text-xs font-medium">
-                                                    {(4.5 + (artist.name.length % 5) * 0.1).toFixed(1)}
-                                                </span>
-                                                <span className="text-xs text-muted-foreground">
-                                                    ({(artist.name.charCodeAt(0) % 80) + 20})
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex flex-wrap gap-1">
-                                        {artist.categories.map(cat => (
-                                            <span key={cat} className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 bg-sand-50 text-sand-700 dark:bg-sand-900/20 dark:text-sand-400 rounded">
-                                                {cat}
-                                            </span>
-                                        ))}
-                                    </div>
-
-                                    <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">{artist.bio}</p>
-
-                                    <div className="flex items-center justify-between pt-4 border-t border-border mt-auto">
-                                        <div>
-                                            <span className="text-[10px] text-muted-foreground uppercase tracking-wider">From</span>
-                                            <p className="text-lg font-sans font-bold">
-                                                ${artist.startingPrice}
-                                                <span className="text-xs font-sans font-normal text-muted-foreground ml-1">{artist.currency}</span>
-                                            </p>
-                                        </div>
-                                        <div className="flex gap-2">
-                                            <Link to={`/artist/${artist.id}`}>
-                                                <Button variant="outline" size="sm" className="text-xs">Profile</Button>
-                                            </Link>
-                                            <Link to={`/hire/${artist.id}`}>
-                                                <Button size="sm" className="text-xs">Hire</Button>
-                                            </Link>
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            );
-                        })}
-                    </div>
-                ) : (
-                    <div className="py-32 text-center space-y-4 text-muted-foreground">
-                        <Globe size={40} strokeWidth={1} className="mx-auto opacity-20" />
-                        <p className="font-sans text-lg font-semibold text-foreground">No creatives found</p>
-                        <p className="text-sm">Try adjusting your filters or search terms.</p>
-                        <Button variant="outline" onClick={clearFilters} className="mt-2 text-xs">Clear all filters</Button>
-                    </div>
                 )}
             </div>
         </div>
