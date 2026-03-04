@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import {
     Search, SlidersHorizontal, MapPin, Star, CheckCircle2, X,
     Camera, Video, Blend, ChevronLeft, ChevronRight, ArrowUpDown,
-    Sparkles
+    Sparkles, Globe
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -13,6 +13,8 @@ import { BadgePill } from "../components/ui/BadgePill";
 import { isArtistVerified } from "../lib/verification";
 import { cn } from "../lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { computeCreativeScore } from "../lib/creativeScore";
+
 
 const COUNTRY_FLAGS: Record<string, string> = {
     "Tunisia": "🇹🇳", "France": "🇫🇷", "UAE": "🇦🇪", "United Kingdom": "🇬🇧",
@@ -56,11 +58,13 @@ export function Photographers() {
     const [minPrice, setMinPrice] = useState("");
     const [maxPrice, setMaxPrice] = useState("");
     const [verifiedOnly, setVerifiedOnly] = useState(false);
+    const [intlOnly, setIntlOnly] = useState(false);
     const [showFilters, setShowFilters] = useState(false);
     const [sortBy, setSortBy] = useState("relevance");
     const [showSortMenu, setShowSortMenu] = useState(false);
     const [page, setPage] = useState(1);
     const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+
 
     const searchRef = useRef<HTMLDivElement>(null);
     const sortRef = useRef<HTMLDivElement>(null);
@@ -104,29 +108,57 @@ export function Photographers() {
             const matchesCategory = !selectedCategory || artist.categories.includes(selectedCategory);
             const matchesType = !selectedType || artist.creativeType === selectedType || (selectedType === "both" && artist.creativeType === "both");
             const matchesVerified = !verifiedOnly || isArtistVerified(artist.id);
+            const matchesIntl = !intlOnly || artist.internationalAvailable === true;
             const min = minPrice ? parseInt(minPrice) : 0;
             const max = maxPrice ? parseInt(maxPrice) : Infinity;
             const matchesPrice = artist.startingPrice >= min && artist.startingPrice <= max;
-            return matchesSearch && matchesCountry && matchesCategory && matchesType && matchesVerified && matchesPrice;
+            return matchesSearch && matchesCountry && matchesCategory && matchesType && matchesVerified && matchesIntl && matchesPrice;
         });
 
         // Sorting
-        if (sortBy === "price_asc") list = [...list].sort((a, b) => a.startingPrice - b.startingPrice);
+        if (sortBy === "relevance") {
+            // Use creative score algorithm for internal relevance ranking
+            list = [...list].sort((a, b) => {
+                const scoreA = computeCreativeScore({
+                    rating: getArtistRating(a.id, a.name).rating,
+                    reviewCount: getArtistRating(a.id, a.name).reviews,
+                    jobsCompleted: a.stats?.jobsCompleted,
+                    successRate: a.stats?.successRate,
+                    avgResponseHours: a.stats?.avgResponseHours,
+                    portfolioCount: a.portfolioImages?.length,
+                    badgeLevel: a.badgeLevel,
+                });
+                const scoreB = computeCreativeScore({
+                    rating: getArtistRating(b.id, b.name).rating,
+                    reviewCount: getArtistRating(b.id, b.name).reviews,
+                    jobsCompleted: b.stats?.jobsCompleted,
+                    successRate: b.stats?.successRate,
+                    avgResponseHours: b.stats?.avgResponseHours,
+                    portfolioCount: b.portfolioImages?.length,
+                    badgeLevel: b.badgeLevel,
+                });
+                return scoreB - scoreA;
+            });
+        } else if (sortBy === "price_asc") list = [...list].sort((a, b) => a.startingPrice - b.startingPrice);
         else if (sortBy === "price_desc") list = [...list].sort((a, b) => b.startingPrice - a.startingPrice);
         else if (sortBy === "rating_desc") list = [...list].sort((a, b) => getArtistRating(b.id, b.name).rating - getArtistRating(a.id, a.name).rating);
 
         return list;
-    }, [searchQuery, selectedCountry, selectedCategory, selectedType, verifiedOnly, minPrice, maxPrice, sortBy]);
+    }, [searchQuery, selectedCountry, selectedCategory, selectedType, verifiedOnly, intlOnly, minPrice, maxPrice, sortBy]);
+
+
 
     const totalPages = Math.ceil(filteredArtists.length / PAGE_SIZE);
     const pagedArtists = filteredArtists.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
     const clearFilters = () => {
         setSelectedCountry(null); setSelectedCategory(null); setSelectedType(null);
-        setMinPrice(""); setMaxPrice(""); setVerifiedOnly(false); setSearchQuery(""); setPage(1);
+        setMinPrice(""); setMaxPrice(""); setVerifiedOnly(false); setIntlOnly(false); setSearchQuery(""); setPage(1);
     };
 
-    const hasActiveFilters = !!(selectedCountry || selectedCategory || selectedType || verifiedOnly || minPrice || maxPrice);
+
+    const hasActiveFilters = !!(selectedCountry || selectedCategory || selectedType || verifiedOnly || intlOnly || minPrice || maxPrice);
+
     const currentSortLabel = SORT_OPTIONS.find(s => s.value === sortBy)?.label ?? "Relevance";
 
     // Reset page on filter/sort change
@@ -401,7 +433,19 @@ export function Photographers() {
                                             <CheckCircle2 className="h-3.5 w-3.5" strokeWidth={1.5} />
                                             Verified Only
                                         </button>
+                                        {/* International filter */}
+                                        <button
+                                            onClick={() => setIntlOnly(!intlOnly)}
+                                            className={cn(
+                                                "flex items-center gap-2 text-xs px-3 py-2 rounded-md border transition-all duration-200 w-full mt-1",
+                                                intlOnly ? "bg-blue-500 text-white border-blue-500" : "hover:bg-muted border-border"
+                                            )}
+                                        >
+                                            <Globe className="h-3.5 w-3.5" strokeWidth={1.5} />
+                                            International Available
+                                        </button>
                                     </div>
+
                                 </div>
                             </div>
                         </motion.div>

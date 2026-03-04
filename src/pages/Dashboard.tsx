@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { Zap, Briefcase, ChevronRight, CheckCircle2, XCircle, AlertCircle, PlusCircle, ShieldCheck, Clock } from "lucide-react";
+import { Zap, Briefcase, ChevronRight, CheckCircle2, XCircle, AlertCircle, PlusCircle, ShieldCheck, Clock, Globe, Tag } from "lucide-react";
 import { motion } from "framer-motion";
 import { useMarketplace } from "../context/MarketplaceContext";
 import { useAuth } from "../context/AuthContext";
@@ -12,6 +12,29 @@ import {
     type VerificationRequest,
 } from "../lib/verification";
 
+// ── Style Tags config ──────────────────────────────────────────────────────────
+const ALL_STYLE_TAGS = [
+    'Street', 'Documentary', 'Black & White', 'Cinematic', 'Wedding', 'Romantic',
+    'Fine Art', 'Fashion', 'Editorial', 'Luxury', 'Portrait', 'Commercial',
+    'Landscape', 'Aerial', 'Golden Hour', 'Architecture', 'Cityscape', 'Twilight',
+    'Food', 'Lifestyle', 'Warm Tones', 'Brand Video', 'Social Media', 'Music Video',
+    'Drone', 'Emotional', 'Minimalist', 'Moody', 'Vibrant',
+];
+
+function getStoredIntl(userId: string): boolean {
+    try { return localStorage.getItem(`tl_intl_${userId}`) === 'true'; } catch { return false; }
+}
+function setStoredIntl(userId: string, val: boolean) {
+    localStorage.setItem(`tl_intl_${userId}`, val ? 'true' : 'false');
+}
+function getStoredStyleTags(userId: string): string[] {
+    try { return JSON.parse(localStorage.getItem(`tl_style_tags_${userId}`) || '[]'); } catch { return []; }
+}
+function setStoredStyleTags(userId: string, tags: string[]) {
+    localStorage.setItem(`tl_style_tags_${userId}`, JSON.stringify(tags));
+}
+
+// ── Sub-components ─────────────────────────────────────────────────────────────
 function StatusBadge({ status }: { status: 'pending' | 'accepted' | 'rejected' }) {
     const config = {
         pending: { icon: AlertCircle, label: 'Pending', cls: 'text-sand-700 bg-sand-50 border-sand-200 dark:text-sand-400 dark:bg-sand-900/20 dark:border-sand-800' },
@@ -31,12 +54,31 @@ function formatDate(iso: string): string {
     return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
+// ── Main Component ─────────────────────────────────────────────────────────────
 export function Dashboard() {
     const { user, isAuthenticated } = useAuth();
     const { jobs, getMyApplications, getJobApplications, getConnects } = useMarketplace();
     const [showRequestForm, setShowRequestForm] = useState(false);
     const [requestMsg, setRequestMsg] = useState('');
     const [requestSent, setRequestSent] = useState(false);
+
+    // International toggle & style tags (creative only)
+    const [intlAvailable, setIntlAvailable] = useState(() => user ? getStoredIntl(user.id) : false);
+    const [styleTags, setStyleTags] = useState<string[]>(() => user ? getStoredStyleTags(user.id) : []);
+
+    const handleIntlToggle = () => {
+        if (!user) return;
+        const next = !intlAvailable;
+        setIntlAvailable(next);
+        setStoredIntl(user.id, next);
+    };
+
+    const handleTagToggle = (tag: string) => {
+        if (!user) return;
+        const next = styleTags.includes(tag) ? styleTags.filter(t => t !== tag) : [...styleTags, tag];
+        setStyleTags(next);
+        setStoredStyleTags(user.id, next);
+    };
 
     if (!isAuthenticated || !user) {
         return (
@@ -303,6 +345,53 @@ export function Dashboard() {
                                         );
                                     })}
                                 </div>
+                            </div>
+
+                            {/* ── INTERNATIONAL AVAILABILITY TOGGLE ── */}
+                            <div className="border border-border rounded-lg p-6 bg-card">
+                                <div className="flex items-center justify-between gap-4">
+                                    <div className="flex items-center gap-3">
+                                        <Globe className={`h-5 w-5 flex-shrink-0 ${intlAvailable ? 'text-blue-500' : 'text-muted-foreground'}`} strokeWidth={1.5} />
+                                        <div>
+                                            <p className="text-sm font-semibold">Available for International Projects</p>
+                                            <p className="text-xs text-muted-foreground mt-0.5">
+                                                {intlAvailable ? "Shown on your profile — clients worldwide can see you're open." : 'Toggle on to advertise global availability.'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={handleIntlToggle}
+                                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 focus:outline-none border ${intlAvailable ? 'bg-blue-500 border-blue-500' : 'bg-muted border-border'}`}
+                                    >
+                                        <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform duration-300 ${intlAvailable ? 'translate-x-6' : 'translate-x-1'}`} />
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* ── STYLE TAGS ── */}
+                            <div className="border border-border rounded-lg p-6 bg-card space-y-4">
+                                <div className="flex items-center gap-2">
+                                    <Tag className="h-4 w-4 text-sand-500" strokeWidth={1.5} />
+                                    <h2 className="font-sans font-semibold">Style Tags</h2>
+                                </div>
+                                <p className="text-xs text-muted-foreground">Select the styles that describe your work. These are shown on your public profile.</p>
+                                <div className="flex flex-wrap gap-2">
+                                    {ALL_STYLE_TAGS.map(tag => (
+                                        <button
+                                            key={tag}
+                                            onClick={() => handleTagToggle(tag)}
+                                            className={`text-xs px-3 py-1.5 rounded-full border font-medium transition-all duration-200 ${styleTags.includes(tag)
+                                                ? 'bg-foreground text-background border-foreground'
+                                                : 'bg-muted text-muted-foreground border-border hover:border-foreground/30 hover:text-foreground'
+                                                }`}
+                                        >
+                                            {tag}
+                                        </button>
+                                    ))}
+                                </div>
+                                {styleTags.length > 0 && (
+                                    <p className="text-xs text-muted-foreground">{styleTags.length} tag{styleTags.length !== 1 ? 's' : ''} selected</p>
+                                )}
                             </div>
                         </div>
                     )}
