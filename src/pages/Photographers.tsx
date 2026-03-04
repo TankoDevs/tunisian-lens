@@ -10,6 +10,8 @@ import { Input } from "../components/ui/input";
 import { ARTISTS, COUNTRIES, CATEGORIES } from "../data/mockData";
 import { VerificationBadge } from "../components/ui/VerificationBadge";
 import { BadgePill } from "../components/ui/BadgePill";
+import { Skeleton } from "../components/ui/Skeleton";
+import { Tooltip } from "../components/ui/Tooltip";
 import { isArtistVerified } from "../lib/verification";
 import { cn } from "../lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
@@ -64,7 +66,13 @@ export function Photographers() {
     const [showSortMenu, setShowSortMenu] = useState(false);
     const [page, setPage] = useState(1);
     const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
+    // Simulate network delay for skeletons
+    useEffect(() => {
+        const timer = setTimeout(() => setIsLoading(false), 800);
+        return () => clearTimeout(timer);
+    }, []);
 
     const searchRef = useRef<HTMLDivElement>(null);
     const sortRef = useRef<HTMLDivElement>(null);
@@ -199,10 +207,10 @@ export function Photographers() {
                         className="max-w-xl mx-auto relative"
                         ref={searchRef}
                     >
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none z-10" strokeWidth={1.5} />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none z-10" />
                         <Input
-                            placeholder="Search by name, style, or country…"
-                            className="pl-11 h-13 text-sm h-12 pr-10 shadow-sm"
+                            placeholder="Search by name, style, location…"
+                            className="pl-12 h-14 text-base md:text-sm pr-10 shadow-sm rounded-xl"
                             value={searchQuery}
                             onChange={e => { setSearchQuery(e.target.value); setShowSuggestions(true); }}
                             onFocus={() => setShowSuggestions(true)}
@@ -305,13 +313,12 @@ export function Photographers() {
                                 </button>
                             ))}
 
-                            {/* Sort dropdown */}
                             <div className="relative" ref={sortRef}>
                                 <button
                                     onClick={() => setShowSortMenu(v => !v)}
-                                    className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md border border-border hover:bg-muted transition-colors"
+                                    className="flex items-center gap-2 text-sm md:text-xs px-4 py-2 bg-background rounded-full border border-border hover:bg-muted transition-colors shadow-sm"
                                 >
-                                    <ArrowUpDown className="h-3 w-3" strokeWidth={2} />
+                                    <ArrowUpDown className="h-4 w-4 md:h-3 md:w-3" strokeWidth={2} />
                                     {currentSortLabel}
                                 </button>
                                 <AnimatePresence>
@@ -344,10 +351,10 @@ export function Photographers() {
                             <Button
                                 variant="outline"
                                 size="sm"
-                                className={cn("gap-2 text-xs", hasActiveFilters && "border-[hsl(var(--accent))] text-[hsl(var(--accent))]")}
+                                className={cn("gap-2 text-sm md:text-xs h-9 md:h-8 rounded-full px-4 shadow-sm", hasActiveFilters && "border-[hsl(var(--accent))] text-[hsl(var(--accent))] bg-[hsl(var(--accent))]/5")}
                                 onClick={() => setShowFilters(!showFilters)}
                             >
-                                <SlidersHorizontal className="h-3.5 w-3.5" strokeWidth={1.5} />
+                                <SlidersHorizontal className="h-4 w-4 md:h-3.5 md:w-3.5" strokeWidth={1.5} />
                                 Filters {hasActiveFilters ? "·" : ""}
                                 {hasActiveFilters && (
                                     <span className="bg-[hsl(var(--accent))] text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px]">
@@ -453,7 +460,41 @@ export function Photographers() {
                 </AnimatePresence>
 
                 {/* ── Gallery Grid ── */}
-                {pagedArtists.length > 0 ? (
+                {isLoading ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {Array.from({ length: 9 }).map((_, i) => (
+                            <div key={i} className="group relative bg-card rounded-2xl overflow-hidden border border-border">
+                                {/* Image Area */}
+                                <div className="relative aspect-[4/3] w-full">
+                                    <Skeleton className="w-full h-full" />
+                                </div>
+                                {/* Content Area */}
+                                <div className="p-5">
+                                    <div className="flex justify-between items-start mb-3">
+                                        <div className="flex items-center gap-3">
+                                            <Skeleton className="h-10 w-10 rounded-full" />
+                                            <div className="space-y-2">
+                                                <Skeleton className="h-4 w-32" />
+                                                <Skeleton className="h-3 w-20" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="mt-4 flex flex-wrap gap-2">
+                                        <Skeleton className="h-6 w-16 rounded-full" />
+                                        <Skeleton className="h-6 w-16 rounded-full" />
+                                    </div>
+                                    <div className="mt-5 pt-4 border-t border-border/50 flex items-center justify-between">
+                                        <Skeleton className="h-4 w-24" />
+                                        <div className="flex gap-2">
+                                            <Skeleton className="h-8 w-8 rounded-full" />
+                                            <Skeleton className="h-8 w-16 rounded-full" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : pagedArtists.length > 0 ? (
                     <>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             {pagedArtists.map((artist, i) => {
@@ -573,11 +614,13 @@ export function Photographers() {
                                             <div className="flex items-center justify-between pt-2 border-t border-border">
                                                 <div className="flex items-center gap-3">
                                                     {/* Rating */}
-                                                    <div className="flex items-center gap-1">
-                                                        <Star className="h-3 w-3 fill-[hsl(var(--accent))] text-[hsl(var(--accent))]" strokeWidth={0} />
-                                                        <span className="text-xs font-semibold">{rating}</span>
-                                                        <span className="text-[10px] text-muted-foreground">({reviews})</span>
-                                                    </div>
+                                                    <Tooltip content={`${reviews} verified client reviews`}>
+                                                        <div className="flex items-center gap-1 cursor-help">
+                                                            <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" strokeWidth={0} />
+                                                            <span className="text-sm font-bold text-foreground">{rating}</span>
+                                                            <span className="text-[10px] sm:text-xs text-muted-foreground font-medium">({reviews} reviews)</span>
+                                                        </div>
+                                                    </Tooltip>
                                                     {/* Price */}
                                                     <div className="text-xs text-muted-foreground">
                                                         from <span className="font-bold text-foreground text-sm">${artist.startingPrice}</span>
@@ -585,14 +628,14 @@ export function Photographers() {
                                                 </div>
 
                                                 {/* Actions */}
-                                                <div className="flex gap-1.5">
+                                                <div className="flex gap-2">
                                                     <Link to={`/artist/${artist.id}`}>
-                                                        <Button variant="outline" size="sm" className="text-[11px] h-7 px-2.5">
-                                                            Profile
+                                                        <Button variant="outline" size="sm" className="text-xs h-8 px-3">
+                                                            View Profile
                                                         </Button>
                                                     </Link>
                                                     <Link to={`/hire/${artist.id}`}>
-                                                        <Button size="sm" className="text-[11px] h-7 px-2.5">
+                                                        <Button size="sm" className="text-xs h-8 px-3 font-semibold shadow-sm">
                                                             Hire
                                                         </Button>
                                                     </Link>

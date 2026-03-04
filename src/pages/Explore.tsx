@@ -4,13 +4,14 @@ import { CATEGORIES, COUNTRIES } from "../data/mockData";
 import { ProjectCard } from "../components/ui/ProjectCard";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
+import { Skeleton } from "../components/ui/Skeleton";
 import { cn } from "../lib/utils";
 import { useProjects } from "../context/ProjectContext";
 import { isArtistVerified } from "../lib/verification";
 import { Link } from "react-router-dom";
 
 export function Explore() {
-    const { publicProjects, deleteProject } = useProjects();
+    const { publicProjects, deleteProject, isLoading } = useProjects();
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
@@ -120,7 +121,20 @@ export function Explore() {
 
                 {/* Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                    {filteredProjects.length > 0 ? (
+                    {isLoading ? (
+                        Array.from({ length: 8 }).map((_, i) => (
+                            <div key={i} className="space-y-3">
+                                <Skeleton className="w-full aspect-square rounded-xl" />
+                                <div className="flex items-center gap-3">
+                                    <Skeleton className="h-8 w-8 rounded-full" />
+                                    <div className="space-y-1">
+                                        <Skeleton className="h-4 w-24" />
+                                        <Skeleton className="h-3 w-16" />
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    ) : filteredProjects.length > 0 ? (
                         filteredProjects.map((project) => (
                             <ProjectCard
                                 key={project.id}
@@ -136,12 +150,17 @@ export function Explore() {
                         <div className="col-span-full py-32 flex flex-col items-center gap-6 text-center text-muted-foreground">
                             <Camera size={40} strokeWidth={1} className="opacity-20" />
                             <div>
-                                <p className="font-sans text-xl font-semibold text-foreground">No work here yet</p>
-                                <p className="text-sm mt-2">Be the first to share your photography.</p>
+                                <p className="font-sans text-xl font-bold text-foreground">Nothing to see here... yet.</p>
+                                <p className="text-sm mt-2 max-w-sm mx-auto">This gallery is waiting for its first masterpiece. If you're a creative, this is your chance to stand out.</p>
                             </div>
-                            <Link to="/submit">
-                                <Button className="mt-2">Submit Your Work</Button>
-                            </Link>
+                            <div className="flex gap-3">
+                                <Link to="/photographers">
+                                    <Button variant="outline">Find Creatives</Button>
+                                </Link>
+                                <Link to="/submit">
+                                    <Button>Submit Your Work</Button>
+                                </Link>
+                            </div>
                         </div>
                     ) : (
                         <div className="col-span-full py-24 text-center text-muted-foreground">

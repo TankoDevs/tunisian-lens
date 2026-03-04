@@ -1,12 +1,14 @@
 import { useState, useMemo } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { ArrowLeft, Briefcase, Lock, ShieldCheck, Zap, Info } from "lucide-react";
+import { ArrowLeft, Briefcase, Lock, ShieldCheck, Info } from "lucide-react";
 import { motion } from "framer-motion";
 import { useMarketplace } from "../context/MarketplaceContext";
 import { useAuth } from "../context/AuthContext";
+import { useAlert } from "../context/AlertContext";
 import { useTunisianAccess } from "../lib/useTunisianAccess";
 import { JOB_CATEGORIES, PHOTO_CATEGORIES, VIDEO_CATEGORIES, type CreativeType } from "../data/mockData";
 import { Button } from "../components/ui/button";
+import { cn } from "../lib/utils";
 
 // Smart budget guidance lookup
 const BUDGET_RANGES: Record<string, [number, number]> = {
@@ -44,10 +46,10 @@ export function PostJob() {
         connectsRequired: 4,
         verifiedOnly: false,
         creativeTypeRequired: 'both' as CreativeType,
-        isUrgent: false,
+        plan: 'standard' as 'standard' | 'featured' | 'urgent',
     });
     const [submitted, setSubmitted] = useState(false);
-    const [error, setError] = useState('');
+    const { showAlert } = useAlert();
 
     const budgetRange = useMemo(() => BUDGET_RANGES[form.category], [form.category]);
 
@@ -90,9 +92,8 @@ export function PostJob() {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        setError('');
         if (!form.title.trim() || !form.description.trim() || !form.budget || !form.deadline) {
-            setError('Please fill in all required fields.');
+            showAlert('Please fill in all required fields.', 'error');
             return;
         }
         postJob({
@@ -107,7 +108,7 @@ export function PostJob() {
             connectsRequired: form.connectsRequired,
             verifiedOnly: form.verifiedOnly,
             creativeTypeRequired: form.creativeTypeRequired,
-            isUrgent: form.isUrgent,
+            isUrgent: form.plan === 'urgent',
         });
         setSubmitted(true);
         setTimeout(() => navigate('/jobs'), 1800);
@@ -142,7 +143,7 @@ export function PostJob() {
                     transition={{ duration: 0.4 }}
                 >
                     <h1 className="font-sans text-3xl font-bold mb-1">Post a Job</h1>
-                    <p className="text-muted-foreground mb-8">Verified creatives will apply using their Connects.</p>
+                    <p className="text-muted-foreground mb-8">Reach the best creatives in Tunisia.</p>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {/* Title */}
@@ -258,6 +259,9 @@ export function PostJob() {
                             </label>
                         </div>
 
+                        <hr className="border-border my-8" />
+                        <h2 className="font-sans text-xl font-bold mb-4">Visibility & Requirements</h2>
+
                         {/* Deadline */}
                         <div className="space-y-1.5">
                             <label className="text-sm font-medium">Deadline <span className="text-red-500">*</span></label>
@@ -271,46 +275,111 @@ export function PostJob() {
                         </div>
 
                         {/* Connects Required */}
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium">
-                                Connects Required to Apply
-                                <span className="ml-2 text-amber-600 font-bold">{form.connectsRequired}</span>
-                            </label>
-                            <p className="text-xs text-muted-foreground">Higher connects = fewer but more serious applicants. Recommended: 2–6.</p>
+                        <div className="space-y-3 p-5 rounded-xl border border-border bg-muted/20">
+                            <div className="flex justify-between items-center mb-1">
+                                <label className="text-sm font-semibold flex items-center gap-2">
+                                    Connects Required to Apply
+                                </label>
+                                <span className="bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-500 font-bold px-3 py-1 rounded-md text-sm shadow-sm border border-amber-200 dark:border-amber-900/50">
+                                    {form.connectsRequired} Connect{form.connectsRequired > 1 ? 's' : ''}
+                                </span>
+                            </div>
+
+                            <p className="text-xs text-muted-foreground leading-relaxed">
+                                Connects are the platform currency creatives use to apply for jobs. Requiring more connects acts as a filter, ensuring only highly motivated and suitable creatives apply to your job.
+                                <br /><span className="mt-1 block"><strong>Recommendation:</strong> 2 for small gigs, up to 6–10 for premium budgets.</span>
+                            </p>
+
                             <input
                                 type="range"
                                 min="1"
                                 max="10"
                                 value={form.connectsRequired}
                                 onChange={e => setForm(f => ({ ...f, connectsRequired: parseInt(e.target.value) }))}
-                                className="w-full accent-amber-500"
+                                className="w-full accent-amber-500 mt-2"
                             />
-                            <div className="flex justify-between text-xs text-muted-foreground">
+                            <div className="flex justify-between text-[11px] font-medium text-muted-foreground">
                                 <span>1 (low barrier)</span>
                                 <span>10 (high barrier)</span>
                             </div>
                         </div>
 
-                        {/* Urgent Job Toggle */}
-                        <div
-                            className={`flex items-start gap-3 p-4 rounded-xl border cursor-pointer select-none transition-colors ${form.isUrgent
-                                    ? 'bg-red-50 dark:bg-red-950/20 border-red-300 dark:border-red-800'
-                                    : 'bg-muted/30 border-border hover:bg-muted/50'
-                                }`}
-                            onClick={() => setForm(f => ({ ...f, isUrgent: !f.isUrgent }))}
-                        >
-                            <Zap className={`h-5 w-5 flex-shrink-0 mt-0.5 ${form.isUrgent ? 'text-red-500' : 'text-muted-foreground'}`} strokeWidth={2} fill={form.isUrgent ? 'currentColor' : 'none'} />
-                            <div className="flex-1">
-                                <p className={`text-sm font-semibold ${form.isUrgent ? 'text-red-600 dark:text-red-400' : 'text-muted-foreground'}`}>
-                                    Urgent — 24h Boost
-                                </p>
-                                <p className="text-xs text-muted-foreground mt-0.5">
-                                    Urgent jobs appear at the top of the listing with a visibility badge.
-                                </p>
+                        {/* Job Visibility Plans */}
+                        <div className="space-y-3 pt-2">
+                            <label className="text-sm font-medium">Select a Visibility Plan</label>
+
+                            {/* Standard Plan */}
+                            <div
+                                className={cn(
+                                    "flex items-start gap-4 p-4 rounded-xl border cursor-pointer select-none transition-all",
+                                    form.plan === 'standard'
+                                        ? "bg-foreground text-background border-foreground"
+                                        : "bg-card hover:bg-muted border-border"
+                                )}
+                                onClick={() => setForm(f => ({ ...f, plan: 'standard' }))}
+                            >
+                                <div className="mt-1">
+                                    <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center", form.plan === 'standard' ? "border-background" : "border-muted-foreground")}>
+                                        {form.plan === 'standard' && <div className="w-2.5 h-2.5 rounded-full bg-background" />}
+                                    </div>
+                                </div>
+                                <div className="flex-1">
+                                    <p className="font-semibold text-base">Standard Listing</p>
+                                    <p className={cn("text-xs mt-1 leading-relaxed", form.plan === 'standard' ? "text-background/80" : "text-muted-foreground")}>
+                                        Your job appears in the standard feed. Free to post for verified clients.
+                                    </p>
+                                </div>
                             </div>
-                            <div className={`w-10 h-5 rounded-full flex-shrink-0 mt-0.5 relative transition-colors ${form.isUrgent ? 'bg-red-500' : 'bg-muted-foreground/30'
-                                }`}>
-                                <div className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${form.isUrgent ? 'translate-x-5' : 'translate-x-0'}`} />
+
+                            {/* Featured Plan */}
+                            <div
+                                className={cn(
+                                    "flex items-start gap-4 p-4 rounded-xl border cursor-pointer select-none transition-all",
+                                    form.plan === 'featured'
+                                        ? "bg-[hsl(var(--accent))]/10 border-[hsl(var(--accent))]"
+                                        : "bg-card hover:bg-muted border-border"
+                                )}
+                                onClick={() => setForm(f => ({ ...f, plan: 'featured' }))}
+                            >
+                                <div className="mt-1">
+                                    <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center", form.plan === 'featured' ? "border-[hsl(var(--accent))]" : "border-muted-foreground")}>
+                                        {form.plan === 'featured' && <div className="w-2.5 h-2.5 rounded-full bg-[hsl(var(--accent))]" />}
+                                    </div>
+                                </div>
+                                <div className="flex-1">
+                                    <div className="flex justify-between items-center">
+                                        <p className={cn("font-semibold text-base", form.plan === 'featured' && "text-[hsl(var(--accent))]")}>Featured Boost</p>
+                                    </div>
+                                    <p className={cn("text-xs mt-1 leading-relaxed text-muted-foreground")}>
+                                        Highlighted styling and pinned higher in search results to attract top-tier talent faster.
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Urgent Plan */}
+                            <div
+                                className={cn(
+                                    "flex items-start gap-4 p-4 rounded-xl border cursor-pointer select-none transition-all",
+                                    form.plan === 'urgent'
+                                        ? "bg-red-50 dark:bg-red-950/20 border-red-500"
+                                        : "bg-card hover:bg-muted border-border"
+                                )}
+                                onClick={() => setForm(f => ({ ...f, plan: 'urgent' }))}
+                            >
+                                <div className="mt-1">
+                                    <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center", form.plan === 'urgent' ? "border-red-500" : "border-muted-foreground")}>
+                                        {form.plan === 'urgent' && <div className="w-2.5 h-2.5 rounded-full bg-red-500" />}
+                                    </div>
+                                </div>
+                                <div className="flex-1">
+                                    <div className="flex flex-wrap items-center gap-2">
+                                        <p className={cn("font-semibold text-base", form.plan === 'urgent' && "text-red-600 dark:text-red-400")}>Urgent Hire</p>
+                                        <span className="text-[10px] uppercase tracking-wider font-bold bg-red-100 text-red-600 px-2 py-0.5 rounded-sm">24h Priority</span>
+                                    </div>
+                                    <p className="text-xs mt-1 leading-relaxed text-muted-foreground">
+                                        Absolute top placement and flagged as urgent. Alerts nearby matching creatives immediately.
+                                    </p>
+                                </div>
                             </div>
                         </div>
 
@@ -336,8 +405,6 @@ export function PostJob() {
                                     }`} />
                             </div>
                         </div>
-
-                        {error && <p className="text-sm text-red-500 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</p>}
 
                         <Button type="submit" className="w-full h-11" size="lg">
                             Post Job

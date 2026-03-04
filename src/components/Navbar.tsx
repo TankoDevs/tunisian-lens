@@ -6,7 +6,6 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
-import { useTunisianAccess } from "../lib/useTunisianAccess";
 import { useChat } from "../context/ChatContext";
 
 export function Navbar() {
@@ -18,7 +17,6 @@ export function Navbar() {
     const { user, isAuthenticated, logout } = useAuth();
     const { theme, toggleTheme } = useTheme();
     const { getConnects } = useMarketplace();
-    const { hasAccess: hasTunisianAccess } = useTunisianAccess();
     const { unreadCount } = useChat();
     const navigate = useNavigate();
     const location = useLocation();
@@ -104,11 +102,9 @@ export function Navbar() {
                     <Link to="/about" className={navLinkClass('/about')}>
                         About
                     </Link>
-                    {hasTunisianAccess && (
-                        <Link to="/jobs" className={navLinkClass('/jobs')}>
-                            Jobs
-                        </Link>
-                    )}
+                    <Link to="/jobs" className={navLinkClass('/jobs')}>
+                        Jobs
+                    </Link>
                 </div>
 
                 {/* Desktop Actions */}
@@ -323,11 +319,9 @@ export function Navbar() {
                             <Link to="/about" className={`block py-2.5 text-sm ${isActive('/about') ? 'text-foreground font-medium' : 'text-muted-foreground'}`} onClick={() => setIsOpen(false)}>
                                 About
                             </Link>
-                            {hasTunisianAccess && (
-                                <Link to="/jobs" className={`block py-2.5 text-sm ${isActive('/jobs') ? 'text-foreground font-medium' : 'text-muted-foreground'}`} onClick={() => setIsOpen(false)}>
-                                    Jobs
-                                </Link>
-                            )}
+                            <Link to="/jobs" className={`block py-2.5 text-sm ${isActive('/jobs') ? 'text-foreground font-medium' : 'text-muted-foreground'}`} onClick={() => setIsOpen(false)}>
+                                Jobs
+                            </Link>
 
                             <div className="border-t border-border mt-4 pt-4 space-y-1">
                                 <Link to="/client-access" className="block py-2.5 text-sm text-muted-foreground" onClick={() => setIsOpen(false)}>

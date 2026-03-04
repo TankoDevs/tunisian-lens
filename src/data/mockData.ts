@@ -63,6 +63,7 @@ export interface Job {
     verifiedOnly?: boolean;
     creativeTypeRequired: CreativeType;
     isUrgent?: boolean;
+    isFeatured?: boolean;
 }
 
 export interface JobApplication {

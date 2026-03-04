@@ -8,6 +8,13 @@ import { useAlert } from "../context/AlertContext";
 import { Captcha } from "../components/ui/Captcha";
 import { type CreativeType } from "../data/mockData";
 
+const TUNISIAN_REGIONS = [
+    "Ariana", "Béja", "Ben Arous", "Bizerte", "Gabès", "Gafsa",
+    "Jendouba", "Kairouan", "Kasserine", "Kébili", "Kef", "Mahdia",
+    "Manouba", "Medenine", "Monastir", "Nabeul", "Sfax", "Sidi Bouzid",
+    "Siliana", "Sousse", "Tataouine", "Tozeur", "Tunis", "Zaghouan"
+];
+
 export function Signup() {
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
@@ -123,7 +130,17 @@ export function Signup() {
                             <>
                                 <div className="space-y-2">
                                     <label htmlFor="city" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">City</label>
-                                    <Input id="city" placeholder="Tunis" value={city} onChange={(e) => setCity(e.target.value)} />
+                                    <select
+                                        id="city"
+                                        value={city}
+                                        onChange={(e) => setCity(e.target.value)}
+                                        className="w-full h-10 px-3 rounded-md border border-border bg-background text-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-sand-400/30 focus:border-sand-400"
+                                    >
+                                        <option value="" disabled>Select a city</option>
+                                        {TUNISIAN_REGIONS.map(region => (
+                                            <option key={region} value={region}>{region}</option>
+                                        ))}
+                                    </select>
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">I am a</label>
@@ -138,8 +155,8 @@ export function Signup() {
                                                 type="button"
                                                 onClick={() => setCreativeType(opt.value)}
                                                 className={`flex-1 h-10 rounded-md border text-sm font-medium transition-all duration-200 ${creativeType === opt.value
-                                                        ? 'bg-foreground text-background border-foreground'
-                                                        : 'border-border hover:bg-accent text-muted-foreground hover:text-foreground'
+                                                    ? 'bg-foreground text-background border-foreground'
+                                                    : 'border-border hover:bg-accent text-muted-foreground hover:text-foreground'
                                                     }`}
                                             >
                                                 {opt.label}
