@@ -1,4 +1,4 @@
-import { ArrowRight, Camera, Video, CheckCircle, Shield, Star, Zap, Users, Crown, TrendingUp, Heart, Package, Cloud, Aperture, Layers } from "lucide-react";
+import { ArrowRight, Camera, Video, CheckCircle, Shield, Star, Zap, Crown, TrendingUp, Heart, Package, Cloud, Aperture, Layers } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { ARTISTS, MOCK_JOBS } from "../data/mockData";

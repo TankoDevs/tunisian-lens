@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Search, PlusCircle, Briefcase, Lock, Zap, SlidersHorizontal, X } from "lucide-react";
+import { Search, PlusCircle, Briefcase, Lock, SlidersHorizontal, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMarketplace } from "../context/MarketplaceContext";
 import { useAuth } from "../context/AuthContext";
