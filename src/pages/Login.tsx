@@ -6,6 +6,7 @@ import { Camera } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useAlert } from "../context/AlertContext";
 import { Captcha } from "../components/ui/Captcha";
+import { PHOTO_CATEGORIES, VIDEO_CATEGORIES } from "../data/mockData";
 
 export function Login() {
     const [email, setEmail] = useState("");
@@ -63,6 +64,70 @@ export function Login() {
                         <Link to="/signup" className="text-sand-600 dark:text-sand-400 hover:underline underline-offset-4">
                             Sign up
                         </Link>
+                    </div>
+
+                    <div className="pt-8 border-t border-border">
+                        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">Quick Demo Login (Testing)</p>
+
+                        <div className="space-y-4">
+                            <div>
+                                <p className="text-xs text-muted-foreground mb-2">Photographers</p>
+                                <div className="flex flex-wrap gap-2">
+                                    {PHOTO_CATEGORIES.map(cat => {
+                                        const email = `${cat.toLowerCase().replace(/[^a-z0-9]/g, '')}@demo.com`;
+                                        return (
+                                            <button
+                                                key={`photo-${cat}`}
+                                                type="button"
+                                                onClick={() => { setEmail(email); setPassword('demo123'); setIsVerified(true); }}
+                                                className="text-[10px] px-2.5 py-1 rounded-full border border-border bg-muted/30 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors"
+                                            >
+                                                {cat}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            <div>
+                                <p className="text-xs text-muted-foreground mb-2">Videographers</p>
+                                <div className="flex flex-wrap gap-2">
+                                    {VIDEO_CATEGORIES.map(cat => {
+                                        const email = `${cat.toLowerCase().replace(/[^a-z0-9]/g, '')}@demo.com`;
+                                        return (
+                                            <button
+                                                key={`video-${cat}`}
+                                                type="button"
+                                                onClick={() => { setEmail(email); setPassword('demo123'); setIsVerified(true); }}
+                                                className="text-[10px] px-2.5 py-1 rounded-full border border-border bg-muted/30 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors"
+                                            >
+                                                {cat}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            <div>
+                                <p className="text-xs text-muted-foreground mb-2">Other Roles</p>
+                                <div className="flex gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => { setEmail('client@tunisianlens.com'); setPassword('client123'); setIsVerified(true); }}
+                                        className="text-[10px] px-2.5 py-1 rounded-full border border-sandbox bg-sand-100 hover:bg-sand-500 hover:text-white transition-colors text-sand-800"
+                                    >
+                                        Client
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => { setEmail('admin@tunisianlens.com'); setPassword('admin123'); setIsVerified(true); }}
+                                        className="text-[10px] px-2.5 py-1 rounded-full border border-red-200 bg-red-50 hover:bg-red-500 hover:text-white transition-colors text-red-800"
+                                    >
+                                        Admin
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

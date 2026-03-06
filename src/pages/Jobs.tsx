@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Search, PlusCircle, Briefcase, Lock, Zap } from "lucide-react";
-import { motion } from "framer-motion";
+import { Search, PlusCircle, Briefcase, Lock, Zap, SlidersHorizontal, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useMarketplace } from "../context/MarketplaceContext";
 import { useAuth } from "../context/AuthContext";
 import { useTunisianAccess } from "../lib/useTunisianAccess";
@@ -10,6 +10,14 @@ import { JobCard } from "../components/ui/JobCard";
 import { ConnectsBadge } from "../components/ui/ConnectsBadge";
 import { Button } from "../components/ui/button";
 import { Skeleton } from "../components/ui/Skeleton";
+import { cn } from "../lib/utils";
+
+const DEADLINE_OPTIONS = [
+    { label: "Any time", value: "" },
+    { label: "This week", value: "7" },
+    { label: "This month", value: "30" },
+    { label: "3 months", value: "90" },
+];
 
 export function Jobs() {
     const { jobs, getConnects, isLoading } = useMarketplace();
@@ -21,10 +29,20 @@ export function Jobs() {
     const [location, setLocation] = useState('');
     const [maxConnects, setMaxConnects] = useState('');
     const [showOpen, setShowOpen] = useState(true);
+    const [deadlineDays, setDeadlineDays] = useState('');
+    const [showFilters, setShowFilters] = useState(false);
 
     const connects = isAuthenticated && user ? getConnects(user.id) : 0;
 
-    // We allow everyone to view jobs, but restrict posting/applying
+    const activeFilterCount = [
+        maxBudget, location, maxConnects, deadlineDays,
+        !showOpen ? 'all' : ''
+    ].filter(Boolean).length;
+
+    const clearFilters = () => {
+        setMaxBudget(''); setLocation(''); setMaxConnects('');
+        setDeadlineDays(''); setShowOpen(true);
+    };
 
     const filtered = jobs.filter(job => {
         if (showOpen && job.status !== 'open') return false;
@@ -32,6 +50,10 @@ export function Jobs() {
         if (maxBudget && job.budget > parseInt(maxBudget)) return false;
         if (location && job.location && !job.location.toLowerCase().includes(location.toLowerCase())) return false;
         if (maxConnects && job.connectsRequired > parseInt(maxConnects)) return false;
+        if (deadlineDays) {
+            const daysUntil = (new Date(job.deadline).getTime() - Date.now()) / 86400000;
+            if (daysUntil > parseInt(deadlineDays)) return false;
+        }
         if (search && !job.title.toLowerCase().includes(search.toLowerCase()) &&
             !job.description.toLowerCase().includes(search.toLowerCase()) &&
             (!job.location || !job.location.toLowerCase().includes(search.toLowerCase()))) return false;
@@ -40,7 +62,6 @@ export function Jobs() {
 
     const showTunisiaRestrictionBanner = !hasAccess && filtered.length > 0;
 
-    // Sort urgent to top
     const sortedJobs = [
         ...filtered.filter(j => j.isUrgent),
         ...filtered.filter(j => !j.isUrgent),
@@ -48,15 +69,15 @@ export function Jobs() {
 
     return (
         <div className="min-h-screen bg-background">
-            {/* Header */}
-            <div className="border-b border-border">
-                <div className="container mx-auto px-6 py-16">
+            {/* ── Header ── */}
+            <div className="border-b border-border bg-background">
+                <div className="container mx-auto px-4 sm:px-6 py-12 md:py-16">
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                         <div>
-                            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sand-500 mb-2">Marketplace</p>
-                            <h1 className="font-sans text-4xl md:text-5xl font-bold tracking-tight mb-2">Find Jobs</h1>
-                            <p className="text-muted-foreground max-w-xl">
-                                Browse photography jobs from Tunisian clients. Apply with Connects.
+                            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[hsl(var(--accent))] mb-2">Marketplace</p>
+                            <h1 className="font-sans text-3xl md:text-5xl font-bold tracking-tight mb-2">Find Jobs</h1>
+                            <p className="text-muted-foreground max-w-xl text-sm">
+                                Browse photography &amp; videography jobs. Apply with Connects.
                             </p>
                         </div>
                         <div className="flex items-center gap-3 flex-shrink-0">
@@ -84,88 +105,170 @@ export function Jobs() {
                 </div>
             </div>
 
-            <div className="container mx-auto px-6 py-10">
-                {/* Filters */}
-                <div className="flex flex-col lg:flex-row gap-3 mb-8 bg-card border border-border rounded-xl p-3 shadow-sm">
-                    <div className="relative flex-[2]">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" strokeWidth={1.5} />
+            <div className="container mx-auto px-4 sm:px-6 py-8">
+                {/* ── Search + Filter Row ── */}
+                <div className="flex flex-col sm:flex-row gap-3 mb-6">
+                    {/* Search */}
+                    <div className="relative flex-1">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
                         <input
                             type="text"
-                            placeholder="Search jobs or locations..."
+                            placeholder="Search jobs, locations…"
                             value={search}
                             onChange={e => setSearch(e.target.value)}
-                            className="w-full pl-12 pr-4 h-11 rounded-lg border-none bg-muted/40 text-sm transition-all duration-300 focus:outline-none focus:ring-1 focus:ring-sand-400 placeholder:text-muted-foreground/60"
+                            className="w-full pl-11 pr-4 h-11 rounded-xl border border-border bg-card text-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[hsl(var(--accent))/50] placeholder:text-muted-foreground/60"
                         />
+                        {search && (
+                            <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
+                                <X className="h-4 w-4" />
+                            </button>
+                        )}
                     </div>
 
-                    <div className="hidden lg:block w-px h-8 bg-border self-center" />
-
-                    <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 flex-[3]">
-                        <select
-                            value={location}
-                            onChange={e => setLocation(e.target.value)}
-                            className="flex-1 min-w-[130px] h-11 px-3 rounded-lg border-none bg-muted/40 text-sm transition-all duration-300 focus:outline-none focus:ring-1 focus:ring-sand-400 text-muted-foreground cursor-pointer"
-                        >
-                            <option value="">Any Location</option>
-                            {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
-                        </select>
-
-                        <input
-                            type="number"
-                            placeholder="Max Budget $"
-                            value={maxBudget}
-                            onChange={e => setMaxBudget(e.target.value)}
-                            className="flex-1 w-24 sm:w-auto h-11 px-4 rounded-lg border-none bg-muted/40 text-sm transition-all duration-300 focus:outline-none focus:ring-1 focus:ring-sand-400 placeholder:text-muted-foreground/60"
-                        />
-
-                        <input
-                            type="number"
-                            placeholder="Max Connects"
-                            value={maxConnects}
-                            onChange={e => setMaxConnects(e.target.value)}
-                            className="flex-1 w-28 sm:w-auto h-11 px-4 rounded-lg border-none bg-muted/40 text-sm transition-all duration-300 focus:outline-none focus:ring-1 focus:ring-sand-400 placeholder:text-muted-foreground/60"
-                        />
-
-                        <div className="hidden sm:block w-px h-8 bg-border self-center" />
-
-                        <label className="flex items-center gap-2 text-sm cursor-pointer select-none text-foreground font-medium pl-1 pr-2 whitespace-nowrap">
-                            <input
-                                type="checkbox"
-                                checked={showOpen}
-                                onChange={e => setShowOpen(e.target.checked)}
-                                className="w-4 h-4 rounded text-sand-500 accent-sand-500 border-border focus:ring-sand-500"
-                            />
-                            Open only
-                        </label>
-                    </div>
+                    {/* Filter toggle button */}
+                    <Button
+                        variant="outline"
+                        className={cn("gap-2 h-11 rounded-xl px-5 flex-shrink-0", activeFilterCount > 0 && "border-[hsl(var(--accent))] text-[hsl(var(--accent))]")}
+                        onClick={() => setShowFilters(v => !v)}
+                    >
+                        <SlidersHorizontal className="h-4 w-4" strokeWidth={1.5} />
+                        Filters
+                        {activeFilterCount > 0 && (
+                            <span className="bg-[hsl(var(--accent))] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold">
+                                {activeFilterCount}
+                            </span>
+                        )}
+                    </Button>
                 </div>
 
-                {/* Categories */}
-                <div className="flex gap-2 overflow-x-auto pb-4 mb-8 scrollbar-hide">
+                {/* ── Expanded Filters ── */}
+                <AnimatePresence>
+                    {showFilters && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.22 }}
+                            className="overflow-hidden mb-6"
+                        >
+                            <div className="p-5 border border-border rounded-xl bg-card space-y-5">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                                    {/* Location */}
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Location</label>
+                                        <select
+                                            value={location}
+                                            onChange={e => setLocation(e.target.value)}
+                                            className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))/50] text-muted-foreground cursor-pointer"
+                                        >
+                                            <option value="">Any Location</option>
+                                            {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
+                                        </select>
+                                    </div>
+
+                                    {/* Max Budget */}
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Max Budget (USD)</label>
+                                        <input
+                                            type="number"
+                                            placeholder="e.g. 1000"
+                                            value={maxBudget}
+                                            onChange={e => setMaxBudget(e.target.value)}
+                                            className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))/50] placeholder:text-muted-foreground/60"
+                                        />
+                                    </div>
+
+                                    {/* Deadline */}
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Deadline</label>
+                                        <div className="flex flex-wrap gap-1.5">
+                                            {DEADLINE_OPTIONS.map(opt => (
+                                                <button
+                                                    key={opt.value}
+                                                    onClick={() => setDeadlineDays(opt.value)}
+                                                    className={cn(
+                                                        "text-xs px-2.5 py-1 rounded-lg border transition-all duration-200",
+                                                        deadlineDays === opt.value
+                                                            ? "bg-foreground text-background border-foreground"
+                                                            : "border-border hover:bg-muted"
+                                                    )}
+                                                >
+                                                    {opt.label}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Max Connects + Open only */}
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Max Connects</label>
+                                        <input
+                                            type="number"
+                                            placeholder="e.g. 4"
+                                            value={maxConnects}
+                                            onChange={e => setMaxConnects(e.target.value)}
+                                            className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))/50] placeholder:text-muted-foreground/60"
+                                        />
+                                        <label className="flex items-center gap-2 text-sm cursor-pointer select-none mt-2">
+                                            <input
+                                                type="checkbox"
+                                                checked={showOpen}
+                                                onChange={e => setShowOpen(e.target.checked)}
+                                                className="w-4 h-4 rounded accent-[hsl(var(--accent))]"
+                                            />
+                                            <span className="text-xs font-medium">Open jobs only</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                {activeFilterCount > 0 && (
+                                    <div className="pt-3 border-t border-border">
+                                        <button
+                                            onClick={clearFilters}
+                                            className="flex items-center gap-1.5 text-xs text-[hsl(var(--accent))] hover:opacity-80 transition-opacity font-medium"
+                                        >
+                                            <X className="h-3.5 w-3.5" />
+                                            Clear all filters
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                {/* ── Category Tabs ── */}
+                <div className="flex gap-2 overflow-x-auto pb-4 mb-6 scrollbar-hide">
                     {['All', ...JOB_CATEGORIES].map(cat => (
                         <button
                             key={cat}
                             onClick={() => setSelectedCategory(cat)}
-                            className={`flex-shrink-0 px-4 py-2 rounded-md text-xs font-medium transition-all duration-300
-                                ${selectedCategory === cat
-                                    ? 'bg-foreground text-background'
-                                    : 'bg-muted text-muted-foreground hover:text-foreground'}`}
+                            className={cn(
+                                "flex-shrink-0 px-4 py-2 rounded-full text-xs font-medium transition-all duration-200 border",
+                                selectedCategory === cat
+                                    ? 'bg-foreground text-background border-foreground'
+                                    : 'bg-card border-border text-muted-foreground hover:text-foreground hover:bg-muted'
+                            )}
                         >
                             {cat}
                         </button>
                     ))}
                 </div>
 
-                {/* Results */}
-                <p className="text-xs text-muted-foreground mb-6 uppercase tracking-wider mt-6">
-                    {sortedJobs.length} job{sortedJobs.length !== 1 ? 's' : ''} found
-                    {sortedJobs.filter(j => j.isUrgent).length > 0 && (
-                        <span className="ml-3 text-red-500 font-semibold">
-                            · {sortedJobs.filter(j => j.isUrgent).length} urgent
-                        </span>
-                    )}
-                </p>
+                {/* ── Results count ── */}
+                <div className="flex items-center justify-between mb-6">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider">
+                        <span className="font-semibold text-foreground text-sm">{sortedJobs.length}</span>
+                        {' '}job{sortedJobs.length !== 1 ? 's' : ''} found
+                        {sortedJobs.filter(j => j.isUrgent).length > 0 && (
+                            <span className="ml-3 text-red-500 font-semibold">
+                                · {sortedJobs.filter(j => j.isUrgent).length} urgent
+                            </span>
+                        )}
+                    </p>
+                </div>
 
+                {/* ── Access restriction banner ── */}
                 {showTunisiaRestrictionBanner && (
                     <motion.div
                         initial={{ opacity: 0, y: -10 }}
@@ -189,19 +292,21 @@ export function Jobs() {
                     </motion.div>
                 )}
 
+                {/* ── Job Grid ── */}
                 {isLoading ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
                         {Array.from({ length: 9 }).map((_, i) => (
-                            <div key={i} className="border border-border rounded-xl p-6 bg-card space-y-4">
+                            <div key={i} className="border border-border rounded-xl p-5 bg-card space-y-4">
                                 <div className="flex justify-between gap-4">
-                                    <Skeleton className="h-5 w-3/4" />
-                                    <Skeleton className="h-6 w-16 rounded-full" />
+                                    <Skeleton className="h-4 w-20 rounded-full" />
+                                    <Skeleton className="h-6 w-12 rounded-full" />
                                 </div>
+                                <Skeleton className="h-5 w-3/4" />
                                 <Skeleton className="h-4 w-full" />
                                 <Skeleton className="h-4 w-4/5" />
-                                <div className="pt-4 border-t border-border flex justify-between">
-                                    <Skeleton className="h-5 w-24" />
+                                <div className="pt-3 border-t border-border flex justify-between items-center">
                                     <Skeleton className="h-5 w-20" />
+                                    <Skeleton className="h-8 w-20 rounded-lg" />
                                 </div>
                             </div>
                         ))}
@@ -209,8 +314,13 @@ export function Jobs() {
                 ) : sortedJobs.length === 0 ? (
                     <div className="text-center py-32 text-muted-foreground">
                         <Briefcase className="h-10 w-10 mx-auto mb-4 opacity-20" strokeWidth={1.2} />
-                        <p className="font-sans text-lg font-semibold mb-1">No jobs match your filters</p>
+                        <p className="text-lg font-semibold mb-1">No jobs match your filters</p>
                         <p className="text-sm">Try adjusting the category or search term</p>
+                        {activeFilterCount > 0 && (
+                            <button onClick={clearFilters} className="mt-4 text-xs text-[hsl(var(--accent))] underline underline-offset-2">
+                                Clear all filters
+                            </button>
+                        )}
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
@@ -220,14 +330,7 @@ export function Jobs() {
                                 initial={{ opacity: 0, y: 16 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.3, delay: i * 0.04 }}
-                                className="relative"
                             >
-                                {job.isUrgent && (
-                                    <div className="absolute -top-2 left-4 z-10 flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-white bg-red-500 px-2.5 py-1 rounded-full shadow">
-                                        <Zap className="h-2.5 w-2.5" strokeWidth={2} fill="currentColor" />
-                                        Urgent
-                                    </div>
-                                )}
                                 <JobCard job={job} />
                             </motion.div>
                         ))}

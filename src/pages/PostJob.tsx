@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { ArrowLeft, Briefcase, Lock, ShieldCheck, Info } from "lucide-react";
+import { ArrowLeft, Briefcase, Lock, ShieldCheck, Info, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
 import { useMarketplace } from "../context/MarketplaceContext";
 import { useAuth } from "../context/AuthContext";
@@ -60,7 +60,9 @@ export function PostJob() {
                     <div className="flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mx-auto">
                         <Lock className="h-7 w-7 text-primary" strokeWidth={1.5} />
                     </div>
-                    <div className="text-3xl">🇹🇳</div>
+                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-muted mx-auto">
+                        <MapPin className="h-5 w-5 text-muted-foreground" strokeWidth={1.5} />
+                    </div>
                     <p className="text-lg font-medium">Tunisia Marketplace Only</p>
                     <p className="text-sm text-muted-foreground">
                         Posting jobs is restricted to Tunisian citizens and residents.

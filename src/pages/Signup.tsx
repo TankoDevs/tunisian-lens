@@ -174,16 +174,16 @@ export function Signup() {
                                 onChange={(e) => setCountry(e.target.value)}
                                 className="w-full h-10 px-4 rounded-md border border-border bg-background text-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-sand-400/30 focus:border-sand-400"
                             >
-                                <option value="Tunisia">🇹🇳 Tunisia</option>
-                                <option value="Algeria">🇩🇿 Algeria</option>
-                                <option value="Morocco">🇲🇦 Morocco</option>
-                                <option value="Libya">🇱🇾 Libya</option>
-                                <option value="Egypt">🇪🇬 Egypt</option>
-                                <option value="France">🇫🇷 France</option>
-                                <option value="Germany">🇩🇪 Germany</option>
-                                <option value="United States">🇺🇸 United States</option>
-                                <option value="United Kingdom">🇬🇧 United Kingdom</option>
-                                <option value="Other">🌍 Other</option>
+                                <option value="Tunisia">Tunisia</option>
+                                <option value="Algeria">Algeria</option>
+                                <option value="Morocco">Morocco</option>
+                                <option value="Libya">Libya</option>
+                                <option value="Egypt">Egypt</option>
+                                <option value="France">France</option>
+                                <option value="Germany">Germany</option>
+                                <option value="United States">United States</option>
+                                <option value="United Kingdom">United Kingdom</option>
+                                <option value="Other">Other</option>
                             </select>
                             {country !== 'Tunisia' && (
                                 <p className="text-xs text-sand-600 dark:text-sand-400">

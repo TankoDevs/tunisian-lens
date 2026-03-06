@@ -173,6 +173,20 @@
     animation: scaleIn 0.4s ease-out forwards;
   }
 
+  /* Shimmer skeleton */
+  .animate-shimmer {
+    animation: shimmer 1.6s infinite;
+  }
+
+  /* Lazy-load image fade-in */
+  .lazy-img {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  .lazy-img.loaded {
+    opacity: 1;
+  }
+
   /* Image hover zoom */
   .img-hover-zoom {
     overflow: hidden;
@@ -225,6 +239,12 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+  /* touch-friendly tap target helper */
+  .tap-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
 }
 
 @keyframes fadeIn {
@@ -273,4 +293,10 @@
 
 .animate-scan {
   animation: scan 2s linear infinite;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(200%);
+  }
 }

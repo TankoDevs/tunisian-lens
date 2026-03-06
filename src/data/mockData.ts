@@ -279,6 +279,8 @@ export interface Artist {
     styleTags?: string[];
     collections?: PortfolioCollection[];
     coordinates?: { lat: number; lng: number };
+    equipment?: string[];
+    availability?: "available" | "busy";
 }
 
 export const PROJECTS = [
@@ -382,7 +384,9 @@ export const ARTISTS: Artist[] = [
             { name: "Premium", price: 450, currency: "USD", description: "Multi-day visual story", deliveryDays: 14, includes: ["2-day session", "100+ edited photos", "Print-ready files", "Online gallery", "Commercial license"] }
         ],
         contact: { email: "amine.b@example.com", instagram: "@aminelens", phone: "+216 00 000 000" },
-        stats: { jobsCompleted: 24, repeatRate: 58, successRate: 92, avgResponseHours: 4 },
+        stats: { jobsCompleted: 24, repeatRate: 58, successRate: 92, avgResponseHours: 2 },
+        equipment: ["Sony A7 IV", "35mm f/1.4 GM", "85mm f/1.8", "Godox V1 Flash"],
+        availability: "available",
         badgeLevel: 'elite',
         internationalAvailable: true,
         styleTags: ["Street", "Documentary", "Black & White", "Cinematic"],
@@ -440,7 +444,9 @@ export const ARTISTS: Artist[] = [
             { name: "Premium", price: 1400, currency: "USD", description: "Complete wedding package", deliveryDays: 30, includes: ["2-day coverage", "350+ edited photos", "Drone footage", "Luxury album", "USB drive"] }
         ],
         contact: { email: "sarra.j@example.com", instagram: "@sarraphoto", phone: "+216 11 111 111" },
-        stats: { jobsCompleted: 12, repeatRate: 41, successRate: 88, avgResponseHours: 8 },
+        stats: { jobsCompleted: 12, repeatRate: 41, successRate: 88, avgResponseHours: 6 },
+        equipment: ["Canon R5", "24-70mm f/2.8L", "50mm f/1.2L", "DJI Mavic 3 Pro"],
+        availability: "busy",
         badgeLevel: 'pro',
         internationalAvailable: true,
         styleTags: ["Wedding", "Romantic", "Architecture", "Fine Art"],
@@ -482,7 +488,9 @@ export const ARTISTS: Artist[] = [
             { name: "Premium", price: 900, currency: "USD", description: "Desert expedition series", deliveryDays: 21, includes: ["3-day expedition", "80+ edited photos", "Drone footage", "Commercial license", "Print-ready files"] }
         ],
         contact: { email: "karim.t@example.com", instagram: "@karimscapes", phone: "+216 22 222 222" },
-        stats: { jobsCompleted: 31, repeatRate: 65, successRate: 96, avgResponseHours: 3 },
+        stats: { jobsCompleted: 31, repeatRate: 65, successRate: 96, avgResponseHours: 4 },
+        equipment: ["Nikon Z9", "14-24mm f/2.8S", "70-200mm f/2.8S", "Gitzo Tripod"],
+        availability: "available",
         badgeLevel: 'elite',
         internationalAvailable: false,
         styleTags: ["Landscape", "Aerial", "Sahara", "Golden Hour", "Documentary"],
@@ -625,7 +633,9 @@ export const ARTISTS: Artist[] = [
             { name: "Premium", price: 2200, currency: "USD", description: "Cinematic wedding package", deliveryDays: 30, includes: ["2-day coverage", "15+ min film", "Highlight reel", "Drone", "Same-day edit", "USB delivery"] }
         ],
         contact: { email: "youssef.k@example.com", instagram: "@yousseffilms", phone: "+216 33 333 333" },
-        stats: { jobsCompleted: 19, repeatRate: 52, successRate: 90, avgResponseHours: 5 },
+        stats: { jobsCompleted: 19, repeatRate: 52, successRate: 90, avgResponseHours: 3 },
+        equipment: ["Blackmagic 6K Pro", "Sigma Art Lenses", "DJI Ronin RS3", "Sennheiser Audio"],
+        availability: "available",
         badgeLevel: 'pro' as const,
         internationalAvailable: true,
         styleTags: ["Wedding Film", "Cinematic", "Drone", "Emotional"],
@@ -661,5 +671,253 @@ export const ARTISTS: Artist[] = [
         internationalAvailable: false,
         styleTags: ["Brand Video", "Social Media", "Commercial", "Music Video"],
         coordinates: { lat: 34.7473, lng: 10.7596 },
+    },
+];
+
+// ─── Gear Market ────────────────────────────────────────────────────────────
+
+export type GearCondition = 'New' | 'Like New' | 'Used';
+
+export type GearCategory = 'Camera' | 'Lens' | 'Drone' | 'Lighting' | 'Tripod' | 'Audio' | 'Accessories';
+
+export const GEAR_CATEGORIES: GearCategory[] = [
+    'Camera', 'Lens', 'Drone', 'Lighting', 'Tripod', 'Audio', 'Accessories'
+];
+
+export const GEAR_BRANDS = [
+    'Sony', 'Canon', 'Nikon', 'Fujifilm', 'Leica', 'Panasonic', 'Olympus',
+    'DJI', 'GoPro', 'Blackmagic', 'Zhiyun', 'Godox', 'Profoto',
+    'Rode', 'Sennheiser', 'Zoom', 'Manfrotto', 'Peak Design', 'Other'
+];
+
+export interface GearListing {
+    id: string;
+    title: string;
+    images: string[];
+    price: number;
+    currency: string;
+    condition: GearCondition;
+    location: string;
+    description: string;
+    category: GearCategory;
+    brand: string;
+    sellerId: string;
+    sellerName: string;
+    sellerAvatar: string;
+    isVerifiedSeller: boolean;
+    createdAt: string;
+    isAvailable: boolean;
+}
+
+export const MOCK_GEAR_LISTINGS: GearListing[] = [
+    {
+        id: 'gear-1',
+        title: 'Sony A7 IV Mirrorless Camera Body',
+        images: [
+            'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=80',
+            'https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=800&q=80',
+        ],
+        price: 2200,
+        currency: 'USD',
+        condition: 'Like New',
+        location: 'Tunis, Tunisia',
+        description: 'Sony A7 IV in excellent condition, purchased 6 months ago. Shutter count under 5,000. Comes with original box, charger, and one battery. No scratches on body or sensor. Perfect for photographers upgrading to full frame.',
+        category: 'Camera',
+        brand: 'Sony',
+        sellerId: 'a1',
+        sellerName: 'Amine Benali',
+        sellerAvatar: 'https://randomuser.me/api/portraits/men/32.jpg',
+        isVerifiedSeller: true,
+        createdAt: '2026-03-01T10:00:00Z',
+        isAvailable: true,
+    },
+    {
+        id: 'gear-2',
+        title: 'Canon RF 50mm f/1.2L USM Lens',
+        images: [
+            'https://images.unsplash.com/photo-1617450365226-9bf28c04e130?w=800&q=80',
+            'https://images.unsplash.com/photo-1542038374416-a76d756c2e0e?w=800&q=80',
+        ],
+        price: 1800,
+        currency: 'USD',
+        condition: 'Used',
+        location: 'Sousse, Tunisia',
+        description: 'Canon RF 50mm f/1.2L. Incredible portrait lens with razor-sharp optics. Minor wear on exterior but glass is pristine — no dust, fungus, or scratches. Includes hood, caps, and original pouch.',
+        category: 'Lens',
+        brand: 'Canon',
+        sellerId: 'a2',
+        sellerName: 'Sarra Jaziri',
+        sellerAvatar: 'https://randomuser.me/api/portraits/women/44.jpg',
+        isVerifiedSeller: false,
+        createdAt: '2026-03-02T14:30:00Z',
+        isAvailable: true,
+    },
+    {
+        id: 'gear-3',
+        title: 'DJI Mavic 3 Pro Drone — Complete Kit',
+        images: [
+            'https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=800&q=80',
+            'https://images.unsplash.com/photo-1508614589041-895b88991e3e?w=800&q=80',
+        ],
+        price: 1600,
+        currency: 'USD',
+        condition: 'Like New',
+        location: 'Sfax, Tunisia',
+        description: 'DJI Mavic 3 Pro with the Fly More Combo. Includes 3 batteries, ND filter set, carrying case, and charging hub. Only used for 4 flights — essentially new. Hasselblad camera system, 4/3 CMOS sensor.',
+        category: 'Drone',
+        brand: 'DJI',
+        sellerId: 'a7',
+        sellerName: 'Youssef Khelifi',
+        sellerAvatar: 'https://randomuser.me/api/portraits/men/75.jpg',
+        isVerifiedSeller: true,
+        createdAt: '2026-03-02T16:00:00Z',
+        isAvailable: true,
+    },
+    {
+        id: 'gear-4',
+        title: 'Godox AD600Pro Strobe Light',
+        images: [
+            'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80',
+            'https://images.unsplash.com/photo-1516724562728-afc824a36e84?w=800&q=80',
+        ],
+        price: 480,
+        currency: 'USD',
+        condition: 'Used',
+        location: 'Tunis, Tunisia',
+        description: 'Godox AD600Pro outdoor flash unit. 600Ws output, TTL compatible, built-in 2.4G wireless. Works perfectly. Selling because I upgraded to Profoto. Comes with battery, charger, and round head adapter.',
+        category: 'Lighting',
+        brand: 'Godox',
+        sellerId: 'a3',
+        sellerName: 'Karim Tounsi',
+        sellerAvatar: 'https://randomuser.me/api/portraits/men/85.jpg',
+        isVerifiedSeller: true,
+        createdAt: '2026-03-03T09:00:00Z',
+        isAvailable: true,
+    },
+    {
+        id: 'gear-5',
+        title: 'Rode VideoMic Pro+ Shotgun Microphone',
+        images: [
+            'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=800&q=80',
+            'https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=800&q=80',
+        ],
+        price: 220,
+        currency: 'USD',
+        condition: 'Like New',
+        location: 'Hammamet, Tunisia',
+        description: 'Rode VideoMic Pro+ with Rycote Lyre shock mount. Barely used — purchased for one project. Includes deadcat windshield, camera mount, and original box. Excellent audio quality for video work.',
+        category: 'Audio',
+        brand: 'Rode',
+        sellerId: 'a8',
+        sellerName: 'Nadia Bouazizi',
+        sellerAvatar: 'https://randomuser.me/api/portraits/women/35.jpg',
+        isVerifiedSeller: true,
+        createdAt: '2026-03-03T12:00:00Z',
+        isAvailable: true,
+    },
+    {
+        id: 'gear-6',
+        title: 'Manfrotto 055 Carbon Fibre Tripod',
+        images: [
+            'https://images.unsplash.com/photo-1490217083006-62e18c553e05?w=800&q=80',
+            'https://images.unsplash.com/photo-1452780212461-a1c7def8e3a5?w=800&q=80',
+        ],
+        price: 320,
+        currency: 'USD',
+        condition: 'Used',
+        location: 'Nabeul, Tunisia',
+        description: 'Manfrotto 055 4-section carbon fibre tripod with 496RC2 ball head. Very sturdy and lightweight. Some scratches on legs from field use but all locks and mechanisms work perfectly. Great for landscape and studio.',
+        category: 'Tripod',
+        brand: 'Manfrotto',
+        sellerId: 'a1',
+        sellerName: 'Amine Benali',
+        sellerAvatar: 'https://randomuser.me/api/portraits/men/32.jpg',
+        isVerifiedSeller: true,
+        createdAt: '2026-03-04T08:00:00Z',
+        isAvailable: true,
+    },
+    {
+        id: 'gear-7',
+        title: 'Fujifilm X100VI Compact Camera',
+        images: [
+            'https://images.unsplash.com/photo-1519183071298-a2962cd48b7d?w=800&q=80',
+            'https://images.unsplash.com/photo-1512499617640-c74ae3a79d37?w=800&q=80',
+        ],
+        price: 1350,
+        currency: 'USD',
+        condition: 'New',
+        location: 'Tunis, Tunisia',
+        description: 'Brand new, sealed in box. Received as a gift but already own one. 40MP APS-C sensor, 6-stop in-body stabilisation, 7 frames per second burst. The most coveted compact camera available.',
+        category: 'Camera',
+        brand: 'Fujifilm',
+        sellerId: 'a4',
+        sellerName: 'Léa Moreau',
+        sellerAvatar: 'https://randomuser.me/api/portraits/women/28.jpg',
+        isVerifiedSeller: true,
+        createdAt: '2026-03-04T10:00:00Z',
+        isAvailable: true,
+    },
+    {
+        id: 'gear-8',
+        title: 'Sony FE 85mm f/1.4 GM Portrait Lens',
+        images: [
+            'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&q=80',
+            'https://images.unsplash.com/photo-1581591524425-c7e0978865fc?w=800&q=80',
+        ],
+        price: 1400,
+        currency: 'USD',
+        condition: 'Like New',
+        location: 'Bizerte, Tunisia',
+        description: 'Sony FE 85mm G Master. The gold standard for portrait lenses. Buttery bokeh, edge-to-edge sharpness, XD linear motors for silent AF. Shutter count under 10k images. Includes all caps, hood, and original box.',
+        category: 'Lens',
+        brand: 'Sony',
+        sellerId: 'a5',
+        sellerName: 'Omar Al-Rashid',
+        sellerAvatar: 'https://randomuser.me/api/portraits/men/52.jpg',
+        isVerifiedSeller: true,
+        createdAt: '2026-03-04T14:00:00Z',
+        isAvailable: true,
+    },
+    {
+        id: 'gear-9',
+        title: 'Peak Design Camera Backpack 30L',
+        images: [
+            'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&q=80',
+            'https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?w=800&q=80',
+        ],
+        price: 180,
+        currency: 'USD',
+        condition: 'Used',
+        location: 'Monastir, Tunisia',
+        description: 'Peak Design Everyday Backpack 30L in Ash colour. Used for about a year, still in great condition. All dividers and FlexFold included, laptop sleeve, weatherproof zip. The best camera bag I have ever owned.',
+        category: 'Accessories',
+        brand: 'Peak Design',
+        sellerId: 'a6',
+        sellerName: 'Emily Clarke',
+        sellerAvatar: 'https://randomuser.me/api/portraits/women/62.jpg',
+        isVerifiedSeller: false,
+        createdAt: '2026-03-05T09:00:00Z',
+        isAvailable: true,
+    },
+    {
+        id: 'gear-10',
+        title: 'Zhiyun Crane 4 3-Axis Gimbal',
+        images: [
+            'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=800&q=80',
+            'https://images.unsplash.com/photo-1536240478700-b869ad10e128?w=800&q=80',
+        ],
+        price: 340,
+        currency: 'USD',
+        condition: 'Like New',
+        location: 'Sfax, Tunisia',
+        description: 'Zhiyun Crane 4 with OLED touchscreen and built-in fill light. Used on 3 video shoots total. Payload up to 4.5kg, 12-hour battery life. Perfect for mirrorless and DSLR setups. Includes carrying case.',
+        category: 'Accessories',
+        brand: 'Zhiyun',
+        sellerId: 'a8',
+        sellerName: 'Nadia Bouazizi',
+        sellerAvatar: 'https://randomuser.me/api/portraits/women/35.jpg',
+        isVerifiedSeller: true,
+        createdAt: '2026-03-05T14:00:00Z',
+        isAvailable: true,
     },
 ];

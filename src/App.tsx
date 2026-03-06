@@ -24,6 +24,9 @@ import { Messages } from "./pages/Messages";
 import { BuyConnects } from "./pages/BuyConnects";
 import { MarketplaceProvider } from "./context/MarketplaceContext";
 import { ChatProvider } from "./context/ChatContext";
+import { GearMarket } from "./pages/GearMarket";
+import { SellGear } from "./pages/SellGear";
+import { GearListingDetail } from "./pages/GearListingDetail";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -65,6 +68,9 @@ function App() {
             <Route path="/messages" element={<Messages />} />
             <Route path="/messages/:conversationId" element={<Messages />} />
             <Route path="/buy-connects" element={<BuyConnects />} />
+            <Route path="/gear" element={<GearMarket />} />
+            <Route path="/gear/sell" element={<SellGear />} />
+            <Route path="/gear/:id" element={<GearListingDetail />} />
           </Route>
         </Routes>
       </ChatProvider>

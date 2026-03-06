@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { supabase, isConfigured } from '../lib/supabaseClient';
+import { PHOTO_CATEGORIES, VIDEO_CATEGORIES } from '../data/mockData';
 
 interface User {
     id: string;
@@ -37,15 +38,6 @@ const CURRENT_USER_KEY = 'tunisian_lens_current_user';
             role: 'admin',
         },
         {
-            id: 'demo-creative-1',
-            email: 'creative@tunisianlens.com',
-            password: 'creative123',
-            name: 'Yassine Mansour',
-            role: 'creative',
-            country: 'TN',
-            avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
-        },
-        {
             id: 'demo-client-1',
             email: 'client@tunisianlens.com',
             password: 'client123',
@@ -55,6 +47,31 @@ const CURRENT_USER_KEY = 'tunisian_lens_current_user';
             avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
         },
     ];
+
+    // Dynamically inject a creative account for every category
+    PHOTO_CATEGORIES.forEach((cat, i) => {
+        demos.push({
+            id: `demo-photo-${i}`,
+            email: `${cat.toLowerCase().replace(/[^a-z0-9]/g, '')}@demo.com`,
+            password: 'demo123',
+            name: `${cat} Photographer`,
+            role: 'creative',
+            country: 'TN',
+            avatar: `https://randomuser.me/api/portraits/men/${(i % 50) + 1}.jpg`,
+        });
+    });
+
+    VIDEO_CATEGORIES.forEach((cat, i) => {
+        demos.push({
+            id: `demo-video-${i}`,
+            email: `${cat.toLowerCase().replace(/[^a-z0-9]/g, '')}@demo.com`,
+            password: 'demo123',
+            name: `${cat} Videographer`,
+            role: 'creative',
+            country: 'TN',
+            avatar: `https://randomuser.me/api/portraits/women/${(i % 50) + 1}.jpg`,
+        });
+    });
 
     let changed = false;
     for (const demo of demos) {

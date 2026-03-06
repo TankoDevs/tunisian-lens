@@ -4,7 +4,8 @@ import { ProjectCard } from "../components/ui/ProjectCard";
 import { Button } from "../components/ui/button";
 import {
     MapPin, Mail, Instagram, Phone, ShieldCheck, Globe, Clock, Check,
-    Calendar, ArrowLeft, Clapperboard, BarChart3, RefreshCw, Zap, Clock3, Globe2
+    Calendar, ArrowLeft, Clapperboard, BarChart3, RefreshCw, Zap, Clock3, Globe2,
+    Camera, Heart, Star
 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
@@ -15,8 +16,9 @@ import { BeforeAfterSlider } from "../components/ui/BeforeAfterSlider";
 import { cn } from "../lib/utils";
 import { isArtistVerified, setArtistVerification } from "../lib/verification";
 import { motion, AnimatePresence } from "framer-motion";
+import { useCurrency } from "../lib/useCurrency";
 
-const TABS = ["Portfolio", "Services", "About"] as const;
+const TABS = ["Portfolio", "Services", "Reviews", "About"] as const;
 type Tab = (typeof TABS)[number];
 
 export function ArtistProfile() {
@@ -25,12 +27,14 @@ export function ArtistProfile() {
     const [activeTab, setActiveTab] = useState<Tab>("Portfolio");
     const [cinematicOpen, setCinematicOpen] = useState(false);
     const [cinematicIndex, setCinematicIndex] = useState(0);
+    const [isSaved, setIsSaved] = useState(false);
     const [activeCollection, setActiveCollection] = useState<string | null>(null);
     const { user } = useAuth();
     const isAdmin = user?.role === 'admin';
 
     const verifiedFromStorage = id ? isArtistVerified(id) : false;
     const [isVerified, setIsVerified] = useState<boolean>(verifiedFromStorage);
+    const { formatPrice } = useCurrency();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const mockUsers: any[] = JSON.parse(localStorage.getItem('tunisian_lens_mock_users') || '[]');
@@ -59,7 +63,6 @@ export function ArtistProfile() {
     const profileCategories = artist.categories || ["Photography"];
     const languages = artist.languages || [];
     const startingPrice = artist.startingPrice || null;
-    const currency = artist.currency || "USD";
     const packages = artist.packages || [];
     const collections = artist.collections || [];
     const stats = artist.stats;
@@ -137,11 +140,22 @@ export function ArtistProfile() {
                                         🌐 Intl. Available
                                     </span>
                                 )}
+                                {artist.availability && (
+                                    <span className={cn(
+                                        "text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border flex items-center gap-1.5",
+                                        artist.availability === "available"
+                                            ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
+                                            : "bg-amber-500/20 text-amber-300 border-amber-500/30"
+                                    )}>
+                                        <span className={cn("w-1.5 h-1.5 rounded-full animate-pulse", artist.availability === "available" ? "bg-emerald-400" : "bg-amber-400")} />
+                                        {artist.availability === "available" ? "Available Now" : "Currently Busy"}
+                                    </span>
+                                )}
                             </div>
                             <div className="flex items-center gap-4 mt-1.5 text-white/70 text-sm flex-wrap">
                                 <span className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5" strokeWidth={1.5} />{loc}</span>
                                 <span className="flex items-center gap-1.5"><Globe className="h-3.5 w-3.5" strokeWidth={1.5} />{country}</span>
-                                {startingPrice && <span className="text-white font-semibold">from ${startingPrice} {currency}</span>}
+                                {startingPrice && <span className="text-white font-semibold">from {formatPrice(startingPrice)}</span>}
                             </div>
                         </div>
                         <div className="hidden md:flex items-center gap-3 flex-shrink-0 pb-1">
@@ -156,6 +170,15 @@ export function ArtistProfile() {
                                 className="bg-white/10 border-white/30 text-white hover:bg-white/20 gap-2">
                                 <Mail className="h-4 w-4" strokeWidth={1.5} />
                                 Get in Touch
+                            </Button>
+                            <Button size="sm" variant="outline"
+                                onClick={() => setIsSaved(!isSaved)}
+                                className={cn(
+                                    "bg-white/10 border-white/30 text-white hover:bg-white/20 gap-2",
+                                    isSaved && "bg-white/20 border-white/50"
+                                )}>
+                                <Heart className={cn("h-4 w-4", isSaved && "fill-rose-500 text-rose-500")} strokeWidth={1.5} />
+                                {isSaved ? "Saved" : "Save"}
                             </Button>
                             {startingPrice && (
                                 <Link to={`/hire/${id}`}>
@@ -212,34 +235,36 @@ export function ArtistProfile() {
             </AnimatePresence>
 
             {/* ── Public Stats Row ── */}
-            {stats && (
-                <div className="border-b border-border bg-muted/20">
-                    <div className="container mx-auto max-w-5xl px-6 py-4">
-                        <div className="flex flex-wrap gap-6 text-sm">
-                            <div className="flex items-center gap-2">
-                                <BarChart3 className="h-4 w-4 text-sand-500" strokeWidth={1.5} />
-                                <span className="font-semibold">{stats.jobsCompleted}</span>
-                                <span className="text-muted-foreground">Jobs Completed</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <RefreshCw className="h-4 w-4 text-sand-500" strokeWidth={1.5} />
-                                <span className="font-semibold">{stats.repeatRate}%</span>
-                                <span className="text-muted-foreground">Repeat Clients</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <Zap className="h-4 w-4 text-sand-500" strokeWidth={1.5} />
-                                <span className="font-semibold">{stats.successRate}%</span>
-                                <span className="text-muted-foreground">Success Rate</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <Clock3 className="h-4 w-4 text-sand-500" strokeWidth={1.5} />
-                                <span className="font-semibold">~{stats.avgResponseHours}h</span>
-                                <span className="text-muted-foreground">Avg. Response</span>
+            {
+                stats && (
+                    <div className="border-b border-border bg-muted/20">
+                        <div className="container mx-auto max-w-5xl px-6 py-4">
+                            <div className="flex flex-wrap gap-6 text-sm">
+                                <div className="flex items-center gap-2">
+                                    <BarChart3 className="h-4 w-4 text-sand-500" strokeWidth={1.5} />
+                                    <span className="font-semibold">{stats.jobsCompleted}</span>
+                                    <span className="text-muted-foreground">Jobs Completed</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <RefreshCw className="h-4 w-4 text-sand-500" strokeWidth={1.5} />
+                                    <span className="font-semibold">{stats.repeatRate}%</span>
+                                    <span className="text-muted-foreground">Repeat Clients</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Zap className="h-4 w-4 text-sand-500" strokeWidth={1.5} />
+                                    <span className="font-semibold">{stats.successRate}%</span>
+                                    <span className="text-muted-foreground">Success Rate</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Clock3 className="h-4 w-4 text-sand-500" strokeWidth={1.5} />
+                                    <span className="font-semibold">~{stats.avgResponseHours}h</span>
+                                    <span className="text-muted-foreground">Avg. Response</span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
             {/* ── Tab Navigation ── */}
             <div className="border-b border-border sticky top-16 z-20 bg-background/90 backdrop-blur-md">
@@ -365,7 +390,7 @@ export function ArtistProfile() {
                                         {i === 1 && <span className="text-[9px] font-bold uppercase tracking-widest bg-sand-400 text-white px-2 py-0.5 rounded">Popular</span>}
                                         <div>
                                             <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">{pkg.name}</p>
-                                            <p className="text-2xl font-sans font-bold mt-1">${pkg.price} <span className="text-sm font-sans font-normal text-muted-foreground">{currency}</span></p>
+                                            <p className="text-2xl font-sans font-bold mt-1">{formatPrice(pkg.price)}</p>
                                         </div>
                                         <p className="text-sm text-muted-foreground leading-relaxed">{pkg.description}</p>
                                         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -393,13 +418,87 @@ export function ArtistProfile() {
                     </div>
                 )}
 
+                {/* REVIEWS TAB */}
+                {activeTab === "Reviews" && (
+                    <div className="space-y-8">
+                        <div className="flex flex-col md:flex-row gap-8 items-start">
+                            <div className="bg-card border border-border p-8 rounded-2xl w-full md:w-72 flex flex-col items-center text-center space-y-4">
+                                <div className="text-5xl font-bold tracking-tighter">4.9</div>
+                                <div className="flex gap-1">
+                                    {[1, 2, 3, 4, 5].map(s => <Star key={s} className="h-5 w-5 fill-amber-500 text-amber-500" strokeWidth={0} />)}
+                                </div>
+                                <p className="text-sm text-muted-foreground font-medium uppercase tracking-widest">12 Verified Reviews</p>
+                            </div>
+
+                            <div className="flex-1 space-y-6">
+                                {[
+                                    { name: "Sarah J.", rating: 5, date: "2 weeks ago", text: "Exceptional work! Captured our wedding moments so beautifully. Highly recommend!" },
+                                    { name: "Marc K.", rating: 5, date: "1 month ago", text: "Super professional and fast delivery. The lighting was perfect for our product shoot." },
+                                    { name: "Leila B.", rating: 4, date: "2 months ago", text: "Great experience overall. Very responsive and creative approach." }
+                                ].map((rev, i) => (
+                                    <div key={i} className="p-6 rounded-2xl bg-muted/20 border border-border/50 space-y-3">
+                                        <div className="flex justify-between items-start">
+                                            <div>
+                                                <p className="font-bold text-sm">{rev.name}</p>
+                                                <div className="flex gap-0.5 mt-1">
+                                                    {Array.from({ length: 5 }).map((_, j) => (
+                                                        <Star key={j} className={cn("h-3 w-3", j < rev.rating ? "fill-amber-500 text-amber-500" : "text-muted/30")} strokeWidth={0} />
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold">{rev.date}</span>
+                                        </div>
+                                        <p className="text-sm text-muted-foreground leading-relaxed italic">"{rev.text}"</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {/* ABOUT TAB */}
                 {activeTab === "About" && (
-                    <div className="max-w-2xl space-y-8">
+                    <div className="max-w-2xl space-y-12">
+                        <div className="space-y-4">
+                            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sand-500 flex items-center gap-2">
+                                <Zap className="h-3.5 w-3.5" strokeWidth={1.5} />
+                                Availability Schedule
+                            </p>
+                            <div className="bg-muted/10 border border-border/40 rounded-2xl p-6">
+                                <div className="grid grid-cols-7 gap-2">
+                                    {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
+                                        <div key={i} className="text-[10px] font-bold text-center text-muted-foreground opacity-50 mb-2">{d}</div>
+                                    ))}
+                                    {Array.from({ length: 31 }).map((_, i) => {
+                                        const isBusy = [5, 6, 12, 13, 20, 26, 27].includes(i + 1);
+                                        const isToday = i + 1 === 18;
+                                        return (
+                                            <div key={i} className={cn(
+                                                "aspect-square rounded-lg flex items-center justify-center text-[10px] font-semibold transition-all",
+                                                isBusy ? "bg-amber-500/10 text-amber-500 line-through opacity-40" : "bg-emerald-500/10 text-emerald-500",
+                                                isToday && "ring-2 ring-foreground text-foreground bg-foreground/5 shadow-lg"
+                                            )}>
+                                                {i + 1}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                                <div className="mt-6 flex items-center justify-center gap-6 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-2.5 h-2.5 rounded bg-emerald-500/20" /> Available
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-2.5 h-2.5 rounded bg-amber-500/20" /> Booked
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div className="space-y-3">
                             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sand-500">Bio</p>
                             <p className="text-muted-foreground leading-relaxed">{bio}</p>
                         </div>
+
                         <div className="space-y-3">
                             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sand-500">Specialities</p>
                             <div className="flex flex-wrap gap-2">
@@ -408,12 +507,31 @@ export function ArtistProfile() {
                                 ))}
                             </div>
                         </div>
+
+                        {artist.equipment && artist.equipment.length > 0 && (
+                            <div className="space-y-4 pt-4 border-t border-border/50">
+                                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sand-500 flex items-center gap-2">
+                                    <Camera className="h-3.5 w-3.5" strokeWidth={1.5} />
+                                    Professional Gear
+                                </p>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    {artist.equipment.map((item: string, i: number) => (
+                                        <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-muted/20 border border-border/40">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-sand-400" />
+                                            <span className="text-xs font-medium text-foreground/80">{item}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
                         {languages.length > 0 && (
                             <div className="space-y-3">
                                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sand-500">Languages</p>
                                 <p className="text-sm text-muted-foreground">{languages.join(", ")}</p>
                             </div>
                         )}
+
                         {internationalAvailable && (
                             <div className="flex items-center gap-3 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/20">
                                 <Globe2 className="h-5 w-5 text-emerald-500 flex-shrink-0" strokeWidth={1.5} />
@@ -423,6 +541,7 @@ export function ArtistProfile() {
                                 </div>
                             </div>
                         )}
+
                         {isVerified && (
                             <div className="flex items-center gap-3 p-4 rounded-xl border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/20">
                                 <ShieldCheck className="h-4 w-4 text-green-600 dark:text-green-400 flex-shrink-0" strokeWidth={1.5} />
@@ -432,6 +551,7 @@ export function ArtistProfile() {
                                 </div>
                             </div>
                         )}
+
                         {isAdmin && (
                             <Button variant={isVerified ? "outline" : "default"} onClick={toggleVerification} className="gap-2 text-sm">
                                 <ShieldCheck className="h-4 w-4" strokeWidth={1.5} />
@@ -441,6 +561,6 @@ export function ArtistProfile() {
                     </div>
                 )}
             </div>
-        </div>
+        </div >
     );
 }

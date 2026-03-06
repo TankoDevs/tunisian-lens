@@ -1,9 +1,10 @@
 import { useState, useMemo, useRef, useEffect } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import {
     Search, SlidersHorizontal, MapPin, Star, CheckCircle2, X,
     Camera, Video, Blend, ChevronLeft, ChevronRight, ArrowUpDown,
-    Sparkles, Globe
+    Sparkles, Globe, Zap
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -14,15 +15,13 @@ import { Skeleton } from "../components/ui/Skeleton";
 import { Tooltip } from "../components/ui/Tooltip";
 import { isArtistVerified } from "../lib/verification";
 import { cn } from "../lib/utils";
+import { useCurrency } from "../lib/useCurrency";
 import { motion, AnimatePresence } from "framer-motion";
 import { computeCreativeScore } from "../lib/creativeScore";
 
 
-const COUNTRY_FLAGS: Record<string, string> = {
-    "Tunisia": "🇹🇳", "France": "🇫🇷", "UAE": "🇦🇪", "United Kingdom": "🇬🇧",
-    "United States": "🇺🇸", "Germany": "🇩🇪", "Morocco": "🇲🇦", "Egypt": "🇪🇬",
-    "Spain": "🇪🇸", "Italy": "🇮🇹", "Turkey": "🇹🇷", "Lebanon": "🇱🇧",
-};
+
+
 
 const CREATIVE_TYPE_ICONS: Record<string, React.ReactNode> = {
     photographer: <Camera className="h-3.5 w-3.5" strokeWidth={1.5} />,
@@ -52,6 +51,7 @@ function getCoverImage(artist: typeof ARTISTS[number]) {
 }
 
 export function Photographers() {
+    const { formatPrice } = useCurrency();
     const [searchQuery, setSearchQuery] = useState("");
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
@@ -67,6 +67,9 @@ export function Photographers() {
     const [page, setPage] = useState(1);
     const [hoveredCard, setHoveredCard] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [minRating, setMinRating] = useState<number | null>(null);
+    const [selectedStyleTags, setSelectedStyleTags] = useState<string[]>([]);
+    const [discoveryTab, setDiscoveryTab] = useState("all");
 
     // Simulate network delay for skeletons
     useEffect(() => {
@@ -105,7 +108,35 @@ export function Photographers() {
     }, [searchQuery]);
 
     const filteredArtists = useMemo(() => {
-        let list = ARTISTS.filter((artist) => {
+        let list = [...ARTISTS];
+
+        // ── 1. Apply Discovery Context ──
+        if (discoveryTab === "trending") {
+            list = list.sort((a, b) => {
+                const scoreA = computeCreativeScore({
+                    rating: getArtistRating(a.id, a.name).rating,
+                    reviewCount: getArtistRating(a.id, a.name).reviews,
+                    jobsCompleted: a.stats?.jobsCompleted,
+                    portfolioCount: a.portfolioImages?.length,
+                    badgeLevel: a.badgeLevel,
+                });
+                const scoreB = computeCreativeScore({
+                    rating: getArtistRating(b.id, b.name).rating,
+                    reviewCount: getArtistRating(b.id, b.name).reviews,
+                    jobsCompleted: b.stats?.jobsCompleted,
+                    portfolioCount: b.portfolioImages?.length,
+                    badgeLevel: b.badgeLevel,
+                });
+                return scoreB - scoreA;
+            });
+        } else if (discoveryTab === "new") {
+            list = [...ARTISTS].slice(-6).reverse();
+        } else if (discoveryTab === "top_rated") {
+            list = list.sort((a, b) => getArtistRating(b.id, b.name).rating - getArtistRating(a.id, a.name).rating);
+        }
+
+        // ── 2. Apply Search & Regular Filters ──
+        list = list.filter((artist) => {
             const lq = searchQuery.toLowerCase();
             const matchesSearch = !searchQuery ||
                 artist.name.toLowerCase().includes(lq) ||
@@ -120,39 +151,43 @@ export function Photographers() {
             const min = minPrice ? parseInt(minPrice) : 0;
             const max = maxPrice ? parseInt(maxPrice) : Infinity;
             const matchesPrice = artist.startingPrice >= min && artist.startingPrice <= max;
-            return matchesSearch && matchesCountry && matchesCategory && matchesType && matchesVerified && matchesIntl && matchesPrice;
+            const { rating } = getArtistRating(artist.id, artist.name);
+            const matchesRating = !minRating || rating >= minRating;
+            const matchesStyle = selectedStyleTags.length === 0 || selectedStyleTags.some(t => artist.styleTags?.includes(t));
+            return matchesSearch && matchesCountry && matchesCategory && matchesType && matchesVerified && matchesIntl && matchesPrice && matchesRating && matchesStyle;
         });
 
-        // Sorting
-        if (sortBy === "relevance") {
-            // Use creative score algorithm for internal relevance ranking
-            list = [...list].sort((a, b) => {
-                const scoreA = computeCreativeScore({
-                    rating: getArtistRating(a.id, a.name).rating,
-                    reviewCount: getArtistRating(a.id, a.name).reviews,
-                    jobsCompleted: a.stats?.jobsCompleted,
-                    successRate: a.stats?.successRate,
-                    avgResponseHours: a.stats?.avgResponseHours,
-                    portfolioCount: a.portfolioImages?.length,
-                    badgeLevel: a.badgeLevel,
+        // ── 3. Apply Standard Sorting ──
+        if (discoveryTab === "all" || searchQuery) {
+            if (sortBy === "relevance") {
+                list = [...list].sort((a, b) => {
+                    const scoreA = computeCreativeScore({
+                        rating: getArtistRating(a.id, a.name).rating,
+                        reviewCount: getArtistRating(a.id, a.name).reviews,
+                        jobsCompleted: a.stats?.jobsCompleted,
+                        successRate: a.stats?.successRate,
+                        avgResponseHours: a.stats?.avgResponseHours,
+                        portfolioCount: a.portfolioImages?.length,
+                        badgeLevel: a.badgeLevel,
+                    });
+                    const scoreB = computeCreativeScore({
+                        rating: getArtistRating(b.id, b.name).rating,
+                        reviewCount: getArtistRating(b.id, b.name).reviews,
+                        jobsCompleted: b.stats?.jobsCompleted,
+                        successRate: b.stats?.successRate,
+                        avgResponseHours: b.stats?.avgResponseHours,
+                        portfolioCount: b.portfolioImages?.length,
+                        badgeLevel: b.badgeLevel,
+                    });
+                    return scoreB - scoreA;
                 });
-                const scoreB = computeCreativeScore({
-                    rating: getArtistRating(b.id, b.name).rating,
-                    reviewCount: getArtistRating(b.id, b.name).reviews,
-                    jobsCompleted: b.stats?.jobsCompleted,
-                    successRate: b.stats?.successRate,
-                    avgResponseHours: b.stats?.avgResponseHours,
-                    portfolioCount: b.portfolioImages?.length,
-                    badgeLevel: b.badgeLevel,
-                });
-                return scoreB - scoreA;
-            });
-        } else if (sortBy === "price_asc") list = [...list].sort((a, b) => a.startingPrice - b.startingPrice);
-        else if (sortBy === "price_desc") list = [...list].sort((a, b) => b.startingPrice - a.startingPrice);
-        else if (sortBy === "rating_desc") list = [...list].sort((a, b) => getArtistRating(b.id, b.name).rating - getArtistRating(a.id, a.name).rating);
+            } else if (sortBy === "price_asc") list = [...list].sort((a, b) => a.startingPrice - b.startingPrice);
+            else if (sortBy === "price_desc") list = [...list].sort((a, b) => b.startingPrice - a.startingPrice);
+            else if (sortBy === "rating_desc") list = [...list].sort((a, b) => getArtistRating(b.id, b.name).rating - getArtistRating(a.id, a.name).rating);
+        }
 
         return list;
-    }, [searchQuery, selectedCountry, selectedCategory, selectedType, verifiedOnly, intlOnly, minPrice, maxPrice, sortBy]);
+    }, [searchQuery, selectedCountry, selectedCategory, selectedType, verifiedOnly, intlOnly, minPrice, maxPrice, sortBy, discoveryTab]);
 
 
 
@@ -162,10 +197,18 @@ export function Photographers() {
     const clearFilters = () => {
         setSelectedCountry(null); setSelectedCategory(null); setSelectedType(null);
         setMinPrice(""); setMaxPrice(""); setVerifiedOnly(false); setIntlOnly(false); setSearchQuery(""); setPage(1);
+        setMinRating(null); setSelectedStyleTags([]);
     };
 
 
-    const hasActiveFilters = !!(selectedCountry || selectedCategory || selectedType || verifiedOnly || intlOnly || minPrice || maxPrice);
+    const hasActiveFilters = !!(selectedCountry || selectedCategory || selectedType || verifiedOnly || intlOnly || minPrice || maxPrice || minRating || selectedStyleTags.length);
+
+    // Collect all style tags from all artists
+    const allStyleTags = useMemo(() => {
+        const set = new Set<string>();
+        ARTISTS.forEach(a => a.styleTags?.forEach(t => set.add(t)));
+        return Array.from(set).sort();
+    }, []);
 
     const currentSortLabel = SORT_OPTIONS.find(s => s.value === sortBy)?.label ?? "Relevance";
 
@@ -276,6 +319,58 @@ export function Photographers() {
             </section>
 
             <div className="container mx-auto px-6 py-8">
+                {/* Discovery Tabs */}
+                <div className="flex border-b border-border/50 mb-10 overflow-x-auto no-scrollbar">
+                    {[
+                        { id: "all", label: "Browse All" },
+                        { id: "trending", label: "Trending" },
+                        { id: "new", label: "New Creators" },
+                        { id: "top_rated", label: "Top Rated" },
+                    ].map((t) => (
+                        <button
+                            key={t.id}
+                            onClick={() => {
+                                setDiscoveryTab(t.id);
+                                setPage(1);
+                            }}
+                            className={cn(
+                                "px-6 py-3 text-[10px] font-bold uppercase tracking-widest whitespace-nowrap transition-all border-b-2 relative",
+                                discoveryTab === t.id
+                                    ? "text-[hsl(var(--accent))]"
+                                    : "border-transparent text-muted-foreground hover:text-foreground"
+                            )}
+                        >
+                            {t.label}
+                            {discoveryTab === t.id && (
+                                <motion.div
+                                    layoutId="discovery-active"
+                                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-[hsl(var(--accent))]"
+                                />
+                            )}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Category Pill Row */}
+                <div className="flex flex-wrap items-center justify-center gap-2 mb-12">
+                    {["Wedding", "Event", "Product", "Drone", "Videography"].map(cat => (
+                        <button
+                            key={cat}
+                            onClick={() => {
+                                setSelectedCategory(cat === selectedCategory ? null : cat);
+                                setDiscoveryTab("all");
+                            }}
+                            className={cn(
+                                "px-5 py-2.5 rounded-full text-[9px] font-bold tracking-wider transition-all border",
+                                selectedCategory === cat
+                                    ? "bg-[hsl(var(--accent))] border-[hsl(var(--accent))] text-white shadow-lg shadow-[hsl(var(--accent))]/20 scale-105"
+                                    : "bg-muted/50 border-border/50 text-muted-foreground hover:border-muted-foreground/30"
+                            )}
+                        >
+                            {cat.toUpperCase()}
+                        </button>
+                    ))}
+                </div>
                 {/* ── Sticky Toolbar ── */}
                 <div className="sticky top-0 z-30 bg-background/90 backdrop-blur-sm border-b border-border -mx-6 px-6 py-3 mb-6">
                     <div className="flex items-center justify-between gap-4 flex-wrap">
@@ -393,7 +488,7 @@ export function Photographers() {
                                                             : "hover:bg-muted border-border"
                                                     )}
                                                 >
-                                                    {COUNTRY_FLAGS[country] || "🌍"} {country}
+                                                    {country}
                                                 </button>
                                             ))}
                                         </div>
@@ -427,7 +522,7 @@ export function Photographers() {
                                             <Input type="number" placeholder="Max" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} className="h-9 text-sm" />
                                         </div>
                                     </div>
-                                    {/* Verification */}
+                                    {/* Verification + Rating */}
                                     <div className="space-y-2">
                                         <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Verification</label>
                                         <button
@@ -451,9 +546,52 @@ export function Photographers() {
                                             <Globe className="h-3.5 w-3.5" strokeWidth={1.5} />
                                             International Available
                                         </button>
+                                        {/* Min Rating */}
+                                        <div className="mt-2">
+                                            <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">Min Rating</p>
+                                            <div className="flex gap-1.5 flex-wrap">
+                                                {[null, 4.0, 4.5, 4.8].map(r => (
+                                                    <button
+                                                        key={String(r)}
+                                                        onClick={() => setMinRating(r)}
+                                                        className={cn(
+                                                            "flex items-center gap-1 text-[10px] px-2.5 py-1 rounded-full border transition-all duration-200",
+                                                            minRating === r ? "bg-amber-500 text-white border-amber-500" : "hover:bg-muted border-border"
+                                                        )}
+                                                    >
+                                                        <Star className="h-2.5 w-2.5" strokeWidth={0} fill={minRating === r ? 'white' : 'currentColor'} />
+                                                        {r === null ? "Any" : `${r}+`}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
                                     </div>
 
                                 </div>
+                                {/* Style Tags filter */}
+                                {allStyleTags.length > 0 && (
+                                    <div className="pt-4 border-t border-border space-y-2">
+                                        <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Style</label>
+                                        <div className="flex flex-wrap gap-1.5">
+                                            {allStyleTags.map(tag => (
+                                                <button
+                                                    key={tag}
+                                                    onClick={() => setSelectedStyleTags(prev =>
+                                                        prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
+                                                    )}
+                                                    className={cn(
+                                                        "text-xs px-2.5 py-1 rounded-full border transition-all duration-200",
+                                                        selectedStyleTags.includes(tag)
+                                                            ? "bg-foreground text-background border-foreground"
+                                                            : "hover:bg-muted border-border"
+                                                    )}
+                                                >
+                                                    {tag}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </motion.div>
                     )}
@@ -561,7 +699,7 @@ export function Photographers() {
                                                     </div>
                                                     <p className="text-white/70 text-xs flex items-center gap-1">
                                                         <MapPin className="h-2.5 w-2.5" strokeWidth={1.5} />
-                                                        {artist.location}, {COUNTRY_FLAGS[artist.country] || ""} {artist.country}
+                                                        {artist.location}, {artist.country}
                                                     </p>
                                                 </div>
                                             </div>
@@ -612,33 +750,48 @@ export function Photographers() {
 
                                             {/* Footer: rating + price + actions */}
                                             <div className="flex items-center justify-between pt-2 border-t border-border">
-                                                <div className="flex items-center gap-3">
+                                                <div className="flex flex-col gap-0.5">
                                                     {/* Rating */}
                                                     <Tooltip content={`${reviews} verified client reviews`}>
                                                         <div className="flex items-center gap-1 cursor-help">
                                                             <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" strokeWidth={0} />
                                                             <span className="text-sm font-bold text-foreground">{rating}</span>
-                                                            <span className="text-[10px] sm:text-xs text-muted-foreground font-medium">({reviews} reviews)</span>
+                                                            <span className="text-[10px] text-muted-foreground">({reviews})</span>
                                                         </div>
                                                     </Tooltip>
-                                                    {/* Price */}
-                                                    <div className="text-xs text-muted-foreground">
-                                                        from <span className="font-bold text-foreground text-sm">${artist.startingPrice}</span>
-                                                    </div>
+                                                    {/* Jobs Completed */}
+                                                    {artist.stats?.jobsCompleted !== undefined && (
+                                                        <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                                                            <CheckCircle2 className="h-3 w-3 text-green-500" strokeWidth={2} />
+                                                            <span className="font-semibold text-foreground">{artist.stats.jobsCompleted}</span> jobs done
+                                                        </div>
+                                                    )}
+                                                    {/* Response Rate */}
+                                                    {artist.stats?.avgResponseHours !== undefined && (
+                                                        <div className="flex items-center gap-1 text-[10px] text-muted-foreground mt-0.5">
+                                                            <Zap className="h-3 w-3 text-amber-500 fill-amber-500/20" strokeWidth={2} />
+                                                            Replies in <span className="font-semibold text-foreground">~{artist.stats.avgResponseHours}h</span>
+                                                        </div>
+                                                    )}
                                                 </div>
 
                                                 {/* Actions */}
-                                                <div className="flex gap-2">
-                                                    <Link to={`/artist/${artist.id}`}>
-                                                        <Button variant="outline" size="sm" className="text-xs h-8 px-3">
-                                                            View Profile
-                                                        </Button>
-                                                    </Link>
-                                                    <Link to={`/hire/${artist.id}`}>
-                                                        <Button size="sm" className="text-xs h-8 px-3 font-semibold shadow-sm">
-                                                            Hire
-                                                        </Button>
-                                                    </Link>
+                                                <div className="flex flex-col gap-1.5 items-end">
+                                                    <div className="text-xs text-muted-foreground text-right">
+                                                        from <span className="font-bold text-foreground text-sm">{formatPrice(artist.startingPrice)}</span>
+                                                    </div>
+                                                    <div className="flex gap-1.5">
+                                                        <Link to={`/artist/${artist.id}`}>
+                                                            <Button variant="outline" size="sm" className="text-xs h-8 px-3 gap-1">
+                                                                View Profile
+                                                            </Button>
+                                                        </Link>
+                                                        <Link to={`/hire/${artist.id}`}>
+                                                            <Button size="sm" className="text-xs h-8 px-3 font-semibold shadow-sm">
+                                                                Hire
+                                                            </Button>
+                                                        </Link>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

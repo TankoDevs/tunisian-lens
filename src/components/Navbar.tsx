@@ -11,13 +11,15 @@ import { useChat } from "../context/ChatContext";
 export function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+    const [isMessagesOpen, setIsMessagesOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const userMenuRef = useRef<HTMLDivElement>(null);
+    const messagesMenuRef = useRef<HTMLDivElement>(null);
     const mobileMenuRef = useRef<HTMLDivElement>(null);
     const { user, isAuthenticated, logout } = useAuth();
     const { theme, toggleTheme } = useTheme();
     const { getConnects } = useMarketplace();
-    const { unreadCount } = useChat();
+    const { unreadCount, getMyConversations } = useChat();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -33,6 +35,9 @@ export function Navbar() {
         function handleClickOutside(event: MouseEvent) {
             if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
                 setIsUserMenuOpen(false);
+            }
+            if (messagesMenuRef.current && !messagesMenuRef.current.contains(event.target as Node)) {
+                setIsMessagesOpen(false);
             }
         }
         document.addEventListener("mousedown", handleClickOutside);
@@ -99,11 +104,14 @@ export function Navbar() {
                     <Link to="/creatives" className={navLinkClass('/creatives')}>
                         Creatives
                     </Link>
-                    <Link to="/about" className={navLinkClass('/about')}>
-                        About
-                    </Link>
                     <Link to="/jobs" className={navLinkClass('/jobs')}>
                         Jobs
+                    </Link>
+                    <Link to="/gear" className={navLinkClass('/gear')}>
+                        Gear Market
+                    </Link>
+                    <Link to="/about" className={navLinkClass('/about')}>
+                        About
                     </Link>
                 </div>
 
@@ -133,8 +141,12 @@ export function Navbar() {
 
                     {/* Messages Icon */}
                     {isAuthenticated && (
-                        <Link to="/messages" className="relative">
-                            <button className="rounded-full w-9 h-9 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-300" title="Messages">
+                        <div className="relative" ref={messagesMenuRef}>
+                            <button
+                                className="rounded-full w-9 h-9 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-300 relative"
+                                title="Messages"
+                                onClick={() => setIsMessagesOpen(!isMessagesOpen)}
+                            >
                                 <MessageSquare className="h-4 w-4" strokeWidth={1.5} />
                                 {unreadCount > 0 && (
                                     <span className="absolute top-0.5 right-0.5 h-3.5 w-3.5 bg-sand-400 text-white text-[9px] font-semibold rounded-full flex items-center justify-center">
@@ -142,7 +154,61 @@ export function Navbar() {
                                     </span>
                                 )}
                             </button>
-                        </Link>
+
+                            <AnimatePresence>
+                                {isMessagesOpen && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        transition={{ duration: 0.2 }}
+                                        className="absolute right-0 mt-2 w-80 bg-background border border-border rounded-2xl shadow-xl overflow-hidden z-50"
+                                    >
+                                        <div className="p-4 border-b border-border flex items-center justify-between bg-muted/30">
+                                            <h3 className="font-bold text-sm">Recent Messages</h3>
+                                            <Link to="/messages" onClick={() => setIsMessagesOpen(false)} className="text-xs text-[hsl(var(--accent))] hover:underline font-semibold">
+                                                View All
+                                            </Link>
+                                        </div>
+                                        <div className="max-h-[320px] overflow-y-auto">
+                                            {getMyConversations().length === 0 ? (
+                                                <div className="p-8 text-center text-muted-foreground">
+                                                    <p className="text-xs">No conversations yet</p>
+                                                </div>
+                                            ) : (
+                                                getMyConversations().slice(0, 5).map((conv) => (
+                                                    <Link
+                                                        key={conv.id}
+                                                        to="/messages"
+                                                        onClick={() => setIsMessagesOpen(false)}
+                                                        className="block p-4 hover:bg-muted transition-colors border-b border-border/50 last:border-0"
+                                                    >
+                                                        <div className="flex items-start gap-3">
+                                                            <div className="w-10 h-10 rounded-full bg-sand-100 flex items-center justify-center text-sand-600 font-bold text-xs uppercase flex-shrink-0">
+                                                                {(user?.id === conv.clientId ? conv.creativeName : conv.clientName).charAt(0)}
+                                                            </div>
+                                                            <div className="flex-1 min-w-0">
+                                                                <div className="flex items-center justify-between gap-2 mb-1">
+                                                                    <p className="font-bold text-xs truncate">
+                                                                        {user?.id === conv.clientId ? conv.creativeName : conv.clientName}
+                                                                    </p>
+                                                                    <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+                                                                        {conv.lastMessageAt ? new Date(conv.lastMessageAt).toLocaleDateString([], { month: 'short', day: 'numeric' }) : ''}
+                                                                    </span>
+                                                                </div>
+                                                                <p className="text-[11px] text-muted-foreground line-clamp-1">
+                                                                    {conv.lastMessage || 'Start a conversation'}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </Link>
+                                                ))
+                                            )}
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
                     )}
 
                     {/* Account Dropdown */}
@@ -316,11 +382,14 @@ export function Navbar() {
                             <Link to="/creatives" className={`block py-2.5 text-sm ${isActive('/creatives') ? 'text-foreground font-medium' : 'text-muted-foreground'}`} onClick={() => setIsOpen(false)}>
                                 Creatives
                             </Link>
-                            <Link to="/about" className={`block py-2.5 text-sm ${isActive('/about') ? 'text-foreground font-medium' : 'text-muted-foreground'}`} onClick={() => setIsOpen(false)}>
-                                About
-                            </Link>
                             <Link to="/jobs" className={`block py-2.5 text-sm ${isActive('/jobs') ? 'text-foreground font-medium' : 'text-muted-foreground'}`} onClick={() => setIsOpen(false)}>
                                 Jobs
+                            </Link>
+                            <Link to="/gear" className={`block py-2.5 text-sm ${isActive('/gear') ? 'text-foreground font-medium' : 'text-muted-foreground'}`} onClick={() => setIsOpen(false)}>
+                                Gear Market
+                            </Link>
+                            <Link to="/about" className={`block py-2.5 text-sm ${isActive('/about') ? 'text-foreground font-medium' : 'text-muted-foreground'}`} onClick={() => setIsOpen(false)}>
+                                About
                             </Link>
 
                             <div className="border-t border-border mt-4 pt-4 space-y-1">

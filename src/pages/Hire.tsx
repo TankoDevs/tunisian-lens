@@ -7,21 +7,9 @@ import { ARTISTS, PROJECTS } from "../data/mockData";
 import { VerificationBadge } from "../components/ui/VerificationBadge";
 import { isArtistVerified } from "../lib/verification";
 import { cn } from "../lib/utils";
+import { useCurrency } from "../lib/useCurrency";
 
-const COUNTRY_FLAGS: Record<string, string> = {
-    "Tunisia": "🇹🇳",
-    "France": "🇫🇷",
-    "UAE": "🇦🇪",
-    "United Kingdom": "🇬🇧",
-    "United States": "🇺🇸",
-    "Germany": "🇩🇪",
-    "Morocco": "🇲🇦",
-    "Egypt": "🇪🇬",
-    "Spain": "🇪🇸",
-    "Italy": "🇮🇹",
-    "Turkey": "🇹🇷",
-    "Lebanon": "🇱🇧",
-};
+
 
 export function Hire() {
     const { id } = useParams<{ id: string }>();
@@ -46,6 +34,7 @@ export function Hire() {
     }
 
     const isVerified = isArtistVerified(artist.id);
+    const { formatPrice } = useCurrency();
     const mockRating = (4.5 + parseInt(artist.id.replace(/\D/g, '') || "1") * 0.07).toFixed(1);
     const mockReviews = 20 + parseInt(artist.id.replace(/\D/g, '') || "1") * 13;
 
@@ -87,7 +76,7 @@ export function Hire() {
                                     </span>
                                     <span className="flex items-center gap-1.5">
                                         <Globe className="h-4 w-4" strokeWidth={2} />
-                                        {COUNTRY_FLAGS[artist.country] || ""} {artist.country}
+                                        {artist.country}
                                     </span>
                                     <span className="flex items-center gap-1.5">
                                         <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" strokeWidth={0} />
@@ -130,9 +119,9 @@ export function Hire() {
                                         <div>
                                             <p className="text-xs font-bold uppercase tracking-widest opacity-60">{pkg.name}</p>
                                             <p className={cn("text-2xl font-bold mt-1", selectedPackage === i && showForm ? "text-background" : "")}>
-                                                ${pkg.price}
+                                                {formatPrice(pkg.price)}
                                                 <span className={cn("text-sm font-normal ml-1", selectedPackage === i && showForm ? "text-background/70" : "text-muted-foreground")}>
-                                                    {pkg.currency}
+
                                                 </span>
                                             </p>
                                         </div>
@@ -186,8 +175,8 @@ export function Hire() {
                         <div className="bg-card border rounded-2xl p-5 space-y-4 sticky top-20">
                             <div className="text-center pb-2 border-b">
                                 <p className="text-sm text-muted-foreground">Starting from</p>
-                                <p className="text-3xl font-bold">${artist.startingPrice}
-                                    <span className="text-base font-normal text-muted-foreground ml-1">{artist.currency}</span>
+                                <p className="text-3xl font-bold">{formatPrice(artist.startingPrice)}
+
                                 </p>
                             </div>
 
@@ -221,7 +210,7 @@ export function Hire() {
                                                     ))}
                                                 </div>
                                                 <p className="text-xs text-muted-foreground">
-                                                    ${artist.packages[selectedPackage].price} · {artist.packages[selectedPackage].deliveryDays}d delivery
+                                                    {formatPrice(artist.packages[selectedPackage].price)} · {artist.packages[selectedPackage].deliveryDays}d delivery
                                                 </p>
                                             </div>
                                             <div className="space-y-1">
