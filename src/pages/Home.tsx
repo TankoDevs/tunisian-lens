@@ -5,6 +5,7 @@ import { ARTISTS, MOCK_JOBS } from "../data/mockData";
 import { motion } from "framer-motion";
 import { isArtistVerified } from "../lib/verification";
 import { useCurrency } from "../lib/useCurrency";
+import { ProfileAvatar } from "../components/ui/ProfileAvatar";
 
 const FEATURED_ARTISTS = ARTISTS.slice(0, 3);
 const RECENT_JOBS = MOCK_JOBS.filter(j => j.status === "open").slice(0, 3);
@@ -278,7 +279,11 @@ export function Home() {
 
                                                 {/* Avatar + name overlay */}
                                                 <div className="absolute bottom-3 left-4 flex items-center gap-3">
-                                                    <img src={artist.avatar} alt={artist.name} className="w-9 h-9 rounded-full object-cover ring-2 ring-white/80" />
+                                                    <ProfileAvatar
+                                                        src={artist.avatar}
+                                                        alt={artist.name}
+                                                        className="w-9 h-9 ring-2 ring-white/80"
+                                                    />
                                                     <div>
                                                         <div className="flex items-center gap-1.5">
                                                             <p className="text-white font-semibold text-sm">{artist.name}</p>
@@ -352,8 +357,11 @@ export function Home() {
                                             <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
                                             <div className="absolute inset-0 flex items-end p-8">
                                                 <div className="flex items-end gap-5">
-                                                    <img src={cotmArtist.avatar} alt={cotmArtist.name}
-                                                        className="w-16 h-16 rounded-full object-cover ring-2 ring-amber-400/60 flex-shrink-0" />
+                                                    <ProfileAvatar
+                                                        src={cotmArtist.avatar}
+                                                        alt={cotmArtist.name}
+                                                        className="w-16 h-16 ring-2 ring-amber-400/60 flex-shrink-0"
+                                                    />
                                                     <div>
                                                         <p className="text-amber-400 text-xs font-semibold uppercase tracking-widest mb-1">This Month's Featured Creative</p>
                                                         <h3 className="text-white text-2xl font-bold">{cotmArtist.name}</h3>

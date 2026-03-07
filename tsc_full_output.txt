@@ -1,0 +1,2 @@
+src/pages/Home.tsx(1,69): error TS6133: 'Users' is declared but its value is never read.
+src/pages/Jobs.tsx(3,47): error TS6133: 'Zap' is declared but its value is never read.

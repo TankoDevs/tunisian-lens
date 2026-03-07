@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Search, PlusCircle, Briefcase, Lock, SlidersHorizontal, X } from "lucide-react";
+import { Search, PlusCircle, Briefcase, Lock, SlidersHorizontal, X, ArrowUpDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMarketplace } from "../context/MarketplaceContext";
 import { useAuth } from "../context/AuthContext";
 import { useTunisianAccess } from "../lib/useTunisianAccess";
-import { JOB_CATEGORIES, CITIES } from "../data/mockData";
+import { JOB_CATEGORIES, CITIES, type Job } from "../data/mockData";
 import { JobCard } from "../components/ui/JobCard";
 import { ConnectsBadge } from "../components/ui/ConnectsBadge";
 import { Button } from "../components/ui/button";
@@ -17,6 +17,12 @@ const DEADLINE_OPTIONS = [
     { label: "This week", value: "7" },
     { label: "This month", value: "30" },
     { label: "3 months", value: "90" },
+];
+
+const SORT_OPTIONS = [
+    { value: "recent", label: "Recently Added" },
+    { value: "urgent", label: "Urgent First" },
+    { value: "budget_desc", label: "Highest Budget" },
 ];
 
 export function Jobs() {
@@ -31,6 +37,9 @@ export function Jobs() {
     const [showOpen, setShowOpen] = useState(true);
     const [deadlineDays, setDeadlineDays] = useState('');
     const [showFilters, setShowFilters] = useState(false);
+    const [sortBy, setSortBy] = useState("urgent"); // Keep urgent first as default but make it switchable
+    const [showSortMenu, setShowSortMenu] = useState(false);
+    const sortRef = useRef<HTMLDivElement>(null);
 
     const connects = isAuthenticated && user ? getConnects(user.id) : 0;
 
@@ -62,10 +71,35 @@ export function Jobs() {
 
     const showTunisiaRestrictionBanner = !hasAccess && filtered.length > 0;
 
-    const sortedJobs = [
-        ...filtered.filter(j => j.isUrgent),
-        ...filtered.filter(j => !j.isUrgent),
-    ];
+    // sorting logic
+    const sortedJobs = useMemo(() => {
+        let list = [...filtered] as Job[];
+        if (sortBy === "urgent") {
+            list = [
+                ...list.filter((j: Job) => j.isUrgent),
+                ...list.filter((j: Job) => !j.isUrgent),
+            ];
+        } else if (sortBy === "budget_desc") {
+            list = [...list].sort((a: Job, b: Job) => b.budget - a.budget);
+        } else {
+            // Default: recently added
+            list = [...list].sort((a: Job, b: Job) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        }
+        return list;
+    }, [filtered, sortBy]);
+
+    const currentSortLabel = SORT_OPTIONS.find(s => s.value === sortBy)?.label ?? "Urgent First";
+
+    // Close sort menu on outside click
+    useEffect(() => {
+        function handle(e: MouseEvent) {
+            if (sortRef.current && !sortRef.current.contains(e.target as Node)) {
+                setShowSortMenu(false);
+            }
+        }
+        document.addEventListener("mousedown", handle);
+        return () => document.removeEventListener("mousedown", handle);
+    }, []);
 
     return (
         <div className="min-h-screen bg-background">
@@ -123,6 +157,43 @@ export function Jobs() {
                                 <X className="h-4 w-4" />
                             </button>
                         )}
+                    </div>
+
+                    {/* Sort Dropdown */}
+                    <div className="relative" ref={sortRef}>
+                        <Button
+                            variant="outline"
+                            className="gap-2 h-11 rounded-xl px-4 flex-shrink-0"
+                            onClick={() => setShowSortMenu(v => !v)}
+                        >
+                            <ArrowUpDown className="h-4 w-4" strokeWidth={1.5} />
+                            <span className="hidden sm:inline">{currentSortLabel}</span>
+                        </Button>
+                        <AnimatePresence>
+                            {showSortMenu && (
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.95, y: -4 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                    exit={{ opacity: 0, scale: 0.95, y: -4 }}
+                                    transition={{ duration: 0.1 }}
+                                    className="absolute right-0 top-full mt-2 w-48 bg-card border border-border rounded-xl shadow-xl z-50 py-1 overflow-hidden"
+                                >
+                                    {SORT_OPTIONS.map(opt => (
+                                        <button
+                                            key={opt.value}
+                                            onClick={() => { setSortBy(opt.value); setShowSortMenu(false); }}
+                                            className={cn(
+                                                "w-full text-left px-4 py-2.5 text-sm hover:bg-muted transition-colors flex items-center justify-between",
+                                                sortBy === opt.value ? "font-semibold text-[hsl(var(--accent))]" : "text-muted-foreground"
+                                            )}
+                                        >
+                                            {opt.label}
+                                            {sortBy === opt.value && <div className="h-1.5 w-1.5 rounded-full bg-[hsl(var(--accent))]" />}
+                                        </button>
+                                    ))}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
 
                     {/* Filter toggle button */}
@@ -324,7 +395,7 @@ export function Jobs() {
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                        {sortedJobs.map((job, i) => (
+                        {sortedJobs.map((job: Job, i: number) => (
                             <motion.div
                                 key={job.id}
                                 initial={{ opacity: 0, y: 16 }}

@@ -1,6 +1,6 @@
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
-import { Upload, X, Lock, Unlock, ShieldAlert, CheckCircle2, AlertCircle, Download } from "lucide-react";
+import { Upload, X, Lock, Unlock, ShieldAlert, CheckCircle2, AlertCircle, Download, Sparkles } from "lucide-react";
 import { useState, useEffect } from "react";
 import { CATEGORIES } from "../data/mockData";
 import { cn } from "../lib/utils";
@@ -13,6 +13,17 @@ import { Captcha } from "../components/ui/Captcha";
 import { uploadImage } from "../lib/cloudinary";
 
 import { checkImageSafety } from "../lib/api";
+
+const SUGGESTED_TAGS: Record<string, string[]> = {
+    "Wedding": ["Wedding", "Bride", "Groom", "Love", "Ceremony", "Couple", "Portrait"],
+    "Event": ["Event", "Party", "Music", "Stage", "BTS", "Flash", "Crowd"],
+    "Product": ["Product", "Minimal", "Studio", "Macro", "Advertising", "Commercial"],
+    "Drone": ["Aerial", "Drone", "Landscape", "Nature", "Panorama", "Architecture"],
+    "Videography": ["Cinematic", "B-Roll", "4K", "ShortFilm", "Documentary", "Action"],
+    "Fashion": ["Fashion", "Model", "Style", "Vogue", "Editorial", "Runway"],
+    "Food": ["Food", "Culinary", "Plating", "Gastronomy", "Restaurant", "Delicious"],
+    "Street": ["Street", "Urban", "Candid", "City", "Documentary", "BlackAndWhite"],
+};
 
 export function SubmitProject() {
     const { addProject } = useProjects();
@@ -568,7 +579,7 @@ export function SubmitProject() {
                             />
                         </div>
 
-                        <div className="space-y-2">
+                        <div className="space-y-4">
                             <label htmlFor="tags" className="text-sm font-medium">Tags (space separated, auto-hashtag)</label>
                             <Input
                                 id="tags"
@@ -594,6 +605,41 @@ export function SubmitProject() {
                                     }
                                 }}
                             />
+
+                            {/* Smart Suggestions */}
+                            {category && SUGGESTED_TAGS[category] && (
+                                <div className="space-y-2 animate-in fade-in slide-in-from-top-1 duration-300">
+                                    <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                                        <Sparkles className="h-3 w-3" />
+                                        Suggested for {category}
+                                    </p>
+                                    <div className="flex flex-wrap gap-1.5">
+                                        {SUGGESTED_TAGS[category].map(tag => {
+                                            const hashTag = `#${tag}`;
+                                            const isSelected = tags.includes(hashTag);
+                                            return (
+                                                <button
+                                                    key={tag}
+                                                    type="button"
+                                                    onClick={() => {
+                                                        if (isSelected) return;
+                                                        setTags(prev => prev.trim() + (prev ? ' ' : '') + hashTag + ' ');
+                                                    }}
+                                                    disabled={isSelected}
+                                                    className={cn(
+                                                        "text-[10px] px-2.5 py-1 rounded-full border transition-all duration-200",
+                                                        isSelected
+                                                            ? "bg-muted text-muted-foreground/50 border-transparent cursor-default"
+                                                            : "bg-background hover:border-primary/50 hover:bg-primary/5 border-border text-muted-foreground hover:text-foreground"
+                                                    )}
+                                                >
+                                                    {hashTag}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
 

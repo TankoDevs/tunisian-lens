@@ -12,6 +12,7 @@ import { useAuth } from "../context/AuthContext";
 import { VerificationBadge } from "../components/ui/VerificationBadge";
 import { BadgePill } from "../components/ui/BadgePill";
 import { CinematicViewer } from "../components/ui/CinematicViewer";
+import { ProfileAvatar } from "../components/ui/ProfileAvatar";
 import { BeforeAfterSlider } from "../components/ui/BeforeAfterSlider";
 import { cn } from "../lib/utils";
 import { isArtistVerified, setArtistVerification } from "../lib/verification";
@@ -118,10 +119,11 @@ export function ArtistProfile() {
                 {/* Identity overlay */}
                 <div className="absolute bottom-0 left-0 right-0 px-6 md:px-10 pb-8">
                     <div className="max-w-5xl mx-auto flex items-end gap-5">
-                        <img
+                        <ProfileAvatar
                             src={artist.avatar}
                             alt={artist.name}
-                            className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover ring-3 ring-white/80 flex-shrink-0"
+                            size="lg"
+                            className="flex-shrink-0 ring-3 ring-white/80"
                         />
                         <div className="flex-1 min-w-0 pb-1">
                             <div className="flex items-center gap-2 flex-wrap">

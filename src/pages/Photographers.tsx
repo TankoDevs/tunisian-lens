@@ -351,24 +351,55 @@ export function Photographers() {
                     ))}
                 </div>
 
-                {/* Category Pill Row */}
-                <div className="flex flex-wrap items-center justify-center gap-2 mb-12">
-                    {["Wedding", "Event", "Product", "Drone", "Videography"].map(cat => (
-                        <button
-                            key={cat}
+                {/* ── Category Hero Navigation ── */}
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-14">
+                    {[
+                        { id: "Wedding", label: "Wedding", icon: <Sparkles className="h-5 w-5" />, color: "from-pink-500/20 to-rose-500/20" },
+                        { id: "Event", label: "Events", icon: <Zap className="h-5 w-5" />, color: "from-amber-500/20 to-orange-500/20" },
+                        { id: "Product", label: "Product", icon: <Camera className="h-5 w-5" />, color: "from-blue-500/20 to-indigo-500/20" },
+                        { id: "Drone", label: "Aerial/Drone", icon: <Globe className="h-5 w-5" />, color: "from-emerald-500/20 to-teal-500/20" },
+                        { id: "Videography", label: "Video", icon: <Video className="h-5 w-5" />, color: "from-purple-500/20 to-violet-500/20" },
+                    ].map((cat) => (
+                        <motion.button
+                            key={cat.id}
+                            whileHover={{ y: -4, scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
                             onClick={() => {
-                                setSelectedCategory(cat === selectedCategory ? null : cat);
+                                setSelectedCategory(cat.id === selectedCategory ? null : cat.id);
                                 setDiscoveryTab("all");
                             }}
                             className={cn(
-                                "px-5 py-2.5 rounded-full text-[9px] font-bold tracking-wider transition-all border",
-                                selectedCategory === cat
-                                    ? "bg-[hsl(var(--accent))] border-[hsl(var(--accent))] text-white shadow-lg shadow-[hsl(var(--accent))]/20 scale-105"
-                                    : "bg-muted/50 border-border/50 text-muted-foreground hover:border-muted-foreground/30"
+                                "relative group overflow-hidden rounded-2xl border aspect-[4/3] flex flex-col items-center justify-center gap-3 transition-all duration-300",
+                                selectedCategory === cat.id
+                                    ? "border-[hsl(var(--accent))] bg-[hsl(var(--accent))]/5 ring-1 ring-[hsl(var(--accent))]"
+                                    : "border-border bg-card hover:border-border/80"
                             )}
                         >
-                            {cat.toUpperCase()}
-                        </button>
+                            {/* Abstract background gradient */}
+                            <div className={cn("absolute inset-0 opacity-40 transition-opacity group-hover:opacity-60", cat.color, "bg-gradient-to-br")} />
+
+                            {/* Icon glassmorphism wrapper */}
+                            <div className={cn(
+                                "relative z-10 p-3 rounded-xl backdrop-blur-md border transition-all duration-300",
+                                selectedCategory === cat.id
+                                    ? "bg-[hsl(var(--accent))] text-white border-[hsl(var(--accent))]/20 scale-110"
+                                    : "bg-background/50 border-white/10 text-muted-foreground group-hover:text-foreground group-hover:scale-110"
+                            )}>
+                                {cat.icon}
+                            </div>
+
+                            <span className={cn(
+                                "relative z-10 text-[11px] font-bold uppercase tracking-widest transition-colors",
+                                selectedCategory === cat.id ? "text-[hsl(var(--accent))]" : "text-muted-foreground group-hover:text-foreground"
+                            )}>
+                                {cat.label}
+                            </span>
+
+                            {/* Selection dot */}
+                            {selectedCategory === cat.id && (
+                                <div className="absolute top-3 right-3 h-2 w-2 rounded-full bg-[hsl(var(--accent))] animate-pulse" />
+                            )}
+                        </motion.button>
                     ))}
                 </div>
                 {/* ── Sticky Toolbar ── */}
