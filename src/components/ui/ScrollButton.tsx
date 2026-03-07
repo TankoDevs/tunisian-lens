@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "../../lib/utils";
 
 const PROXIMITY_THRESHOLD = 150; // px from top/bottom before button slides away
 
@@ -8,11 +9,8 @@ export function ScrollButton() {
     const [isAtBottom, setIsAtBottom] = useState(false);
     const [visible, setVisible] = useState(false);
     const [nearTarget, setNearTarget] = useState(false);
-    const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
-        const checkMobile = () => setIsMobile(window.innerWidth < 768);
-
         const handleScroll = () => {
             const scrollTop = window.scrollY;
             const windowHeight = window.innerHeight;
@@ -35,20 +33,15 @@ export function ScrollButton() {
             }
         };
 
-        checkMobile();
         handleScroll();
 
-        const onResize = () => { checkMobile(); handleScroll(); };
         window.addEventListener("scroll", handleScroll, { passive: true });
-        window.addEventListener("resize", onResize, { passive: true });
+        window.addEventListener("resize", handleScroll, { passive: true });
         return () => {
             window.removeEventListener("scroll", handleScroll);
-            window.removeEventListener("resize", onResize);
+            window.removeEventListener("resize", handleScroll);
         };
     }, []);
-
-    // Only show on mobile
-    if (!isMobile) return null;
 
     const handleClick = () => {
         if (isAtBottom) {
@@ -71,7 +64,10 @@ export function ScrollButton() {
                     }
                     transition={{ duration: 0.35, ease: "easeInOut" }}
                     onClick={handleClick}
-                    className="fixed bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-[#C8A97E] text-white shadow-lg"
+                    className={cn(
+                        "fixed right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-[#C8A97E] text-white shadow-lg",
+                        "bottom-24 md:bottom-24" // Moved higher to avoid overlapping with Post Job (bottom-6)
+                    )}
                     aria-label={isAtBottom ? "Scroll to top" : "Scroll to bottom"}
                 >
                     <motion.div
