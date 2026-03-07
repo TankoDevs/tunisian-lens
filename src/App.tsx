@@ -27,6 +27,7 @@ import { ChatProvider } from "./context/ChatContext";
 import { GearMarket } from "./pages/GearMarket";
 import { SellGear } from "./pages/SellGear";
 import { GearListingDetail } from "./pages/GearListingDetail";
+import { ScrollToTop } from "./components/ui/ScrollToTop";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -40,6 +41,7 @@ function App() {
 
   return (
     <MarketplaceProvider>
+      <ScrollToTop />
       <ChatProvider>
         <AnimatePresence mode="wait">
           {isLoading && <LoadingScreen key="loader" />}
