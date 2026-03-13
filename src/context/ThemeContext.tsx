@@ -9,15 +9,26 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-const THEME_KEY = 'tunisian_lens_theme';
-
 export function ThemeProvider({ children }: { children: ReactNode }) {
-    const [theme, setTheme] = useState<Theme>(() => {
-        // Check localStorage first, then system preference
-        const stored = localStorage.getItem(THEME_KEY) as Theme | null;
-        if (stored) return stored;
-        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    });
+    const [theme, setTheme] = useState<Theme>(() =>
+        window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+    );
+
+    useEffect(() => {
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+        const handleChange = (e: MediaQueryListEvent) => {
+            setTheme(e.matches ? 'dark' : 'light');
+        };
+
+        // Set initial state correctly
+        setTheme(mediaQuery.matches ? 'dark' : 'light');
+
+        // Modern browsers
+        mediaQuery.addEventListener('change', handleChange);
+
+        return () => mediaQuery.removeEventListener('change', handleChange);
+    }, []);
 
     useEffect(() => {
         const root = document.documentElement;
@@ -26,11 +37,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         } else {
             root.classList.remove('dark');
         }
-        localStorage.setItem(THEME_KEY, theme);
     }, [theme]);
 
     const toggleTheme = () => {
-        setTheme(prev => prev === 'light' ? 'dark' : 'light');
+        // No-op or log a warning since we're following system preference now
+        console.warn('Manual theme toggling is disabled. The app follows system preference.');
     };
 
     return (

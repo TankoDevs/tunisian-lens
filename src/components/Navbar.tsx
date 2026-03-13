@@ -1,11 +1,10 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useMarketplace } from "../context/MarketplaceContext";
 import { Button } from "./ui/button";
-import { Menu, X, Camera, User, LogIn, UserPlus, LogOut, Sun, Moon, Briefcase, ShieldCheck, MessageSquare, Zap, TrendingUp, Bell, ChevronDown } from "lucide-react";
+import { Menu, X, Camera, User, LogIn, UserPlus, LogOut, Briefcase, ShieldCheck, MessageSquare, Zap, TrendingUp, Bell, ChevronDown } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
-import { useTheme } from "../context/ThemeContext";
 import { useChat } from "../context/ChatContext";
 import { cn } from "../lib/utils";
 
@@ -22,7 +21,6 @@ export function Navbar() {
     const gearMenuRef = useRef<HTMLDivElement>(null);
     const mobileMenuRef = useRef<HTMLDivElement>(null);
     const { user, isAuthenticated, logout } = useAuth();
-    const { theme, toggleTheme } = useTheme();
     const { getConnects } = useMarketplace();
     const { unreadCount, getMyConversations } = useChat();
     const navigate = useNavigate();
@@ -274,18 +272,6 @@ export function Navbar() {
                             </button>
                         )}
 
-                        {/* Theme Toggle */}
-                        <button
-                            className="rounded-full w-9 h-9 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-300"
-                            onClick={toggleTheme}
-                            title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
-                        >
-                            {theme === 'light' ? (
-                                <Moon className="h-4.5 w-4.5" strokeWidth={1.5} />
-                            ) : (
-                                <Sun className="h-4.5 w-4.5" strokeWidth={1.5} />
-                            )}
-                        </button>
                     </div>
 
                     {/* Account Dropdown */}
@@ -421,17 +407,6 @@ export function Navbar() {
 
                 {/* Mobile Right Controls */}
                 <div className="md:hidden flex items-center gap-1">
-                    <button
-                        className="rounded-full w-9 h-9 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors duration-300"
-                        onClick={toggleTheme}
-                        title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
-                    >
-                        {theme === 'light' ? (
-                            <Moon className="h-4.5 w-4.5" strokeWidth={1.5} />
-                        ) : (
-                            <Sun className="h-4.5 w-4.5" strokeWidth={1.5} />
-                        )}
-                    </button>
                     <button
                         className="rounded-full w-9 h-9 flex items-center justify-center text-foreground"
                         onClick={() => setIsOpen(!isOpen)}
