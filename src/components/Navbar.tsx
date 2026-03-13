@@ -1,7 +1,7 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useMarketplace } from "../context/MarketplaceContext";
 import { Button } from "./ui/button";
-import { Menu, X, Camera, User, LogIn, UserPlus, LogOut, Sun, Moon, Briefcase, ShieldCheck, MessageSquare, Zap, TrendingUp } from "lucide-react";
+import { Menu, X, Camera, User, LogIn, UserPlus, LogOut, Sun, Moon, Briefcase, ShieldCheck, MessageSquare, Zap, TrendingUp, Bell, ChevronDown } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
@@ -13,9 +13,13 @@ export function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
     const [isMessagesOpen, setIsMessagesOpen] = useState(false);
+    const [isExploreOpen, setIsExploreOpen] = useState(false);
+    const [isGearOpen, setIsGearOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const userMenuRef = useRef<HTMLDivElement>(null);
     const messagesMenuRef = useRef<HTMLDivElement>(null);
+    const exploreMenuRef = useRef<HTMLDivElement>(null);
+    const gearMenuRef = useRef<HTMLDivElement>(null);
     const mobileMenuRef = useRef<HTMLDivElement>(null);
     const { user, isAuthenticated, logout } = useAuth();
     const { theme, toggleTheme } = useTheme();
@@ -31,7 +35,7 @@ export function Navbar() {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    // Close user menu when clicking outside
+    // Close menus when clicking outside
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
             if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
@@ -39,6 +43,12 @@ export function Navbar() {
             }
             if (messagesMenuRef.current && !messagesMenuRef.current.contains(event.target as Node)) {
                 setIsMessagesOpen(false);
+            }
+            if (exploreMenuRef.current && !exploreMenuRef.current.contains(event.target as Node)) {
+                setIsExploreOpen(false);
+            }
+            if (gearMenuRef.current && !gearMenuRef.current.contains(event.target as Node)) {
+                setIsGearOpen(false);
             }
         }
         document.addEventListener("mousedown", handleClickOutside);
@@ -86,142 +96,208 @@ export function Navbar() {
         }`;
 
     return (
-        <nav className={`sticky top-0 z-50 w-full transition-all duration-500 ${scrolled
-            ? 'bg-background/90 backdrop-blur-xl border-b border-border/50 shadow-sm'
-            : 'bg-transparent border-b border-transparent'
-            }`}>
-            <div className="container mx-auto px-6 h-16 flex items-center justify-between">
-                {/* Logo */}
-                <Link to="/" className="flex items-center space-x-2.5 group">
-                    <Camera className="h-5 w-5 text-sand-400 transition-transform duration-300 group-hover:rotate-12" strokeWidth={1.8} />
-                    <span className="font-sans text-xl font-bold tracking-tight">Tunisian Lens</span>
-                </Link>
+        <nav className={cn(
+            "sticky top-0 z-50 w-full transition-all duration-500",
+            scrolled
+                ? "bg-background/80 backdrop-blur-xl border-b border-border/40 shadow-sm py-2"
+                : "bg-transparent border-b border-transparent py-4"
+        )}>
+            <div className="container mx-auto px-6 flex items-center justify-between">
+                <div className="flex items-center gap-10">
+                    {/* Logo */}
+                    <Link to="/" className="flex items-center space-x-3 group">
+                        <Camera className="h-6 w-6 text-sand-400 transition-transform duration-300 group-hover:rotate-12" strokeWidth={2} />
+                        <span className="font-sans text-2xl font-black tracking-tight text-foreground">Tunisian Lens</span>
+                    </Link>
 
-                {/* Desktop Nav */}
-                <div className="hidden md:flex items-center space-x-8">
-                    <Link to="/explore" className={navLinkClass('/explore')}>
-                        Explore
-                    </Link>
-                    <Link to="/creatives" className={navLinkClass('/creatives')}>
-                        Creatives
-                    </Link>
-                    <Link to="/jobs" className={navLinkClass('/jobs')}>
-                        Jobs
-                    </Link>
-                    <Link to="/gear" className={navLinkClass('/gear')}>
-                        Gear Market
-                    </Link>
-                    <Link to="/about" className={navLinkClass('/about')}>
-                        About
-                    </Link>
-                </div>
-
-                {/* Desktop Actions */}
-                <div className="hidden md:flex items-center space-x-2">
-                    <Link to="/client-access" className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-300 mr-2">
-                        Client Access
-                    </Link>
-                    {(!isAuthenticated || user?.role === 'creative') && (
-                        <Link to="/submit">
-                            <Button variant="ghost" size="sm" className="hidden lg:inline-flex text-muted-foreground">Submit Work</Button>
-                        </Link>
-                    )}
-
-                    {/* Theme Toggle */}
-                    <button
-                        className="rounded-full w-9 h-9 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-300"
-                        onClick={toggleTheme}
-                        title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
-                    >
-                        {theme === 'light' ? (
-                            <Moon className="h-4 w-4" strokeWidth={1.5} />
-                        ) : (
-                            <Sun className="h-4 w-4" strokeWidth={1.5} />
-                        )}
-                    </button>
-
-                    {/* Messages Icon */}
-                    {isAuthenticated && (
-                        <div className="relative" ref={messagesMenuRef}>
+                    {/* Desktop Nav Discovery Group */}
+                    <div className="hidden md:flex items-center space-x-7">
+                        <div className="relative group/explore" ref={exploreMenuRef}>
                             <button
-                                className="rounded-full w-9 h-9 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-300 relative"
-                                title="Messages"
-                                onClick={() => setIsMessagesOpen(!isMessagesOpen)}
+                                onClick={() => setIsExploreOpen(!isExploreOpen)}
+                                onMouseEnter={() => setIsExploreOpen(true)}
+                                className={cn(navLinkClass('/explore'), "flex items-center gap-1 py-2")}
                             >
-                                <MessageSquare className="h-4 w-4" strokeWidth={1.5} />
-                                {unreadCount > 0 && (
-                                    <span className="absolute top-0.5 right-0.5 h-3.5 w-3.5 bg-sand-400 text-white text-[9px] font-semibold rounded-full flex items-center justify-center">
-                                        {unreadCount > 9 ? '9+' : unreadCount}
-                                    </span>
-                                )}
+                                Explore <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", isExploreOpen && "rotate-180")} />
                             </button>
-
                             <AnimatePresence>
-                                {isMessagesOpen && (
+                                {isExploreOpen && (
                                     <motion.div
-                                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                        transition={{ duration: 0.2 }}
-                                        className="absolute right-0 mt-2 w-80 bg-background border border-border rounded-2xl shadow-xl overflow-hidden z-50"
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: 10 }}
+                                        onMouseLeave={() => setIsExploreOpen(false)}
+                                        className="absolute top-full left-0 mt-1 w-48 bg-background border border-border rounded-xl shadow-xl p-2 z-50"
                                     >
-                                        <div className="p-4 border-b border-border flex items-center justify-between bg-muted/30">
-                                            <h3 className="font-bold text-sm">Recent Messages</h3>
-                                            <Link to="/messages" onClick={() => setIsMessagesOpen(false)} className="text-xs text-[hsl(var(--accent))] hover:underline font-semibold">
-                                                View All
-                                            </Link>
-                                        </div>
-                                        <div className="max-h-[320px] overflow-y-auto">
-                                            {getMyConversations().length === 0 ? (
-                                                <div className="p-8 text-center text-muted-foreground">
-                                                    <p className="text-xs">No conversations yet</p>
-                                                </div>
-                                            ) : (
-                                                getMyConversations().slice(0, 5).map((conv) => (
-                                                    <Link
-                                                        key={conv.id}
-                                                        to="/messages"
-                                                        onClick={() => setIsMessagesOpen(false)}
-                                                        className="block p-4 hover:bg-muted transition-colors border-b border-border/50 last:border-0"
-                                                    >
-                                                        <div className="flex items-start gap-3">
-                                                            <div className="w-10 h-10 rounded-full bg-sand-100 flex items-center justify-center text-sand-600 font-bold text-xs uppercase flex-shrink-0">
-                                                                {(user?.id === conv.clientId ? conv.creativeName : conv.clientName).charAt(0)}
-                                                            </div>
-                                                            <div className="flex-1 min-w-0">
-                                                                <div className="flex items-center justify-between gap-2 mb-1">
-                                                                    <p className="font-bold text-xs truncate">
-                                                                        {user?.id === conv.clientId ? conv.creativeName : conv.clientName}
-                                                                    </p>
-                                                                    <span className="text-[10px] text-muted-foreground whitespace-nowrap">
-                                                                        {conv.lastMessageAt ? new Date(conv.lastMessageAt).toLocaleDateString([], { month: 'short', day: 'numeric' }) : ''}
-                                                                    </span>
-                                                                </div>
-                                                                <p className="text-[11px] text-muted-foreground line-clamp-1">
-                                                                    {conv.lastMessage || 'Start a conversation'}
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    </Link>
-                                                ))
-                                            )}
-                                        </div>
+                                        <Link to="/explore" className="block px-3 py-2 text-sm hover:bg-muted rounded-lg transition-colors" onClick={() => setIsExploreOpen(false)}>Photography</Link>
+                                        <Link to="/explore?type=video" className="block px-3 py-2 text-sm hover:bg-muted rounded-lg transition-colors" onClick={() => setIsExploreOpen(false)}>Videography</Link>
+                                        <Link to="/creatives" className="block px-3 py-2 text-sm hover:bg-muted rounded-lg transition-colors" onClick={() => setIsExploreOpen(false)}>Top Creators</Link>
                                     </motion.div>
                                 )}
                             </AnimatePresence>
                         </div>
+
+                        <Link to="/creatives" className={navLinkClass('/creatives')}>
+                            Creatives
+                        </Link>
+                        <Link to="/jobs" className={navLinkClass('/jobs')}>
+                            Jobs
+                        </Link>
+
+                        <div className="relative group/gear" ref={gearMenuRef}>
+                            <button
+                                onClick={() => setIsGearOpen(!isGearOpen)}
+                                onMouseEnter={() => setIsGearOpen(true)}
+                                className={cn(navLinkClass('/gear'), "flex items-center gap-1 py-2")}
+                            >
+                                Gear Market <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", isGearOpen && "rotate-180")} />
+                            </button>
+                            <AnimatePresence>
+                                {isGearOpen && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: 10 }}
+                                        onMouseLeave={() => setIsGearOpen(false)}
+                                        className="absolute top-full left-0 mt-1 w-48 bg-background border border-border rounded-xl shadow-xl p-2 z-50"
+                                    >
+                                        <Link to="/gear?cat=camera" className="block px-3 py-2 text-sm hover:bg-muted rounded-lg transition-colors" onClick={() => setIsGearOpen(false)}>Cameras</Link>
+                                        <Link to="/gear?cat=lens" className="block px-3 py-2 text-sm hover:bg-muted rounded-lg transition-colors" onClick={() => setIsGearOpen(false)}>Lenses</Link>
+                                        <Link to="/gear?cat=lighting" className="block px-3 py-2 text-sm hover:bg-muted rounded-lg transition-colors" onClick={() => setIsGearOpen(false)}>Lighting</Link>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Desktop Actions Group */}
+                <div className="hidden md:flex items-center space-x-4">
+                    <div className="flex items-center gap-4 mr-2">
+                        <Link to="/client-access" className="text-[13px] font-medium text-muted-foreground hover:text-foreground transition-colors duration-300">
+                            Client Access
+                        </Link>
+                        <div className="h-4 w-[1px] bg-border/60" /> {/* Subtle Divider */}
+                    </div>
+
+                    {(!isAuthenticated || user?.role === 'creative') && (
+                        <Link to="/submit">
+                            <Button
+                                size="sm"
+                                className="hidden lg:inline-flex rounded-full bg-sand-400 hover:bg-sand-500 text-white font-bold px-5 shadow-lg shadow-sand-400/20 hover:shadow-sand-400/30 transition-all"
+                            >
+                                Submit Work
+                            </Button>
+                        </Link>
                     )}
+
+                    <div className="flex items-center gap-1.5">
+                        {/* Messages Icon */}
+                        {isAuthenticated && (
+                            <div className="relative" ref={messagesMenuRef}>
+                                <button
+                                    className="rounded-full w-9 h-9 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-300 relative"
+                                    title="Messages"
+                                    onClick={() => setIsMessagesOpen(!isMessagesOpen)}
+                                >
+                                    <MessageSquare className="h-4.5 w-4.5" strokeWidth={1.5} />
+                                    {unreadCount > 0 && (
+                                        <span className="absolute top-0.5 right-0.5 h-3.5 w-3.5 bg-sand-400 text-white text-[9px] font-semibold rounded-full flex items-center justify-center">
+                                            {unreadCount > 9 ? '9+' : unreadCount}
+                                        </span>
+                                    )}
+                                </button>
+                                <AnimatePresence>
+                                    {isMessagesOpen && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            transition={{ duration: 0.2 }}
+                                            className="absolute right-0 mt-2 w-80 bg-background border border-border rounded-2xl shadow-xl overflow-hidden z-50"
+                                        >
+                                            <div className="p-4 border-b border-border flex items-center justify-between bg-muted/30">
+                                                <h3 className="font-bold text-sm">Recent Messages</h3>
+                                                <Link to="/messages" onClick={() => setIsMessagesOpen(false)} className="text-xs text-[hsl(var(--accent))] hover:underline font-semibold">
+                                                    View All
+                                                </Link>
+                                            </div>
+                                            <div className="max-h-[320px] overflow-y-auto">
+                                                {getMyConversations().length === 0 ? (
+                                                    <div className="p-8 text-center text-muted-foreground">
+                                                        <p className="text-xs">No conversations yet</p>
+                                                    </div>
+                                                ) : (
+                                                    getMyConversations().slice(0, 5).map((conv) => (
+                                                        <Link
+                                                            key={conv.id}
+                                                            to="/messages"
+                                                            onClick={() => setIsMessagesOpen(false)}
+                                                            className="block p-4 hover:bg-muted transition-colors border-b border-border/50 last:border-0"
+                                                        >
+                                                            <div className="flex items-start gap-3">
+                                                                <div className="w-10 h-10 rounded-full bg-sand-100 flex items-center justify-center text-sand-600 font-bold text-xs uppercase flex-shrink-0">
+                                                                    {(user?.id === conv.clientId ? conv.creativeName : conv.clientName).charAt(0)}
+                                                                </div>
+                                                                <div className="flex-1 min-w-0">
+                                                                    <div className="flex items-center justify-between gap-2 mb-1">
+                                                                        <p className="font-bold text-xs truncate">
+                                                                            {user?.id === conv.clientId ? conv.creativeName : conv.clientName}
+                                                                        </p>
+                                                                        <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+                                                                            {conv.lastMessageAt ? new Date(conv.lastMessageAt).toLocaleDateString([], { month: 'short', day: 'numeric' }) : ''}
+                                                                        </span>
+                                                                    </div>
+                                                                    <p className="text-[11px] text-muted-foreground line-clamp-1">
+                                                                        {conv.lastMessage || 'Start a conversation'}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </Link>
+                                                    ))
+                                                )}
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+                        )}
+
+                        {/* Notifications Icon */}
+                        {isAuthenticated && (
+                            <button
+                                className="rounded-full w-9 h-9 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-300 relative"
+                                title="Notifications"
+                            >
+                                <Bell className="h-4.5 w-4.5" strokeWidth={1.5} />
+                                <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-sand-400 rounded-full" />
+                            </button>
+                        )}
+
+                        {/* Theme Toggle */}
+                        <button
+                            className="rounded-full w-9 h-9 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-300"
+                            onClick={toggleTheme}
+                            title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+                        >
+                            {theme === 'light' ? (
+                                <Moon className="h-4.5 w-4.5" strokeWidth={1.5} />
+                            ) : (
+                                <Sun className="h-4.5 w-4.5" strokeWidth={1.5} />
+                            )}
+                        </button>
+                    </div>
 
                     {/* Account Dropdown */}
                     <div className="relative" ref={userMenuRef}>
                         <button
-                            className="rounded-full w-9 h-9 flex items-center justify-center border border-border hover:border-foreground/20 overflow-hidden transition-all duration-300"
+                            className="rounded-full w-10 h-10 flex items-center justify-center border border-border/60 hover:border-foreground/20 overflow-hidden transition-all duration-300 bg-muted/20 shadow-sm"
                             onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                         >
                             {isAuthenticated && user?.avatar ? (
                                 <img src={user.avatar} alt={user.name} className="h-full w-full object-cover" />
                             ) : (
-                                <User className="h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
+                                <User className="h-5 w-5 text-muted-foreground" strokeWidth={1.5} />
                             )}
                         </button>
 

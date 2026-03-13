@@ -2,13 +2,11 @@ import { useParams, Link } from "react-router-dom";
 import { ARTISTS, PROJECTS } from "../data/mockData";
 import { ProjectCard } from "../components/ui/ProjectCard";
 import { Button } from "../components/ui/button";
-import {
-    MapPin, Mail, Heart, Star,
-    Clapperboard, Calendar, Check,
-    Clock, Zap, Globe2, ShieldCheck, Camera
-} from "lucide-react";
+import { MapPin, Heart, Star, Clapperboard, Globe2, ShieldCheck, Camera, Share, Twitter, MessageSquare, Zap } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { useAlert } from "../context/AlertContext";
+import { useChat } from "../context/ChatContext";
 import { VerificationBadge } from "../components/ui/VerificationBadge";
 import { BadgePill } from "../components/ui/BadgePill";
 import { CinematicViewer } from "../components/ui/CinematicViewer";
@@ -17,9 +15,8 @@ import { BeforeAfterSlider } from "../components/ui/BeforeAfterSlider";
 import { cn } from "../lib/utils";
 import { isArtistVerified, setArtistVerification } from "../lib/verification";
 import { motion, AnimatePresence } from "framer-motion";
-import { useCurrency } from "../lib/useCurrency";
 
-const TABS = ["Portfolio", "Services", "Reviews", "About"] as const;
+const TABS = ["Portfolio", "Reviews", "About"] as const;
 type Tab = (typeof TABS)[number];
 
 // deterministic rating from artist data
@@ -31,13 +28,15 @@ function getArtistRating(_artistId: string, name: string) {
 
 export function ArtistProfile() {
     const { id } = useParams<{ id: string }>();
-    const [showContact, setShowContact] = useState(false);
     const [activeTab, setActiveTab] = useState<Tab>("Portfolio");
     const [cinematicOpen, setCinematicOpen] = useState(false);
     const [cinematicIndex, setCinematicIndex] = useState(0);
     const [isSaved, setIsSaved] = useState(false);
     const [activeCollection, setActiveCollection] = useState<string | null>(null);
+    const [showShareMenu, setShowShareMenu] = useState(false);
     const { user } = useAuth();
+    const { showAlert } = useAlert();
+    const { createConversation } = useChat();
     const isAdmin = user?.role === 'admin';
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -58,7 +57,6 @@ export function ArtistProfile() {
     const verifiedFromStorage = id ? isArtistVerified(id) : false;
     const [isVerified, setIsVerified] = useState<boolean>(verifiedFromStorage);
     const { rating: profileRating } = getArtistRating(id || "", artist.name);
-    const { formatPrice } = useCurrency();
 
     const toggleVerification = () => {
         const newStatus = !isVerified;
@@ -72,7 +70,6 @@ export function ArtistProfile() {
     const profileCategories = artist.categories || ["Photography"];
     const languages = artist.languages || [];
     const internationalAvailable = artist.internationalAvailable || false;
-    const packages = artist.packages || [];
     const collections = artist.collections || [];
     const stats = artist.stats;
     const styleTags = artist.styleTags || [];
@@ -99,6 +96,56 @@ export function ArtistProfile() {
                         title={artist.name}
                         onClose={() => setCinematicOpen(false)}
                     />
+                )}
+            </AnimatePresence>
+
+            {/* ── Share Tooltip ── */}
+            <AnimatePresence>
+                {showShareMenu && (
+                    <>
+                        <div className="fixed inset-0 z-[60]" onClick={() => setShowShareMenu(false)} />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                            className="fixed top-24 right-6 md:right-1/2 md:translate-x-[400px] z-[70] w-56 bg-card border border-border rounded-2xl shadow-2xl p-2 overflow-hidden"
+                        >
+                            <div className="p-3 border-b border-border/50 mb-1">
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Share Profile</p>
+                            </div>
+                            <button
+                                onClick={() => {
+                                    navigator.clipboard.writeText(window.location.href);
+                                    showAlert("Profile link copied to clipboard!", "success");
+                                    setShowShareMenu(false);
+                                }}
+                                className="w-full text-left px-3 py-2.5 hover:bg-muted rounded-xl transition-colors flex items-center gap-3 text-sm font-medium"
+                            >
+                                <div className="p-1.5 bg-primary/10 rounded-lg text-primary"><Zap className="h-4 w-4" /></div>
+                                Copy Profile Link
+                            </button>
+                            <a
+                                href={`https://twitter.com/intent/tweet?text=Check out ${artist.name}'s portfolio on Tunisian Lens!&url=${encodeURIComponent(window.location.href)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full text-left px-3 py-2.5 hover:bg-muted rounded-xl transition-colors flex items-center gap-3 text-sm font-medium"
+                                onClick={() => setShowShareMenu(false)}
+                            >
+                                <div className="p-1.5 bg-black/5 rounded-lg text-black"><Twitter className="h-4 w-4" /></div>
+                                Share on Twitter
+                            </a>
+                            <a
+                                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full text-left px-3 py-2.5 hover:bg-muted rounded-xl transition-colors flex items-center gap-3 text-sm font-medium"
+                                onClick={() => setShowShareMenu(false)}
+                            >
+                                <div className="p-1.5 bg-[#1877F2]/10 rounded-lg text-[#1877F2]"><span className="font-bold text-xs">f</span></div>
+                                Share on Facebook
+                            </a>
+                        </motion.div>
+                    </>
                 )}
             </AnimatePresence>
 
@@ -178,7 +225,6 @@ export function ArtistProfile() {
                             </p>
                         </div>
 
-                        {/* Right: Quick Stats & CTAs */}
                         <div className="w-full md:w-80 space-y-6">
                             <div className="bg-muted/30 border border-border rounded-3xl p-6 space-y-6">
                                 <div className="grid grid-cols-2 gap-4">
@@ -187,27 +233,66 @@ export function ArtistProfile() {
                                         <p className="text-2xl font-bold">{stats?.jobsCompleted || 0}</p>
                                     </div>
                                     <div className="space-y-1 text-right">
-                                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Response Rate</p>
-                                        <p className="text-2xl font-bold text-[#C8A97E]">{stats?.successRate || 100}%</p>
+                                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Success Rate</p>
+                                        <p className="text-2xl font-bold text-sand-500">{stats?.successRate || 100}%</p>
                                     </div>
                                 </div>
-                                <div className="h-[1px] bg-border" />
+                                <div className="h-[1px] bg-border/50" />
                                 <div className="space-y-4">
-                                    <Link to={`/hire/${id}`} className="block">
-                                        <Button className="w-full h-14 rounded-2xl text-base font-bold gap-2">
-                                            Hire Creator
-                                        </Button>
-                                    </Link>
+                                    <Button
+                                        className="w-full h-14 rounded-2xl text-base font-bold gap-3 bg-sand-400 hover:bg-sand-500 text-white shadow-lg shadow-sand-400/20 transition-all border-none"
+                                        onClick={() => {
+                                            if (!user) {
+                                                showAlert("Please log in to message creators", "warning");
+                                                return;
+                                            }
+                                            createConversation({
+                                                jobId: "direct",
+                                                jobTitle: "Direct Inquiry",
+                                                clientId: user.id,
+                                                clientName: user.name,
+                                                creativeId: artist.id,
+                                                creativeName: artist.name
+                                            });
+                                            showAlert(`Conversation started with ${artist.name}`, "success");
+                                        }}
+                                    >
+                                        <MessageSquare className="h-5 w-5 fill-white/20" /> Message Creator
+                                    </Button>
+
                                     <div className="grid grid-cols-2 gap-3">
-                                        <Button variant="outline" className="rounded-xl h-12 gap-2" onClick={() => setShowContact(!showContact)}>
-                                            <Mail className="h-4 w-4" /> Message
-                                        </Button>
                                         <Button
                                             variant="outline"
-                                            className={cn("rounded-xl h-12 gap-2 transition-all", isSaved && "bg-[#C8A97E]/10 border-[#C8A97E]/30 text-[#C8A97E]")}
+                                            className="rounded-xl h-12 gap-2 font-semibold border-border hover:bg-muted text-sm"
+                                            onClick={() => showAlert("Quote request feature coming soon!", "warning")}
+                                        >
+                                            Request Quote
+                                        </Button>
+                                        <Link to={`/hire/${id}`} className="block">
+                                            <Button variant="outline" className="w-full h-12 rounded-xl font-semibold border-border hover:bg-muted text-sm">
+                                                Hire Directly
+                                            </Button>
+                                        </Link>
+                                    </div>
+
+                                    <div className="h-[1px] bg-border/30 my-2" />
+
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className={cn("rounded-xl h-10 gap-2 text-[11px] font-bold uppercase tracking-wider transition-all", isSaved ? "text-amber-500 bg-amber-500/5" : "text-muted-foreground hover:text-foreground")}
                                             onClick={() => setIsSaved(!isSaved)}
                                         >
-                                            <Heart className={cn("h-4 w-4", isSaved && "fill-[#C8A97E]")} /> {isSaved ? "Saved" : "Save"}
+                                            <Heart className={cn("h-3.5 w-3.5", isSaved && "fill-amber-500")} /> {isSaved ? "Saved" : "Save"}
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="rounded-xl h-10 gap-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground"
+                                            onClick={() => setShowShareMenu(true)}
+                                        >
+                                            <Share className="h-3.5 w-3.5" /> Share
                                         </Button>
                                     </div>
                                 </div>
@@ -228,9 +313,6 @@ export function ArtistProfile() {
                                 {tab}
                                 {tab === "Portfolio" && (allPortfolioImgs.length + artistProjects.length) > 0 && (
                                     <span className="ml-1.5 text-[10px] bg-muted text-muted-foreground px-1.5 py-0.5 rounded-full">{allPortfolioImgs.length + artistProjects.length}</span>
-                                )}
-                                {tab === "Services" && packages.length > 0 && (
-                                    <span className="ml-1.5 text-[10px] bg-muted text-muted-foreground px-1.5 py-0.5 rounded-full">{packages.length}</span>
                                 )}
                             </button>
                         ))}
@@ -326,45 +408,6 @@ export function ArtistProfile() {
                             <div className="py-20 text-center text-muted-foreground">
                                 <p>No portfolio work uploaded yet.</p>
                             </div>
-                        )}
-                    </div>
-                )}
-
-                {/* SERVICES TAB */}
-                {activeTab === "Services" && (
-                    <div>
-                        {packages.length > 0 ? (
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-                                {packages.map((pkg: { name: string; price: number; description: string; deliveryDays: number; includes: string[] }, i: number) => (
-                                    <div key={i} className={cn("p-6 rounded-xl border space-y-4",
-                                        i === 1 ? "border-sand-400 bg-sand-50/50 dark:bg-sand-900/10 shadow-md" : "border-border")}>
-                                        {i === 1 && <span className="text-[9px] font-bold uppercase tracking-widest bg-sand-400 text-white px-2 py-0.5 rounded">Popular</span>}
-                                        <div>
-                                            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">{pkg.name}</p>
-                                            <p className="text-2xl font-sans font-bold mt-1">{formatPrice(pkg.price)}</p>
-                                        </div>
-                                        <p className="text-sm text-muted-foreground leading-relaxed">{pkg.description}</p>
-                                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                                            <Clock className="h-3.5 w-3.5" strokeWidth={1.5} />
-                                            {pkg.deliveryDays} day{pkg.deliveryDays !== 1 ? "s" : ""} delivery
-                                        </div>
-                                        <ul className="space-y-2 pt-2 border-t border-border">
-                                            {pkg.includes.map((item: string) => (
-                                                <li key={item} className="flex items-start gap-2 text-xs text-muted-foreground">
-                                                    <Check className="h-3.5 w-3.5 mt-0.5 flex-shrink-0 text-sand-500" strokeWidth={2} />{item}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                        <Link to={`/hire/${id}`}>
-                                            <Button size="sm" variant={i === 1 ? "default" : "outline"} className="w-full gap-2 mt-2 text-xs">
-                                                <Calendar className="h-3.5 w-3.5" strokeWidth={1.5} /> Book This Package
-                                            </Button>
-                                        </Link>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="py-20 text-center text-muted-foreground"><p>No service packages listed yet.</p></div>
                         )}
                     </div>
                 )}
@@ -521,22 +564,36 @@ export function ArtistProfile() {
                         exit={{ y: 100, opacity: 0 }}
                         className="fixed bottom-6 left-6 right-6 z-50 md:hidden flex gap-2"
                     >
+                        <Button
+                            size="lg"
+                            className="flex-1 shadow-2xl h-14 text-base font-bold rounded-2xl gap-3 bg-sand-400 text-white border-none"
+                            onClick={() => {
+                                if (!user) {
+                                    showAlert("Please log in to message creators", "warning");
+                                    return;
+                                }
+                                createConversation({
+                                    jobId: "direct",
+                                    jobTitle: "Direct Inquiry",
+                                    clientId: user.id,
+                                    clientName: user.name,
+                                    creativeId: artist.id,
+                                    creativeName: artist.name
+                                });
+                                showAlert(`Conversation started with ${artist.name}`, "success");
+                            }}
+                        >
+                            <MessageSquare className="h-5 w-5 fill-white/20" /> Message
+                        </Button>
                         <Link to={`/hire/${id}`} className="flex-1">
                             <Button
                                 size="lg"
-                                className="w-full shadow-2xl h-14 text-base font-bold rounded-2xl gap-2 bg-foreground text-background"
+                                variant="outline"
+                                className="w-full shadow-2xl h-14 text-base font-bold rounded-2xl bg-background/80 backdrop-blur-md"
                             >
-                                Hire Creator
+                                Hire
                             </Button>
                         </Link>
-                        <Button
-                            size="lg"
-                            variant="outline"
-                            className="w-14 h-14 shadow-2xl rounded-2xl p-0 bg-background/80 backdrop-blur-md"
-                            onClick={() => setShowContact(true)}
-                        >
-                            <Mail className="h-6 w-6" />
-                        </Button>
                     </motion.div>
                 )}
             </AnimatePresence>

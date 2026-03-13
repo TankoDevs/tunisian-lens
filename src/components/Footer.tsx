@@ -1,13 +1,13 @@
-import { Camera, Instagram } from "lucide-react";
+import { Camera, Instagram, Linkedin, Twitter, Youtube } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export function Footer() {
     return (
-        <footer className="border-t border-border bg-background">
+        <footer className="border-t border-border bg-background text-sm">
             <div className="container mx-auto px-6 py-16">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
                     {/* Brand */}
-                    <div className="md:col-span-2 space-y-4">
+                    <div className="md:col-span-2 space-y-4 text-balance">
                         <Link to="/" className="flex items-center space-x-2.5">
                             <Camera className="h-5 w-5 text-sand-400" strokeWidth={1.8} />
                             <span className="font-sans text-xl font-bold tracking-tight">Tunisian Lens</span>
@@ -16,8 +16,17 @@ export function Footer() {
                             A curated photography marketplace connecting clients with world-class visual artists. Where vision meets opportunity.
                         </p>
                         <div className="flex space-x-4 pt-2">
-                            <a href="#" className="text-muted-foreground hover:text-sand-400 transition-colors duration-300" aria-label="Instagram">
-                                <Instagram className="h-4.5 w-4.5" strokeWidth={1.5} />
+                            <a href="https://instagram.com/tunisianlens" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-sand-400 transition-colors duration-300" aria-label="Instagram">
+                                <Instagram className="h-5 w-5" strokeWidth={1.5} />
+                            </a>
+                            <a href="https://linkedin.com/company/tunisianlens" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-[#0077b5] transition-colors duration-300" aria-label="LinkedIn">
+                                <Linkedin className="h-5 w-5" strokeWidth={1.5} />
+                            </a>
+                            <a href="https://x.com/tunisianlens" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-black dark:hover:text-white transition-colors duration-300" aria-label="Twitter">
+                                <Twitter className="h-5 w-5" strokeWidth={1.5} />
+                            </a>
+                            <a href="https://youtube.com/@tunisianlens" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-[#FF0000] transition-colors duration-300" aria-label="YouTube">
+                                <Youtube className="h-5 w-5" strokeWidth={1.5} />
                             </a>
                         </div>
                     </div>

@@ -220,15 +220,6 @@ export const COUNTRIES = [
     "Germany", "Morocco", "Egypt", "Spain", "Italy", "Turkey", "Lebanon",
 ];
 
-export interface ServicePackage {
-    name: string;
-    price: number;
-    currency: string;
-    description: string;
-    deliveryDays: number;
-    includes: string[];
-}
-
 export type BadgeLevel = 'verified' | 'pro' | 'elite';
 
 export interface CreativeStats {
@@ -268,7 +259,6 @@ export interface Artist {
     currency: string;
     deliveryDays: number;
     portfolioImages: string[];
-    packages: ServicePackage[];
     contact: {
         email: string;
         instagram: string;
@@ -378,11 +368,6 @@ export const ARTISTS: Artist[] = [
             "https://images.unsplash.com/photo-1518982054-56f90e37e4e6?w=400&q=70",
             "https://images.unsplash.com/photo-1490077476659-095159692ab5?w=400&q=70"
         ],
-        packages: [
-            { name: "Basic", price: 120, currency: "USD", description: "Half-day street photography session", deliveryDays: 5, includes: ["2-hour session", "20 edited photos", "Digital delivery"] },
-            { name: "Standard", price: 250, currency: "USD", description: "Full-day documentary shoot", deliveryDays: 7, includes: ["6-hour session", "60 edited photos", "Digital delivery", "Location scouting"] },
-            { name: "Premium", price: 450, currency: "USD", description: "Multi-day visual story", deliveryDays: 14, includes: ["2-day session", "100+ edited photos", "Print-ready files", "Online gallery", "Commercial license"] }
-        ],
         contact: { email: "amine.b@example.com", instagram: "@aminelens", phone: "+216 00 000 000" },
         stats: { jobsCompleted: 24, repeatRate: 58, successRate: 92, avgResponseHours: 2 },
         equipment: ["Sony A7 IV", "35mm f/1.4 GM", "85mm f/1.8", "Godox V1 Flash"],
@@ -438,11 +423,6 @@ export const ARTISTS: Artist[] = [
             "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=400&q=70",
             "https://images.unsplash.com/photo-1605722243979-fe0be8158232?w=400&q=70"
         ],
-        packages: [
-            { name: "Basic", price: 400, currency: "USD", description: "Wedding ceremony coverage", deliveryDays: 14, includes: ["4-hour coverage", "100 edited photos", "Online gallery"] },
-            { name: "Standard", price: 800, currency: "USD", description: "Full wedding day", deliveryDays: 21, includes: ["8-hour coverage", "200 edited photos", "Online gallery", "Printed album (20 pages)"] },
-            { name: "Premium", price: 1400, currency: "USD", description: "Complete wedding package", deliveryDays: 30, includes: ["2-day coverage", "350+ edited photos", "Drone footage", "Luxury album", "USB drive"] }
-        ],
         contact: { email: "sarra.j@example.com", instagram: "@sarraphoto", phone: "+216 11 111 111" },
         stats: { jobsCompleted: 12, repeatRate: 41, successRate: 88, avgResponseHours: 6 },
         equipment: ["Canon R5", "24-70mm f/2.8L", "50mm f/1.2L", "DJI Mavic 3 Pro"],
@@ -481,11 +461,6 @@ export const ARTISTS: Artist[] = [
             "https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=400&q=70",
             "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=400&q=70",
             "https://images.unsplash.com/photo-1482938289607-e9573fc25ebb?w=400&q=70"
-        ],
-        packages: [
-            { name: "Basic", price: 200, currency: "USD", description: "Single location landscape session", deliveryDays: 7, includes: ["Sunrise or sunset shoot", "15 edited photos", "Digital delivery"] },
-            { name: "Standard", price: 500, currency: "USD", description: "Multi-location day tour", deliveryDays: 10, includes: ["Full-day shoot", "40 edited photos", "Drone aerial shots", "Digital delivery"] },
-            { name: "Premium", price: 900, currency: "USD", description: "Desert expedition series", deliveryDays: 21, includes: ["3-day expedition", "80+ edited photos", "Drone footage", "Commercial license", "Print-ready files"] }
         ],
         contact: { email: "karim.t@example.com", instagram: "@karimscapes", phone: "+216 22 222 222" },
         stats: { jobsCompleted: 31, repeatRate: 65, successRate: 96, avgResponseHours: 4 },
@@ -534,11 +509,6 @@ export const ARTISTS: Artist[] = [
             "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=400&q=70",
             "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=70"
         ],
-        packages: [
-            { name: "Basic", price: 350, currency: "USD", description: "Portrait or headshot session", deliveryDays: 5, includes: ["2-hour studio session", "15 retouched photos", "Digital delivery"] },
-            { name: "Standard", price: 750, currency: "USD", description: "Editorial fashion shoot", deliveryDays: 7, includes: ["Half-day shoot", "30 retouched photos", "Styling consultation", "Digital delivery"] },
-            { name: "Premium", price: 1800, currency: "USD", description: "Full editorial campaign", deliveryDays: 14, includes: ["Full-day shoot", "60+ retouched photos", "Creative direction", "Lookbook layout", "Commercial license"] }
-        ],
         contact: { email: "lea.moreau@example.com", instagram: "@leamorphoto", phone: "+33 6 00 00 00 00" },
         stats: { jobsCompleted: 47, repeatRate: 72, successRate: 98, avgResponseHours: 6 },
         badgeLevel: 'elite',
@@ -564,11 +534,6 @@ export const ARTISTS: Artist[] = [
             "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=400&q=70",
             "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=400&q=70",
             "https://images.unsplash.com/photo-1582648257702-0e19fb53e8b5?w=400&q=70"
-        ],
-        packages: [
-            { name: "Basic", price: 500, currency: "USD", description: "Interior or exterior shoot", deliveryDays: 5, includes: ["Half-day shoot", "20 edited photos", "Digital delivery"] },
-            { name: "Standard", price: 1200, currency: "USD", description: "Full property or project shoot", deliveryDays: 7, includes: ["Full-day shoot", "50 edited photos", "Twilight shots", "Digital delivery"] },
-            { name: "Premium", price: 2500, currency: "USD", description: "Complete commercial campaign", deliveryDays: 14, includes: ["2-day shoot", "100+ edited photos", "Drone aerials", "Virtual tour content", "Commercial license"] }
         ],
         contact: { email: "omar.rashid@example.com", instagram: "@omarscapes", phone: "+971 50 000 0000" },
         stats: { jobsCompleted: 38, repeatRate: 60, successRate: 94, avgResponseHours: 10 },
@@ -596,11 +561,6 @@ export const ARTISTS: Artist[] = [
             "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&q=70",
             "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=400&q=70"
         ],
-        packages: [
-            { name: "Basic", price: 300, currency: "USD", description: "Menu or product shoot", deliveryDays: 5, includes: ["3-hour session", "15 edited photos", "Digital delivery"] },
-            { name: "Standard", price: 650, currency: "USD", description: "Restaurant full shoot", deliveryDays: 7, includes: ["Full-day session", "35 edited photos", "Styling props", "Digital delivery"] },
-            { name: "Premium", price: 1200, currency: "USD", description: "Cookbook or brand campaign", deliveryDays: 14, includes: ["2-day session", "70+ edited photos", "Creative direction", "Social media cuts", "Commercial license"] }
-        ],
         contact: { email: "emily.c@example.com", instagram: "@emilyfoodphoto", phone: "+44 77 00 00 00 00" },
         stats: { jobsCompleted: 8, repeatRate: 25, successRate: 80, avgResponseHours: 18 },
         badgeLevel: 'verified',
@@ -626,11 +586,6 @@ export const ARTISTS: Artist[] = [
             "https://images.unsplash.com/photo-1519741497674-611481863552?w=400&q=70",
             "https://images.unsplash.com/photo-1564419320408-38e75470aed8?w=400&q=70",
             "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=70"
-        ],
-        packages: [
-            { name: "Basic", price: 500, currency: "USD", description: "Wedding highlight reel (3-5 min)", deliveryDays: 14, includes: ["Full-day coverage", "3-5 min highlight film", "Digital delivery"] },
-            { name: "Standard", price: 1200, currency: "USD", description: "Full wedding film", deliveryDays: 21, includes: ["Full-day coverage", "8-12 min film", "Highlight reel", "Drone footage", "Raw footage"] },
-            { name: "Premium", price: 2200, currency: "USD", description: "Cinematic wedding package", deliveryDays: 30, includes: ["2-day coverage", "15+ min film", "Highlight reel", "Drone", "Same-day edit", "USB delivery"] }
         ],
         contact: { email: "youssef.k@example.com", instagram: "@yousseffilms", phone: "+216 33 333 333" },
         stats: { jobsCompleted: 19, repeatRate: 52, successRate: 90, avgResponseHours: 3 },
@@ -659,11 +614,6 @@ export const ARTISTS: Artist[] = [
             "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=400&q=70",
             "https://images.unsplash.com/photo-1536240478700-b869ad10e128?w=400&q=70",
             "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=400&q=70"
-        ],
-        packages: [
-            { name: "Basic", price: 350, currency: "USD", description: "Social media video (30-60s)", deliveryDays: 5, includes: ["Half-day shoot", "1 edited video", "Vertical + horizontal cuts", "Digital delivery"] },
-            { name: "Standard", price: 800, currency: "USD", description: "Brand promo video (1-2 min)", deliveryDays: 7, includes: ["Full-day shoot", "1-2 min edited video", "Social cuts", "Color grading", "Background music"] },
-            { name: "Premium", price: 1800, currency: "USD", description: "Full video campaign", deliveryDays: 14, includes: ["2-day shoot", "3 edited videos", "Drone footage", "Motion graphics", "Commercial license"] }
         ],
         contact: { email: "nadia.b@example.com", instagram: "@nadiafilms", phone: "+216 44 444 444" },
         stats: { jobsCompleted: 15, repeatRate: 46, successRate: 87, avgResponseHours: 7 },
