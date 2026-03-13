@@ -2,7 +2,6 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useMarketplace } from "../context/MarketplaceContext";
 import { Button } from "./ui/button";
 import { Menu, X, Camera, User, LogIn, UserPlus, LogOut, Briefcase, ShieldCheck, MessageSquare, Zap, TrendingUp, Bell, ChevronDown } from "lucide-react";
-import { Logo } from "./ui/Logo";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
@@ -104,8 +103,9 @@ export function Navbar() {
             <div className="container mx-auto px-6 flex items-center justify-between">
                 <div className="flex items-center gap-10">
                     {/* Logo */}
-                    <Link to="/" className="group flex">
-                        <Logo iconSize={24} textSize="text-2xl" />
+                    <Link to="/" className="flex items-center space-x-3 group">
+                        <Camera className="h-6 w-6 text-sand-400 transition-transform duration-300 group-hover:rotate-12" strokeWidth={2} />
+                        <span className="font-sans text-2xl font-black tracking-tight text-foreground">Tunisian Lens</span>
                     </Link>
 
                     {/* Desktop Nav Discovery Group */}
