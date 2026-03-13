@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { MapPin, Globe, Mail, Instagram, Phone, Star, Clock, Check, ChevronLeft, Calendar } from "lucide-react";
+import { MapPin, Globe, Mail, Phone, Star, Check, ChevronLeft, Calendar } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { ARTISTS, PROJECTS } from "../data/mockData";
 import { VerificationBadge } from "../components/ui/VerificationBadge";
 import { isArtistVerified } from "../lib/verification";
-import { cn } from "../lib/utils";
 import { useCurrency } from "../lib/useCurrency";
 
 
@@ -14,9 +13,7 @@ import { useCurrency } from "../lib/useCurrency";
 export function Hire() {
     const { id } = useParams<{ id: string }>();
     const artist = ARTISTS.find(a => a.id === id);
-    const [selectedPackage, setSelectedPackage] = useState(0);
-    const [showForm, setShowForm] = useState(false);
-    const [formData, setFormData] = useState({ name: "", email: "", date: "", message: "" });
+    const [formData, setFormData] = useState({ name: "", email: "", budget: "", date: "", message: "" });
     const [submitted, setSubmitted] = useState(false);
 
     const artistProjects = PROJECTS.filter(p => p.artist.id === id).slice(0, 3);
@@ -47,8 +44,8 @@ export function Hire() {
         <div className="min-h-screen">
             {/* Back */}
             <div className="container mx-auto px-4 pt-6">
-                <Link to="/creatives" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
-                    <ChevronLeft className="h-4 w-4" strokeWidth={2} /> Back to Creatives
+                <Link to={`/artist/${artist.id}`} className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    <ChevronLeft className="h-4 w-4" strokeWidth={2} /> Back to Artist Profile
                 </Link>
             </div>
 
@@ -88,10 +85,6 @@ export function Hire() {
                                         <span key={cat} className="text-xs px-2.5 py-1 bg-secondary rounded-full">{cat}</span>
                                     ))}
                                 </div>
-                                <div className="flex gap-1 text-xs text-muted-foreground pt-1">
-                                    <span className="font-medium text-foreground">Languages:</span>
-                                    {artist.languages.join(", ")}
-                                </div>
                             </div>
                         </div>
 
@@ -101,48 +94,29 @@ export function Hire() {
                             <p className="text-muted-foreground leading-relaxed">{artist.bio}</p>
                         </div>
 
-                        {/* Service Packages */}
-                        <div className="space-y-4">
-                            <h2 className="text-xl font-sans font-semibold">Service Packages</h2>
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                {artist.packages.map((pkg, i) => (
-                                    <button
-                                        key={pkg.name}
-                                        onClick={() => { setSelectedPackage(i); setShowForm(true); }}
-                                        className={cn(
-                                            "text-left p-5 rounded-xl border-2 transition-all duration-200 space-y-3",
-                                            selectedPackage === i && showForm
-                                                ? "border-foreground bg-foreground text-background"
-                                                : "border-border hover:border-foreground/50 bg-card"
-                                        )}
-                                    >
-                                        <div>
-                                            <p className="text-xs font-bold uppercase tracking-widest opacity-60">{pkg.name}</p>
-                                            <p className={cn("text-2xl font-bold mt-1", selectedPackage === i && showForm ? "text-background" : "")}>
-                                                {formatPrice(pkg.price)}
-                                                <span className={cn("text-sm font-normal ml-1", selectedPackage === i && showForm ? "text-background/70" : "text-muted-foreground")}>
-
-                                                </span>
-                                            </p>
-                                        </div>
-                                        <p className={cn("text-sm", selectedPackage === i && showForm ? "text-background/80" : "text-muted-foreground")}>
-                                            {pkg.description}
-                                        </p>
-                                        <div className="flex items-center gap-1.5 text-sm">
-                                            <Clock className="h-3.5 w-3.5" strokeWidth={2} />
-                                            {pkg.deliveryDays} day{pkg.deliveryDays !== 1 ? "s" : ""} delivery
-                                        </div>
-                                        <ul className="space-y-1.5">
-                                            {pkg.includes.map(item => (
-                                                <li key={item} className="flex items-start gap-2 text-xs">
-                                                    <Check className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" strokeWidth={2.5} />
-                                                    {item}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </button>
-                                ))}
-                            </div>
+                        {/* Hiring Context */}
+                        <div className="p-6 rounded-2xl border bg-muted/30 border-dashed space-y-4">
+                            <h3 className="font-semibold flex items-center gap-2">
+                                <Calendar className="h-5 w-5 text-primary" /> Direct Booking Request
+                            </h3>
+                            <p className="text-sm text-muted-foreground">
+                                You are initiating a direct hiring request with <strong>{artist.name}</strong>.
+                                Since our platform moved to a negotiation-based model, you can now propose your own project scope and budget directly.
+                            </p>
+                            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                                <li className="flex items-center gap-2">
+                                    <Check className="h-4 w-4 text-green-500" strokeWidth={2.5} /> Flexible project scope
+                                </li>
+                                <li className="flex items-center gap-2">
+                                    <Check className="h-4 w-4 text-green-500" strokeWidth={2.5} /> Custom budget proposals
+                                </li>
+                                <li className="flex items-center gap-2">
+                                    <Check className="h-4 w-4 text-green-500" strokeWidth={2.5} /> Direct communication
+                                </li>
+                                <li className="flex items-center gap-2">
+                                    <Check className="h-4 w-4 text-green-500" strokeWidth={2.5} /> Secure payments
+                                </li>
+                            </ul>
                         </div>
 
                         {/* Portfolio Preview */}
@@ -175,97 +149,74 @@ export function Hire() {
                         <div className="bg-card border rounded-2xl p-5 space-y-4 sticky top-20">
                             <div className="text-center pb-2 border-b">
                                 <p className="text-sm text-muted-foreground">Starting from</p>
-                                <p className="text-3xl font-bold">{formatPrice(artist.startingPrice)}
-
-                                </p>
+                                <p className="text-3xl font-bold">{formatPrice(artist.startingPrice)}</p>
                             </div>
 
                             {!submitted ? (
-                                <>
-                                    <Button className="w-full" size="lg" onClick={() => setShowForm(true)}>
-                                        <Calendar className="h-4 w-4 mr-2" strokeWidth={2} />
-                                        Request a Booking
-                                    </Button>
+                                <form onSubmit={handleSubmit} className="space-y-4 animate-in slide-in-from-top-2 duration-200">
+                                    <div className="space-y-1.5">
+                                        <label className="text-xs font-semibold">Your Name</label>
+                                        <Input required placeholder="Full name" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="h-10 text-sm" />
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <label className="text-xs font-semibold">Email</label>
+                                        <Input required type="email" placeholder="you@example.com" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} className="h-10 text-sm" />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div className="space-y-1.5">
+                                            <label className="text-xs font-semibold">Project Date</label>
+                                            <Input required type="date" value={formData.date} onChange={e => setFormData({ ...formData, date: e.target.value })} className="h-10 text-sm" />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <label className="text-xs font-semibold">Your Budget ($)</label>
+                                            <Input required type="number" placeholder="e.g. 500" value={formData.budget} onChange={e => setFormData({ ...formData, budget: e.target.value })} className="h-10 text-sm" />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <label className="text-xs font-semibold">Project Details</label>
+                                        <textarea
+                                            required
+                                            rows={4}
+                                            placeholder="Describe what you need, location, duration, etc…"
+                                            value={formData.message}
+                                            onChange={e => setFormData({ ...formData, message: e.target.value })}
+                                            className="w-full text-sm rounded-md border border-input bg-background px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-ring"
+                                        />
+                                    </div>
+                                    <Button type="submit" className="w-full" size="lg">Send Hiring Request</Button>
 
-                                    {showForm && (
-                                        <form onSubmit={handleSubmit} className="space-y-3 animate-in slide-in-from-top-2 duration-200">
-                                            {/* Package selector */}
-                                            <div className="space-y-1">
-                                                <label className="text-xs font-semibold">Package</label>
-                                                <div className="grid grid-cols-3 gap-1">
-                                                    {artist.packages.map((pkg, i) => (
-                                                        <button
-                                                            type="button"
-                                                            key={pkg.name}
-                                                            onClick={() => setSelectedPackage(i)}
-                                                            className={cn(
-                                                                "text-xs py-1.5 rounded-lg border transition-colors",
-                                                                selectedPackage === i
-                                                                    ? "bg-foreground text-background border-foreground"
-                                                                    : "hover:bg-muted"
-                                                            )}
-                                                        >
-                                                            {pkg.name}
-                                                        </button>
-                                                    ))}
-                                                </div>
-                                                <p className="text-xs text-muted-foreground">
-                                                    {formatPrice(artist.packages[selectedPackage].price)} · {artist.packages[selectedPackage].deliveryDays}d delivery
-                                                </p>
-                                            </div>
-                                            <div className="space-y-1">
-                                                <label className="text-xs font-semibold">Your Name</label>
-                                                <Input required placeholder="Full name" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="h-9 text-sm" />
-                                            </div>
-                                            <div className="space-y-1">
-                                                <label className="text-xs font-semibold">Email</label>
-                                                <Input required type="email" placeholder="you@example.com" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} className="h-9 text-sm" />
-                                            </div>
-                                            <div className="space-y-1">
-                                                <label className="text-xs font-semibold">Preferred Date</label>
-                                                <Input required type="date" value={formData.date} onChange={e => setFormData({ ...formData, date: e.target.value })} className="h-9 text-sm" />
-                                            </div>
-                                            <div className="space-y-1">
-                                                <label className="text-xs font-semibold">Message</label>
-                                                <textarea
-                                                    required
-                                                    rows={3}
-                                                    placeholder="Describe your project…"
-                                                    value={formData.message}
-                                                    onChange={e => setFormData({ ...formData, message: e.target.value })}
-                                                    className="w-full text-sm rounded-md border border-input bg-background px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-ring"
-                                                />
-                                            </div>
-                                            <Button type="submit" className="w-full">Send Booking Request</Button>
-                                        </form>
-                                    )}
+                                    <p className="text-[10px] text-center text-muted-foreground px-2">
+                                        By sending a request, you agree to our terms of service for direct hiring and payment protection.
+                                    </p>
 
                                     {/* Direct contact */}
                                     <div className="border-t pt-4 space-y-2">
-                                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Direct Contact</p>
+                                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Alternative Contact</p>
                                         <a href={`mailto:${artist.contact.email}`} className="flex items-center gap-2 text-sm hover:text-primary transition-colors">
                                             <Mail className="h-4 w-4" strokeWidth={2} /> {artist.contact.email}
-                                        </a>
-                                        <a href="#" className="flex items-center gap-2 text-sm hover:text-primary transition-colors">
-                                            <Instagram className="h-4 w-4" strokeWidth={2} /> {artist.contact.instagram}
                                         </a>
                                         <a href={`tel:${artist.contact.phone}`} className="flex items-center gap-2 text-sm hover:text-primary transition-colors">
                                             <Phone className="h-4 w-4" strokeWidth={2} /> {artist.contact.phone}
                                         </a>
                                     </div>
-                                </>
+                                </form>
                             ) : (
-                                <div className="text-center py-6 space-y-3 animate-in fade-in duration-500">
+                                <div className="text-center py-6 space-y-4 animate-in fade-in duration-500">
                                     <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto">
                                         <Check className="h-8 w-8 text-green-600" strokeWidth={2.5} />
                                     </div>
-                                    <h3 className="font-semibold">Request Sent!</h3>
-                                    <p className="text-sm text-muted-foreground">
-                                        {artist.name} will get back to you at <strong>{formData.email}</strong> within 24 hours.
-                                    </p>
-                                    <Button variant="outline" size="sm" onClick={() => { setSubmitted(false); setShowForm(false); setFormData({ name: "", email: "", date: "", message: "" }); }}>
+                                    <div className="space-y-1">
+                                        <h3 className="font-semibold text-lg">Request Sent!</h3>
+                                        <p className="text-sm text-muted-foreground">
+                                            {artist.name} will review your project details and get back to you at <strong>{formData.email}</strong> shortly.
+                                        </p>
+                                    </div>
+                                    <Button variant="outline" className="w-full" onClick={() => { setSubmitted(false); setFormData({ name: "", email: "", budget: "", date: "", message: "" }); }}>
                                         Send another request
                                     </Button>
+                                    <Link to={`/artist/${artist.id}`} className="block text-sm text-muted-foreground hover:text-foreground">
+                                        Return to Profile
+                                    </Link>
                                 </div>
                             )}
                         </div>
