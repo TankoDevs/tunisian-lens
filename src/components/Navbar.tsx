@@ -1,12 +1,13 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useMarketplace } from "../context/MarketplaceContext";
 import { Button } from "./ui/button";
-import { Menu, X, Camera, User, LogIn, UserPlus, LogOut, Sun, Moon, Briefcase, ShieldCheck, MessageSquare, Zap } from "lucide-react";
+import { Menu, X, Camera, User, LogIn, UserPlus, LogOut, Sun, Moon, Briefcase, ShieldCheck, MessageSquare, Zap, TrendingUp } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { useChat } from "../context/ChatContext";
+import { cn } from "../lib/utils";
 
 export function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
@@ -375,62 +376,96 @@ export function Navbar() {
                         transition={{ duration: 0.3, ease: 'easeInOut' }}
                         className="md:hidden border-b border-border bg-background overflow-hidden"
                     >
-                        <div className="px-6 py-6 space-y-1">
-                            <Link to="/explore" className={`block py-2.5 text-sm ${isActive('/explore') ? 'text-foreground font-medium' : 'text-muted-foreground'}`} onClick={() => setIsOpen(false)}>
-                                Explore
-                            </Link>
-                            <Link to="/creatives" className={`block py-2.5 text-sm ${isActive('/creatives') ? 'text-foreground font-medium' : 'text-muted-foreground'}`} onClick={() => setIsOpen(false)}>
-                                Creatives
-                            </Link>
-                            <Link to="/jobs" className={`block py-2.5 text-sm ${isActive('/jobs') ? 'text-foreground font-medium' : 'text-muted-foreground'}`} onClick={() => setIsOpen(false)}>
-                                Jobs
-                            </Link>
-                            <Link to="/gear" className={`block py-2.5 text-sm ${isActive('/gear') ? 'text-foreground font-medium' : 'text-muted-foreground'}`} onClick={() => setIsOpen(false)}>
-                                Gear Market
-                            </Link>
-                            <Link to="/about" className={`block py-2.5 text-sm ${isActive('/about') ? 'text-foreground font-medium' : 'text-muted-foreground'}`} onClick={() => setIsOpen(false)}>
-                                About
-                            </Link>
-
-                            <div className="border-t border-border mt-4 pt-4 space-y-1">
-                                <Link to="/client-access" className="block py-2.5 text-sm text-muted-foreground" onClick={() => setIsOpen(false)}>
-                                    Client Access
-                                </Link>
-                                <Link to="/submit" className="block py-2.5 text-sm text-muted-foreground" onClick={() => setIsOpen(false)}>
-                                    Submit Work
-                                </Link>
-                                {user?.role === 'admin' && (
-                                    <Link to="/admin" className="flex items-center gap-2 py-2.5 text-sm text-muted-foreground" onClick={() => setIsOpen(false)}>
-                                        <ShieldCheck className="h-4 w-4" strokeWidth={1.5} />
-                                        Admin Panel
-                                    </Link>
-                                )}
-                                {isAuthenticated && (
-                                    <Link to="/messages" className="flex items-center gap-2 py-2.5 text-sm text-muted-foreground" onClick={() => setIsOpen(false)}>
-                                        <MessageSquare className="h-4 w-4" strokeWidth={1.5} />
-                                        Messages
-                                        {unreadCount > 0 && (
-                                            <span className="ml-auto text-[10px] font-semibold bg-sand-400 text-white px-1.5 py-0.5 rounded-full">
-                                                {unreadCount}
-                                            </span>
+                        <div className="px-6 py-8 space-y-8 max-h-[85vh] overflow-y-auto">
+                            {/* Main Navigation Group */}
+                            <div className="space-y-2">
+                                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60 px-2 mb-4">Menu</p>
+                                {[
+                                    { to: "/explore", label: "Explore Hub", icon: <TrendingUp className="h-4 w-4" /> },
+                                    { to: "/creatives", label: "Find Creatives", icon: <User className="h-4 w-4" /> },
+                                    { to: "/jobs", label: "Job Board", icon: <Briefcase className="h-4 w-4" /> },
+                                    { to: "/gear", label: "Gear Market", icon: <Camera className="h-4 w-4" /> },
+                                ].map((item) => (
+                                    <Link
+                                        key={item.to}
+                                        to={item.to}
+                                        onClick={() => setIsOpen(false)}
+                                        className={cn(
+                                            "flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300",
+                                            isActive(item.to)
+                                                ? "bg-foreground text-background font-bold shadow-lg"
+                                                : "text-foreground/70 hover:bg-muted font-medium"
                                         )}
+                                    >
+                                        <div className={cn(
+                                            "w-8 h-8 rounded-full flex items-center justify-center",
+                                            isActive(item.to) ? "bg-background/20" : "bg-muted"
+                                        )}>
+                                            {item.icon}
+                                        </div>
+                                        <span className="text-sm tracking-wide">{item.label}</span>
                                     </Link>
-                                )}
-                                {isAuthenticated && user?.role === 'creative' && (
-                                    <Link to="/buy-connects" className="flex items-center gap-2 py-2.5 text-sm text-[hsl(var(--accent))] font-medium" onClick={() => setIsOpen(false)}>
-                                        <Zap className="h-4 w-4" strokeWidth={1.5} fill="currentColor" />
-                                        Buy Connects · ⚡ {getConnects(user.id)}
-                                    </Link>
-                                )}
+                                ))}
                             </div>
 
-                            <div className="border-t border-border mt-4 pt-4 grid grid-cols-2 gap-3">
-                                <Link to="/login" onClick={() => setIsOpen(false)}>
-                                    <Button variant="outline" className="w-full">Log In</Button>
+                            {/* Secondary Navigation */}
+                            <div className="space-y-1">
+                                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60 px-2 mb-4">Platform</p>
+                                <Link to="/about" className="flex items-center gap-3 px-4 py-3 text-sm text-foreground/70 font-medium hover:text-foreground" onClick={() => setIsOpen(false)}>
+                                    About Tunisian Lens
                                 </Link>
-                                <Link to="/signup" onClick={() => setIsOpen(false)}>
-                                    <Button className="w-full">Sign Up</Button>
+                                <Link to="/client-access" className="flex items-center gap-3 px-4 py-3 text-sm text-foreground/70 font-medium hover:text-foreground" onClick={() => setIsOpen(false)}>
+                                    Client Access
                                 </Link>
+                                <Link to="/submit" className="flex items-center gap-3 px-4 py-3 text-sm text-foreground/70 font-medium hover:text-foreground" onClick={() => setIsOpen(false)}>
+                                    Submit Your Work
+                                </Link>
+                            </div>
+
+                            {/* User Specific & Auth */}
+                            <div className="pt-4 border-t border-border space-y-4">
+                                {isAuthenticated ? (
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-4 px-4 py-3 bg-muted/30 rounded-2xl border border-border/50">
+                                            <img src={user?.avatar} alt={user?.name} className="w-12 h-12 rounded-full object-cover border-2 border-background" />
+                                            <div className="flex-1 min-w-0">
+                                                <p className="font-bold text-sm truncate">{user?.name}</p>
+                                                <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 gap-2">
+                                            <Link to="/dashboard" onClick={() => setIsOpen(false)}>
+                                                <Button variant="outline" className="w-full h-12 rounded-xl justify-start gap-3 px-4">
+                                                    <Briefcase className="h-4 w-4" /> Dashboard
+                                                </Button>
+                                            </Link>
+                                            {user?.role === 'creative' && (
+                                                <Link to="/buy-connects" onClick={() => setIsOpen(false)}>
+                                                    <Button variant="outline" className="w-full h-12 rounded-xl justify-start gap-3 px-4 border-[hsl(var(--accent))/30] text-[hsl(var(--accent))]">
+                                                        <Zap className="h-4 w-4" fill="currentColor" /> Buy Connects · ⚡ {getConnects(user.id)}
+                                                    </Button>
+                                                </Link>
+                                            )}
+                                            <Button
+                                                variant="ghost"
+                                                className="w-full h-12 rounded-xl justify-start gap-3 px-4 text-red-500 hover:bg-red-50 hover:text-red-600"
+                                                onClick={handleLogout}
+                                            >
+                                                <LogOut className="h-4 w-4" /> Log Out
+                                            </Button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <Link to="/login" className="w-full" onClick={() => setIsOpen(false)}>
+                                            <Button variant="outline" className="w-full h-12 rounded-xl font-bold">Log In</Button>
+                                        </Link>
+                                        <Link to="/signup" className="w-full" onClick={() => setIsOpen(false)}>
+                                            <Button className="w-full h-12 rounded-xl font-bold">Sign Up</Button>
+                                        </Link>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </motion.div>

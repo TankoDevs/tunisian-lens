@@ -133,9 +133,9 @@ export function JobDetail() {
     const hasEnoughConnects = connects >= job.connectsRequired;
 
     return (
-        <div className="min-h-screen bg-background py-10">
-            <div className="container mx-auto px-4 max-w-3xl">
-                <Link to="/jobs" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6">
+        <div className="min-h-screen bg-background section-spacing-sm">
+            <div className="container mx-auto section-padding max-w-4xl">
+                <Link to="/jobs" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8">
                     <ArrowLeft className="h-4 w-4" strokeWidth={2} /> Back to jobs
                 </Link>
 
@@ -280,7 +280,7 @@ export function JobDetail() {
                     )}
 
                     {/* === APPLICATION SECTION === */}
-                    <div className="border rounded-2xl p-6 bg-card space-y-4">
+                    <div id="application-form" className="border rounded-2xl p-6 bg-card space-y-4 shadow-sm scroll-mt-24">
                         {/* Owner: View Applications */}
                         {isOwner ? (
                             <>
@@ -463,6 +463,30 @@ export function JobDetail() {
                     </div>
                 </motion.div>
             </div>
+
+            {/* ── MOBILE STICKY FAB ── */}
+            <AnimatePresence>
+                {canApply && !already && (
+                    <motion.div
+                        initial={{ y: 100, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: 100, opacity: 0 }}
+                        className="fixed bottom-6 left-6 right-6 z-50 md:hidden"
+                    >
+                        <Button
+                            size="lg"
+                            className="w-full shadow-2xl h-14 text-base font-bold rounded-2xl gap-2 bg-foreground text-background"
+                            onClick={() => {
+                                const form = document.getElementById('application-form');
+                                if (form) form.scrollIntoView({ behavior: 'smooth' });
+                            }}
+                        >
+                            <Send className="h-5 w-5" />
+                            Apply for Job
+                        </Button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

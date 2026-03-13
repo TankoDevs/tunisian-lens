@@ -1,4 +1,4 @@
-import { ArrowRight, Camera, Video, CheckCircle, Shield, Star, Zap, Crown, TrendingUp, Heart, Package, Cloud, Aperture, Layers } from "lucide-react";
+import { ArrowRight, Camera, Video, CheckCircle, Shield, Star, Zap, Crown, Heart, Package, Cloud, Layers } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { ARTISTS, MOCK_JOBS } from "../data/mockData";
@@ -43,88 +43,63 @@ export function Home() {
         <div className="space-y-0">
 
             {/* ──────── HERO ──────── */}
-            <section className="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden">
+            <section className="relative h-screen min-h-[700px] flex items-center justify-center overflow-hidden">
                 {/* Background */}
                 <div className="absolute inset-0 z-0">
                     <img
-                        src="https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=1920&q=80"
-                        alt="Tunisian creative photography"
+                        src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=1920&q=80"
+                        alt="Professional photography gear"
                         className="h-full w-full object-cover"
                         loading="eager"
-                        onError={(e) => {
-                            const t = e.target as HTMLImageElement;
-                            if (!t.src.includes("picsum")) t.src = "https://picsum.photos/seed/tunis-hero/1920/1080";
-                        }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/40 to-black/75" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-background" />
                 </div>
 
                 {/* Content */}
                 <div className="relative z-10 text-center text-white max-w-5xl px-4 sm:px-6 w-full">
                     <motion.div
-                        initial={{ opacity: 0, y: 36 }}
+                        initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.9, ease: "easeOut" }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
                         className="space-y-8"
                     >
                         {/* Eyebrow */}
-                        <div className="space-y-3">
-                            <div className="flex justify-center">
-                                <div className="w-12 h-[1.5px] bg-[#C8A97E]" />
-                            </div>
-                            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[#C8A97E]">
-                                Curated Creative Marketplace
-                            </p>
+                        <div className="flex justify-center mb-2">
+                            <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#C8A97E] bg-white/5 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/10">
+                                Tunisia's Premier Creative Marketplace
+                            </span>
                         </div>
 
                         {/* Headline */}
-                        <div>
-                            <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight leading-[1.05]">
-                                Find the perfect<br className="hidden sm:block" /> photographer or videographer.
+                        <div className="space-y-6">
+                            <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold tracking-tight leading-[1.05]">
+                                Discover and Hire <br />
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/60">
+                                    Visual Professionals
+                                </span>
                             </h1>
-                            <p className="mt-5 text-sm md:text-base text-white/60 max-w-lg mx-auto leading-relaxed font-light">
-                                Connect with verified Tunisian photographers and videographers. Post a job or browse top talent now.
+                            <p className="mt-6 text-sm md:text-lg text-white/70 max-w-2xl mx-auto leading-relaxed font-light">
+                                A platform where creators showcase their work and clients find the perfect visual professional. Connect with top talent for your next project.
                             </p>
                         </div>
 
                         {/* CTAs */}
-                        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-5 pt-4">
                             <Link to="/creatives">
-                                <Button size="lg" className="w-full sm:w-auto rounded-full h-14 px-10 text-base font-semibold gap-2 shadow-lg shadow-black/30">
-                                    <Camera className="h-5 w-5" strokeWidth={2} />
-                                    Find a Photographer
+                                <Button size="lg" className="w-full sm:w-auto rounded-xl h-14 px-10 text-base font-bold shadow-2xl shadow-black/40 hover:scale-105 transition-transform">
+                                    Hire a Creator
                                 </Button>
                             </Link>
-                            <Link to="/post-job">
+                            <Link to="/signup">
                                 <Button
                                     size="lg"
                                     variant="outline"
-                                    className="w-full sm:w-auto bg-transparent text-white border-white/30 hover:bg-white/10 hover:border-white/50 h-14 px-10 text-base tracking-wide rounded-full gap-2"
+                                    className="w-full sm:w-auto bg-white/5 backdrop-blur-md text-white border-white/20 hover:bg-white/10 hover:border-white/40 h-14 px-10 text-base font-semibold rounded-xl"
                                 >
-                                    <TrendingUp className="h-5 w-5" strokeWidth={1.5} />
-                                    Post a Job
+                                    Join as Photographer
                                 </Button>
                             </Link>
                         </div>
-
-                        {/* Stats bar */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.7, duration: 0.6 }}
-                            className="flex items-center justify-center gap-6 sm:gap-10 pt-4 text-white"
-                        >
-                            {[
-                                { value: `${ARTISTS.length}+`, label: "Creatives" },
-                                { value: "12", label: "Countries" },
-                                { value: "500+", label: "Projects" },
-                            ].map(({ value, label }) => (
-                                <div key={label} className="text-center">
-                                    <p className="text-xl sm:text-2xl font-bold text-[#C8A97E]">{value}</p>
-                                    <p className="text-[10px] sm:text-xs text-white/50 uppercase tracking-widest mt-0.5">{label}</p>
-                                </div>
-                            ))}
-                        </motion.div>
                     </motion.div>
                 </div>
 
@@ -132,41 +107,56 @@ export function Home() {
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    transition={{ delay: 1.8, duration: 0.8 }}
-                    className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10"
+                    transition={{ delay: 1.5, duration: 1 }}
+                    className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-3"
                 >
-                    <div className="w-[1px] h-14 bg-gradient-to-b from-white/40 to-transparent animate-pulse" />
+                    <span className="text-[10px] uppercase tracking-widest text-white/40 font-bold">Scroll to Explore</span>
+                    <div className="w-[1px] h-12 bg-gradient-to-b from-[#C8A97E] to-transparent" />
                 </motion.div>
             </section>
 
-            {/* ──────── CATEGORIES ──────── */}
-            <section className="py-20 bg-background border-b border-border/50">
-                <div className="container mx-auto px-6">
-                    <div className="flex flex-wrap justify-center gap-8 md:gap-16">
+            {/* ──────── POPULAR CATEGORIES ──────── */}
+            <section className="section-spacing bg-background relative">
+                <div className="container mx-auto section-padding">
+                    <FadeUp className="text-center mb-20 space-y-4">
+                        <h2 className="text-3xl md:text-5xl font-bold tracking-tight">Popular Categories</h2>
+                        <p className="text-muted-foreground text-lg font-light">Explore specialized talent across various visual disciplines.</p>
+                    </FadeUp>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
                         {[
-                            { icon: <Aperture className="h-6 w-6" />, label: "Portrait" },
-                            { icon: <Heart className="h-6 w-6" />, label: "Wedding" },
-                            { icon: <Layers className="h-6 w-6" />, label: "Event" },
-                            { icon: <Cloud className="h-6 w-6" />, label: "Drone" },
-                            { icon: <Package className="h-6 w-6" />, label: "Product" },
-                            { icon: <Video className="h-6 w-6" />, label: "Video" },
+                            { icon: <Heart className="h-6 w-6" />, label: "Wedding Photography", img: "https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=80", color: "from-pink-500/10 to-transparent" },
+                            { icon: <Layers className="h-6 w-6" />, label: "Event Photography", img: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800&q=80", color: "from-amber-500/10 to-transparent" },
+                            { icon: <Package className="h-6 w-6" />, label: "Product Photography", img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80", color: "from-blue-500/10 to-transparent" },
+                            { icon: <Cloud className="h-6 w-6" />, label: "Drone Footage", img: "https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=800&q=80", color: "from-emerald-500/10 to-transparent" },
+                            { icon: <Video className="h-6 w-6" />, label: "Videography", img: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=800&q=80", color: "from-purple-500/10 to-transparent" },
                         ].map((cat, i) => (
-                            <div key={i} className="flex flex-col items-center gap-3 group cursor-pointer">
-                                <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-[#C8A97E] group-hover:text-white transition-all duration-300">
-                                    {cat.icon}
+                            <Link
+                                key={i}
+                                to={`/creatives?category=${cat.label.split(' ')[0]}`}
+                                className="group relative aspect-[4/5] rounded-3xl overflow-hidden border border-border/50 hover:border-[#C8A97E]/50 transition-all duration-500"
+                            >
+                                <img src={cat.img} alt={cat.label} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                                <div className={`absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent`} />
+                                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                                <div className="absolute inset-0 p-8 flex flex-col justify-end items-center text-center">
+                                    <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white mb-4 group-hover:scale-110 group-hover:bg-[#C8A97E] transition-all duration-500">
+                                        {cat.icon}
+                                    </div>
+                                    <h3 className="text-white font-bold text-lg tracking-tight leading-tight group-hover:text-[#C8A97E] transition-colors">
+                                        {cat.label}
+                                    </h3>
                                 </div>
-                                <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground group-hover:text-foreground transition-colors">
-                                    {cat.label}
-                                </span>
-                            </div>
+                            </Link>
                         ))}
                     </div>
                 </div>
             </section>
 
             {/* ──────── HOW IT WORKS ──────── */}
-            <section className="py-32 bg-card/30 backdrop-blur-sm relative overflow-hidden">
-                <div className="container mx-auto px-6 relative z-10">
+            <section className="section-spacing bg-card/30 backdrop-blur-sm relative overflow-hidden">
+                <div className="container mx-auto section-padding relative z-10">
                     <div className="text-center max-w-2xl mx-auto mb-20 space-y-4">
                         <h2 className="text-3xl md:text-4xl font-bold tracking-tight">How it Works</h2>
                         <p className="text-muted-foreground">Find the perfect creative for your next project in three simple steps.</p>
@@ -197,8 +187,8 @@ export function Home() {
             </section>
 
             {/* ──────── GEAR MARKETPLACE ──────── */}
-            <section className="py-32 bg-background">
-                <div className="container mx-auto px-6">
+            <section className="section-spacing bg-background">
+                <div className="container mx-auto section-padding">
                     <div className="flex flex-col md:flex-row items-end justify-between mb-16 gap-6">
                         <div className="max-w-xl space-y-4">
                             <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Pro Gear Marketplace</h2>
@@ -232,8 +222,8 @@ export function Home() {
             </section>
 
             {/* ──────── FEATURED CREATIVES ──────── */}
-            <section className="py-28 bg-muted/30">
-                <div className="container mx-auto px-4 sm:px-6">
+            <section className="section-spacing bg-muted/30">
+                <div className="container mx-auto section-padding">
                     <FadeUp className="flex items-end justify-between mb-14">
                         <div>
                             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[hsl(var(--accent))] mb-2">Featured</p>
@@ -381,8 +371,8 @@ export function Home() {
             {/* ──────── OPEN PROJECTS ──────── */}
             {
                 RECENT_JOBS.length > 0 && (
-                    <section className="py-28 bg-background">
-                        <div className="container mx-auto px-4 sm:px-6">
+                    <section className="section-spacing bg-background">
+                        <div className="container mx-auto section-padding">
                             <FadeUp className="flex items-end justify-between mb-14">
                                 <div>
                                     <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[hsl(var(--accent))] mb-2">Live Now</p>
@@ -434,8 +424,8 @@ export function Home() {
             }
 
             {/* ──────── TRUST SECTION ──────── */}
-            <section className="py-28 bg-muted/20">
-                <div className="container mx-auto px-4 sm:px-6">
+            <section className="section-spacing bg-muted/20">
+                <div className="container mx-auto section-padding">
                     <FadeUp className="text-center mb-16 space-y-3">
                         <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[hsl(var(--accent))]">Why Tunisian Lens</p>
                         <h2 className="text-3xl md:text-4xl font-bold">Built on Trust</h2>

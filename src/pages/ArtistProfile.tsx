@@ -3,9 +3,9 @@ import { ARTISTS, PROJECTS } from "../data/mockData";
 import { ProjectCard } from "../components/ui/ProjectCard";
 import { Button } from "../components/ui/button";
 import {
-    MapPin, Mail, Instagram, Phone, ShieldCheck, Globe, Clock, Check,
-    Calendar, ArrowLeft, Clapperboard, BarChart3, RefreshCw, Zap, Clock3, Globe2,
-    Camera, Heart, Star
+    MapPin, Mail, Heart, Star,
+    Clapperboard, Calendar, Check,
+    Clock, Zap, Globe2, ShieldCheck, Camera
 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
@@ -22,6 +22,13 @@ import { useCurrency } from "../lib/useCurrency";
 const TABS = ["Portfolio", "Services", "Reviews", "About"] as const;
 type Tab = (typeof TABS)[number];
 
+// deterministic rating from artist data
+function getArtistRating(_artistId: string, name: string) {
+    const rating = parseFloat((4.5 + (name.length % 5) * 0.1).toFixed(1));
+    const reviews = (name.charCodeAt(0) % 80) + 20;
+    return { rating, reviews };
+}
+
 export function ArtistProfile() {
     const { id } = useParams<{ id: string }>();
     const [showContact, setShowContact] = useState(false);
@@ -32,10 +39,6 @@ export function ArtistProfile() {
     const [activeCollection, setActiveCollection] = useState<string | null>(null);
     const { user } = useAuth();
     const isAdmin = user?.role === 'admin';
-
-    const verifiedFromStorage = id ? isArtistVerified(id) : false;
-    const [isVerified, setIsVerified] = useState<boolean>(verifiedFromStorage);
-    const { formatPrice } = useCurrency();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const mockUsers: any[] = JSON.parse(localStorage.getItem('tunisian_lens_mock_users') || '[]');
@@ -52,6 +55,11 @@ export function ArtistProfile() {
         );
     }
 
+    const verifiedFromStorage = id ? isArtistVerified(id) : false;
+    const [isVerified, setIsVerified] = useState<boolean>(verifiedFromStorage);
+    const { rating: profileRating } = getArtistRating(id || "", artist.name);
+    const { formatPrice } = useCurrency();
+
     const toggleVerification = () => {
         const newStatus = !isVerified;
         setIsVerified(newStatus);
@@ -63,15 +71,11 @@ export function ArtistProfile() {
     const bio = artist.bio || "Passionate creative exploring the beauty of Tunisia.";
     const profileCategories = artist.categories || ["Photography"];
     const languages = artist.languages || [];
-    const startingPrice = artist.startingPrice || null;
+    const internationalAvailable = artist.internationalAvailable || false;
     const packages = artist.packages || [];
     const collections = artist.collections || [];
     const stats = artist.stats;
-    const contact = artist.contact || { email: artist.email || "contact@example.com", instagram: "@tunisian_lens", phone: "+216 -- --- ---" };
     const styleTags = artist.styleTags || [];
-    const internationalAvailable = artist.internationalAvailable || false;
-
-    const bannerImg = artist.portfolioImages?.[0] ?? `https://picsum.photos/seed/${id}/1600/600`;
     const allPortfolioImgs = artist.portfolioImages ?? [];
 
     // Determine display collection
@@ -98,175 +102,120 @@ export function ArtistProfile() {
                 )}
             </AnimatePresence>
 
-            {/* ── Large Banner Hero ── */}
-            <div className="relative h-[55vh] min-h-[340px] max-h-[520px] overflow-hidden">
-                <img
-                    src={bannerImg}
-                    alt={`${artist.name} portfolio`}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                        const t = e.target as HTMLImageElement;
-                        if (!t.src.includes("picsum")) t.src = `https://picsum.photos/seed/${id}/1600/600`;
-                    }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/30" />
-
-                <Link to="/creatives" className="absolute top-6 left-6 flex items-center gap-2 text-white/80 hover:text-white text-sm transition-colors group">
-                    <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" strokeWidth={1.5} />
-                    All Creatives
-                </Link>
-
-                {/* Identity overlay */}
-                <div className="absolute bottom-0 left-0 right-0 px-6 md:px-10 pb-8">
-                    <div className="max-w-5xl mx-auto flex items-end gap-5">
-                        <ProfileAvatar
-                            src={artist.avatar}
-                            alt={artist.name}
-                            size="lg"
-                            className="flex-shrink-0 ring-3 ring-white/80"
-                        />
-                        <div className="flex-1 min-w-0 pb-1">
-                            <div className="flex items-center gap-2 flex-wrap">
-                                <h1 className="text-white font-bold text-2xl md:text-3xl leading-tight">{artist.name}</h1>
-                                {isVerified && <VerificationBadge size={20} />}
-                                {artist.badgeLevel && (
-                                    <BadgePill level={artist.badgeLevel} />
-                                )}
-                                {artist.creativeType && (
-                                    <span className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full bg-white/15 backdrop-blur-sm text-white capitalize">
-                                        {artist.creativeType}
-                                    </span>
-                                )}
-                                {internationalAvailable && (
-                                    <span className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full bg-emerald-500/25 text-emerald-300 border border-emerald-400/30">
-                                        🌐 Intl. Available
-                                    </span>
-                                )}
-                                {artist.availability && (
-                                    <span className={cn(
-                                        "text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border flex items-center gap-1.5",
-                                        artist.availability === "available"
-                                            ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
-                                            : "bg-amber-500/20 text-amber-300 border-amber-500/30"
-                                    )}>
-                                        <span className={cn("w-1.5 h-1.5 rounded-full animate-pulse", artist.availability === "available" ? "bg-emerald-400" : "bg-amber-400")} />
-                                        {artist.availability === "available" ? "Available Now" : "Currently Busy"}
-                                    </span>
-                                )}
-                            </div>
-                            <div className="flex items-center gap-4 mt-1.5 text-white/70 text-sm flex-wrap">
-                                <span className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5" strokeWidth={1.5} />{loc}</span>
-                                <span className="flex items-center gap-1.5"><Globe className="h-3.5 w-3.5" strokeWidth={1.5} />{country}</span>
-                                {startingPrice && <span className="text-white font-semibold">from {formatPrice(startingPrice)}</span>}
+            {/* ── Visual Focus Portfolio ── */}
+            <div className="bg-black/95 py-2 px-2 overflow-hidden">
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
+                    {allPortfolioImgs.slice(0, 6).map((img: string, i: number) => (
+                        <motion.div
+                            key={i}
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: i * 0.05 }}
+                            className="relative aspect-[4/5] rounded-xl overflow-hidden group cursor-pointer"
+                            onClick={() => { setCinematicIndex(i); setCinematicOpen(true); }}
+                        >
+                            <img src={img} alt={`Portfolio ${i}`} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                            <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </motion.div>
+                    ))}
+                    {allPortfolioImgs.length > 6 && (
+                        <div
+                            className="relative aspect-[4/5] rounded-xl overflow-hidden group cursor-pointer bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                            onClick={() => { setCinematicIndex(6); setCinematicOpen(true); }}
+                        >
+                            <div className="text-center">
+                                <p className="font-bold text-xl">+{allPortfolioImgs.length - 6}</p>
+                                <p className="text-[10px] uppercase font-bold tracking-widest">View More</p>
                             </div>
                         </div>
-                        <div className="hidden md:flex items-center gap-3 flex-shrink-0 pb-1">
-                            {uniqueCinematicImgs.length > 0 && (
-                                <Button size="sm" variant="outline" onClick={() => { setCinematicIndex(0); setCinematicOpen(true); }}
-                                    className="bg-white/10 border-white/30 text-white hover:bg-white/20 gap-2">
-                                    <Clapperboard className="h-4 w-4" strokeWidth={1.5} />
-                                    Cinematic View
-                                </Button>
-                            )}
-                            <Button size="sm" variant="outline" onClick={() => setShowContact(!showContact)}
-                                className="bg-white/10 border-white/30 text-white hover:bg-white/20 gap-2">
-                                <Mail className="h-4 w-4" strokeWidth={1.5} />
-                                Get in Touch
-                            </Button>
-                            <Button size="sm" variant="outline"
-                                onClick={() => setIsSaved(!isSaved)}
-                                className={cn(
-                                    "bg-white/10 border-white/30 text-white hover:bg-white/20 gap-2",
-                                    isSaved && "bg-white/20 border-white/50"
-                                )}>
-                                <Heart className={cn("h-4 w-4", isSaved && "fill-rose-500 text-rose-500")} strokeWidth={1.5} />
-                                {isSaved ? "Saved" : "Save"}
-                            </Button>
-                            {startingPrice && (
-                                <Link to={`/hire/${id}`}>
-                                    <Button size="sm" className="gap-2">
-                                        <Calendar className="h-4 w-4" strokeWidth={1.5} />
-                                        Book Now
-                                    </Button>
-                                </Link>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* ── Mobile actions ── */}
-            <div className="border-b border-border bg-card md:hidden">
-                <div className="container mx-auto px-6 py-4 flex gap-3 flex-wrap">
-                    {uniqueCinematicImgs.length > 0 && (
-                        <Button variant="outline" size="sm" onClick={() => { setCinematicIndex(0); setCinematicOpen(true); }} className="flex-1 gap-2 text-sm">
-                            <Clapperboard className="h-4 w-4" strokeWidth={1.5} /> Cinematic View
-                        </Button>
-                    )}
-                    <Button variant="outline" size="sm" className="flex-1 gap-2 text-sm" onClick={() => setShowContact(!showContact)}>
-                        <Mail className="h-4 w-4" strokeWidth={1.5} /> {showContact ? "Hide" : "Contact"}
-                    </Button>
-                    {startingPrice && (
-                        <Link to={`/hire/${id}`} className="flex-1">
-                            <Button size="sm" className="w-full gap-2 text-sm">
-                                <Calendar className="h-4 w-4" strokeWidth={1.5} /> Book Now
-                            </Button>
-                        </Link>
                     )}
                 </div>
             </div>
 
-            {/* ── Contact Info Reveal ── */}
-            <AnimatePresence>
-                {showContact && (
-                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
-                        className="border-b border-border bg-muted/30">
-                        <div className="container mx-auto max-w-5xl px-6 py-4 flex flex-wrap gap-6">
-                            <a href={`mailto:${contact.email}`} className="flex items-center gap-2 text-sm hover:text-sand-600 transition-colors">
-                                <Mail className="h-4 w-4 text-sand-500" strokeWidth={1.5} /> {contact.email}
-                            </a>
-                            <a href={`tel:${contact.phone}`} className="flex items-center gap-2 text-sm hover:text-sand-600 transition-colors">
-                                <Phone className="h-4 w-4 text-sand-500" strokeWidth={1.5} /> {contact.phone}
-                            </a>
-                            <a href="#" className="flex items-center gap-2 text-sm hover:text-sand-600 transition-colors">
-                                <Instagram className="h-4 w-4 text-sand-500" strokeWidth={1.5} /> {contact.instagram}
-                            </a>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            {/* ── Professional Header ── */}
+            <div className="border-b border-border bg-card">
+                <div className="container mx-auto max-w-6xl px-6 py-12">
+                    <div className="flex flex-col md:flex-row items-start gap-10">
+                        {/* Left: Identity */}
+                        <div className="flex-1 space-y-6">
+                            <div className="flex items-center gap-6">
+                                <ProfileAvatar
+                                    src={artist.avatar}
+                                    alt={artist.name}
+                                    size="lg"
+                                    className="ring-4 ring-offset-4 ring-[#C8A97E] shadow-2xl"
+                                />
+                                <div className="space-y-2">
+                                    <div className="flex items-center gap-3 flex-wrap">
+                                        <h1 className="text-3xl md:text-5xl font-bold tracking-tight">{artist.name}</h1>
+                                        {isVerified && <VerificationBadge size={24} />}
+                                    </div>
+                                    <div className="flex items-center gap-4 text-muted-foreground">
+                                        <span className="flex items-center gap-1.5 text-sm font-medium">
+                                            <MapPin className="h-4 w-4 text-[#C8A97E]" /> {loc}, {country}
+                                        </span>
+                                        <div className="h-4 w-[1px] bg-border" />
+                                        <div className="flex items-center gap-1">
+                                            <Star className="h-4 w-4 fill-amber-500 text-amber-500" strokeWidth={0} />
+                                            <span className="font-bold text-foreground">{profileRating}</span>
+                                            <span className="text-xs">(12 reviews)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-            {/* ── Public Stats Row ── */}
-            {
-                stats && (
-                    <div className="border-b border-border bg-muted/20">
-                        <div className="container mx-auto max-w-5xl px-6 py-4">
-                            <div className="flex flex-wrap gap-6 text-sm">
-                                <div className="flex items-center gap-2">
-                                    <BarChart3 className="h-4 w-4 text-sand-500" strokeWidth={1.5} />
-                                    <span className="font-semibold">{stats.jobsCompleted}</span>
-                                    <span className="text-muted-foreground">Jobs Completed</span>
+                            <div className="flex flex-wrap gap-2">
+                                {(artist.categories || ["Photography"]).map((cat: string) => (
+                                    <span key={cat} className="px-4 py-1.5 rounded-full bg-muted border border-border text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                                        {cat}
+                                    </span>
+                                ))}
+                                {artist.badgeLevel && <BadgePill level={artist.badgeLevel} size="md" />}
+                            </div>
+
+                            <p className="text-muted-foreground leading-relaxed text-lg max-w-2xl">
+                                {bio}
+                            </p>
+                        </div>
+
+                        {/* Right: Quick Stats & CTAs */}
+                        <div className="w-full md:w-80 space-y-6">
+                            <div className="bg-muted/30 border border-border rounded-3xl p-6 space-y-6">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-1">
+                                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Jobs Done</p>
+                                        <p className="text-2xl font-bold">{stats?.jobsCompleted || 0}</p>
+                                    </div>
+                                    <div className="space-y-1 text-right">
+                                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Response Rate</p>
+                                        <p className="text-2xl font-bold text-[#C8A97E]">{stats?.successRate || 100}%</p>
+                                    </div>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    <RefreshCw className="h-4 w-4 text-sand-500" strokeWidth={1.5} />
-                                    <span className="font-semibold">{stats.repeatRate}%</span>
-                                    <span className="text-muted-foreground">Repeat Clients</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <Zap className="h-4 w-4 text-sand-500" strokeWidth={1.5} />
-                                    <span className="font-semibold">{stats.successRate}%</span>
-                                    <span className="text-muted-foreground">Success Rate</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <Clock3 className="h-4 w-4 text-sand-500" strokeWidth={1.5} />
-                                    <span className="font-semibold">~{stats.avgResponseHours}h</span>
-                                    <span className="text-muted-foreground">Avg. Response</span>
+                                <div className="h-[1px] bg-border" />
+                                <div className="space-y-4">
+                                    <Link to={`/hire/${id}`} className="block">
+                                        <Button className="w-full h-14 rounded-2xl text-base font-bold gap-2">
+                                            Hire Creator
+                                        </Button>
+                                    </Link>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <Button variant="outline" className="rounded-xl h-12 gap-2" onClick={() => setShowContact(!showContact)}>
+                                            <Mail className="h-4 w-4" /> Message
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            className={cn("rounded-xl h-12 gap-2 transition-all", isSaved && "bg-[#C8A97E]/10 border-[#C8A97E]/30 text-[#C8A97E]")}
+                                            onClick={() => setIsSaved(!isSaved)}
+                                        >
+                                            <Heart className={cn("h-4 w-4", isSaved && "fill-[#C8A97E]")} /> {isSaved ? "Saved" : "Save"}
+                                        </Button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                )
-            }
+                </div>
+            </div>
 
             {/* ── Tab Navigation ── */}
             <div className="border-b border-border sticky top-16 z-20 bg-background/90 backdrop-blur-md">
@@ -563,6 +512,34 @@ export function ArtistProfile() {
                     </div>
                 )}
             </div>
+            {/* ── MOBILE STICKY FAB ── */}
+            <AnimatePresence>
+                {!isAdmin && user?.id !== id && (
+                    <motion.div
+                        initial={{ y: 100, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: 100, opacity: 0 }}
+                        className="fixed bottom-6 left-6 right-6 z-50 md:hidden flex gap-2"
+                    >
+                        <Link to={`/hire/${id}`} className="flex-1">
+                            <Button
+                                size="lg"
+                                className="w-full shadow-2xl h-14 text-base font-bold rounded-2xl gap-2 bg-foreground text-background"
+                            >
+                                Hire Creator
+                            </Button>
+                        </Link>
+                        <Button
+                            size="lg"
+                            variant="outline"
+                            className="w-14 h-14 shadow-2xl rounded-2xl p-0 bg-background/80 backdrop-blur-md"
+                            onClick={() => setShowContact(true)}
+                        >
+                            <Mail className="h-6 w-6" />
+                        </Button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div >
     );
 }

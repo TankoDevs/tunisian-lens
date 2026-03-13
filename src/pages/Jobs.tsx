@@ -105,7 +105,7 @@ export function Jobs() {
         <div className="min-h-screen bg-background">
             {/* ── Header ── */}
             <div className="border-b border-border bg-background">
-                <div className="container mx-auto px-4 sm:px-6 py-12 md:py-16">
+                <div className="container mx-auto section-padding section-spacing-sm">
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                         <div>
                             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[hsl(var(--accent))] mb-2">Marketplace</p>
@@ -139,7 +139,7 @@ export function Jobs() {
                 </div>
             </div>
 
-            <div className="container mx-auto px-4 sm:px-6 py-8">
+            <div className="container mx-auto section-padding py-12">
                 {/* ── Search + Filter Row ── */}
                 <div className="flex flex-col sm:flex-row gap-3 mb-6">
                     {/* Search */}

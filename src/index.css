@@ -183,6 +183,7 @@
     opacity: 0;
     transition: opacity 0.5s ease;
   }
+
   .lazy-img.loaded {
     opacity: 1;
   }
@@ -244,6 +245,19 @@
   .tap-target {
     min-height: 44px;
     min-width: 44px;
+  }
+
+  /* ── Standardized Layout Utilities ── */
+  .section-padding {
+    @apply px-6 sm:px-8 lg:px-12;
+  }
+
+  .section-spacing {
+    @apply py-24 md:py-32;
+  }
+
+  .section-spacing-sm {
+    @apply py-16 md:py-24;
   }
 }
 

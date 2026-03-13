@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { MapPin, Clock, Users, Banknote, Zap, ArrowRight } from "lucide-react";
+import { Clock, Users, Zap, ArrowRight } from "lucide-react";
 import { type Job } from "../../data/mockData";
 import { ConnectsBadge } from "./ConnectsBadge";
 import { cn } from "../../lib/utils";
@@ -33,100 +33,93 @@ export function JobCard({ job }: JobCardProps) {
     return (
         <div
             className={cn(
-                "group relative bg-card border border-border rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-[hsl(var(--accent))/40]",
-                job.isUrgent && "ring-1 ring-red-500/30"
+                "group relative bg-card border border-border/60 rounded-3xl overflow-hidden transition-all duration-500 hover:shadow-2xl hover:border-[#C8A97E]/30",
+                job.isUrgent && "border-red-500/20"
             )}
         >
-            {/* Urgent strip */}
-            {job.isUrgent && (
-                <div className="h-1 w-full bg-gradient-to-r from-red-500 to-orange-400" />
-            )}
-
-            <div className="p-5 space-y-4">
+            <div className="p-6 space-y-5">
                 {/* Header */}
-                <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
                         {/* Category + status */}
-                        <div className="flex items-center gap-2 mb-2 flex-wrap">
-                            <span className="text-[10px] font-semibold uppercase tracking-widest text-[hsl(var(--accent))] bg-[hsl(var(--accent))/10] px-2 py-0.5 rounded-full">
+                        <div className="flex items-center gap-2 mb-3 flex-wrap">
+                            <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#C8A97E] bg-[#C8A97E]/10 px-2.5 py-1 rounded-full border border-[#C8A97E]/20">
                                 {job.category}
                             </span>
                             {job.isUrgent && (
-                                <span className="flex items-center gap-0.5 text-[10px] font-bold uppercase tracking-widest text-red-500 bg-red-50 dark:bg-red-950/20 px-2 py-0.5 rounded-full">
-                                    <Zap className="h-2.5 w-2.5" strokeWidth={2.5} fill="currentColor" />
+                                <span className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-[0.2em] text-red-500 bg-red-500/10 px-2.5 py-1 rounded-full border border-red-500/20">
+                                    <Zap className="h-3 w-3" strokeWidth={3} fill="currentColor" />
                                     Urgent
-                                </span>
-                            )}
-                            {job.status === 'closed' && (
-                                <span className="text-[10px] font-semibold text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
-                                    Closed
                                 </span>
                             )}
                         </div>
 
                         {/* Title */}
                         <Link to={`/jobs/${job.id}`} className="group/title block">
-                            <h3 className="font-semibold text-base leading-snug line-clamp-2 group-hover/title:text-[hsl(var(--accent))] transition-colors">
+                            <h3 className="font-bold text-lg md:text-xl leading-snug line-clamp-2 group-hover/title:text-[#C8A97E] transition-colors duration-300">
                                 {job.title}
                             </h3>
                         </Link>
-                        <p className="text-xs text-muted-foreground mt-1">by {job.clientName}</p>
+                        <div className="flex items-center gap-2 mt-2">
+                            <div className="w-5 h-5 rounded-full bg-muted flex items-center justify-center text-[10px] font-bold text-muted-foreground uppercase">
+                                {job.clientName?.[0]}
+                            </div>
+                            <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">{job.clientName}</p>
+                        </div>
                     </div>
 
                     {/* Connects badge */}
-                    <ConnectsBadge count={job.connectsRequired} size="sm" />
+                    <div className="flex-shrink-0">
+                        <ConnectsBadge count={job.connectsRequired} size="sm" />
+                    </div>
                 </div>
 
                 {/* Description */}
-                <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed font-light">
                     {job.description}
                 </p>
 
                 {/* Meta row */}
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
-                    {/* Budget */}
-                    <span className="flex items-center gap-1 font-semibold text-sm text-[hsl(var(--accent))]">
-                        <Banknote className="h-3.5 w-3.5" strokeWidth={1.5} />
-                        ${job.budget.toLocaleString()}
-                        <span className="text-muted-foreground font-normal text-xs">{job.currency}</span>
-                    </span>
-
-                    {/* Location */}
-                    {job.location && (
-                        <span className="flex items-center gap-1">
-                            <MapPin className="h-3.5 w-3.5 flex-shrink-0" strokeWidth={1.5} />
-                            <span className="truncate max-w-[120px]">{job.location}</span>
+                <div className="grid grid-cols-2 gap-4 pb-4 border-b border-border/40">
+                    <div className="space-y-1">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-60">Budget</p>
+                        <span className="flex items-center gap-1 font-bold text-lg text-foreground">
+                            ${job.budget.toLocaleString()}
+                            <span className="text-muted-foreground font-normal text-xs">{job.currency}</span>
                         </span>
-                    )}
-
-                    {/* Deadline */}
-                    <span className={cn("flex items-center gap-1 ml-auto", isNearDeadline && "text-amber-500 font-medium", isExpired && "text-muted-foreground/50 line-through")}>
-                        <Clock className="h-3.5 w-3.5 flex-shrink-0" strokeWidth={1.5} />
-                        {daysLeft}
-                    </span>
+                    </div>
+                    <div className="space-y-1 text-right">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-60">Deadline</p>
+                        <span className={cn("inline-flex items-center gap-1 text-sm font-bold",
+                            isNearDeadline ? "text-amber-500" : isExpired ? "text-muted-foreground/30 line-through" : "text-foreground"
+                        )}>
+                            <Clock className="h-3.5 w-3.5" strokeWidth={2} />
+                            {daysLeft}
+                        </span>
+                    </div>
                 </div>
 
-                {/* Footer: applicants + date + Apply button */}
-                <div className="flex items-center justify-between pt-3 border-t border-border">
-                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                            <Users className="h-3.5 w-3.5" strokeWidth={1.5} />
-                            {job.applicantCount} applicant{job.applicantCount !== 1 ? 's' : ''}
+                {/* Footer: applicants + Apply button */}
+                <div className="flex items-center justify-between">
+                    <div className="flex flex-col gap-0.5">
+                        <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                            <Users className="h-3.5 w-3.5" strokeWidth={2} />
+                            {job.applicantCount} {job.applicantCount === 1 ? 'Applicant' : 'Applicants'}
                         </span>
-                        <span>{timeAgo(job.createdAt)}</span>
+                        <span className="text-[10px] text-muted-foreground/60">{timeAgo(job.createdAt)}</span>
                     </div>
 
                     <Link
                         to={`/jobs/${job.id}`}
                         className={cn(
-                            "inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all duration-200",
+                            "inline-flex items-center gap-2 text-xs font-bold px-5 py-2.5 rounded-xl transition-all duration-300",
                             job.status === 'open'
-                                ? "bg-foreground text-background hover:bg-foreground/90"
+                                ? "bg-foreground text-background hover:bg-[#C8A97E] hover:text-white shadow-sm hover:shadow-lg"
                                 : "bg-muted text-muted-foreground cursor-not-allowed pointer-events-none"
                         )}
                     >
                         {job.status === 'open' ? (
-                            <>Apply <ArrowRight className="h-3 w-3" /></>
+                            <>Apply Now <ArrowRight className="h-3.5 w-3.5" /></>
                         ) : 'Closed'}
                     </Link>
                 </div>
