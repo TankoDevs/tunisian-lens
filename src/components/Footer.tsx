@@ -1,5 +1,6 @@
-import { Camera, Instagram, Linkedin, Twitter, Youtube } from "lucide-react";
+import { Instagram, Linkedin, Twitter, Youtube } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Logo } from "./ui/Logo";
 
 export function Footer() {
     return (
@@ -8,9 +9,8 @@ export function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
                     {/* Brand */}
                     <div className="md:col-span-2 space-y-4 text-balance">
-                        <Link to="/" className="flex items-center space-x-2.5">
-                            <Camera className="h-5 w-5 text-sand-400" strokeWidth={1.8} />
-                            <span className="font-sans text-xl font-bold tracking-tight">Tunisian Lens</span>
+                        <Link to="/" className="flex items-center">
+                            <Logo iconSize={20} textSize="text-xl" />
                         </Link>
                         <p className="text-sm text-muted-foreground leading-relaxed max-w-sm">
                             A curated photography marketplace connecting clients with world-class visual artists. Where vision meets opportunity.

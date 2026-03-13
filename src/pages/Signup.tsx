@@ -2,11 +2,11 @@ import { useState } from "react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
-import { Camera } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useAlert } from "../context/AlertContext";
 import { Captcha } from "../components/ui/Captcha";
 import { type CreativeType } from "../data/mockData";
+import { Logo } from "../components/ui/Logo";
 
 const TUNISIAN_REGIONS = [
     "Ariana", "Béja", "Ben Arous", "Bizerte", "Gabès", "Gafsa",
@@ -75,11 +75,10 @@ export function Signup() {
 
             {/* Form */}
             <div className="flex items-center justify-center p-8 md:p-16 bg-background order-1 md:order-2">
-                <div className="w-full max-w-sm space-y-8">
+                <div className="w-full max-sm:px-0 space-y-8">
                     <div className="space-y-3">
-                        <Link to="/" className="inline-flex items-center space-x-2 md:hidden mb-4">
-                            <Camera className="h-5 w-5 text-sand-400" strokeWidth={1.8} />
-                            <span className="font-sans text-xl font-bold">Tunisian Lens</span>
+                        <Link to="/" className="md:hidden block mb-4">
+                            <Logo iconSize={20} textSize="text-xl" />
                         </Link>
                         <div className="hidden md:block w-10 h-[1.5px] bg-sand-400 mb-4" />
                         <h1 className="text-3xl font-sans font-bold tracking-tight">Create an account</h1>
