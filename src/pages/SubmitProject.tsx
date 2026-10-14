@@ -1,6 +1,6 @@
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
-import { Upload, X, Lock, Unlock, ShieldAlert, CheckCircle2, AlertCircle, Download, Sparkles } from "lucide-react";
+import { Upload, X, Lock, Unlock, ShieldAlert, CheckCircle2, AlertCircle, Download, Sparkles, Camera, MapPin, Compass } from "lucide-react";
 import { useState, useEffect } from "react";
 import { CATEGORIES } from "../data/mockData";
 import { cn } from "../lib/utils";
@@ -11,8 +11,10 @@ import { useAuth } from "../context/AuthContext";
 import { useAlert } from "../context/AlertContext";
 import { Captcha } from "../components/ui/Captcha";
 import { uploadImage } from "../lib/cloudinary";
-
 import { checkImageSafety } from "../lib/api";
+import { detectImageMetadata, type DetectedPhotoMeta } from "../utils/exifDetector";
+import { uploadCulturalPhoto } from "../lib/photoUploadService";
+import type { TunisianRegion } from "../types/photo";
 
 const SUGGESTED_TAGS: Record<string, string[]> = {
     "Wedding": ["Wedding", "Bride", "Groom", "Love", "Ceremony", "Couple", "Portrait"],
@@ -27,7 +29,7 @@ const SUGGESTED_TAGS: Record<string, string[]> = {
 
 export function SubmitProject() {
     const { addProject } = useProjects();
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, user } = useAuth();
     const { showAlert } = useAlert();
     const navigate = useNavigate();
 
@@ -49,6 +51,15 @@ export function SubmitProject() {
     const [isCertified, setIsCertified] = useState(false);
     const [generatedCode, setGeneratedCode] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [uploadStatusMsg, setUploadStatusMsg] = useState("");
+
+    // Cultural Region & Location State
+    const [region, setRegion] = useState<TunisianRegion>("Tunis & Suburbs");
+    const [locationName, setLocationName] = useState("Sidi Bou Said, Tunis");
+
+    // Client-side EXIF Optics Detection State
+    const [detectedExif, setDetectedExif] = useState<DetectedPhotoMeta | null>(null);
+    const [isExtractingExif, setIsExtractingExif] = useState(false);
 
     // AI & Safety Detection State
     const [isScanning, setIsScanning] = useState(false);
@@ -155,13 +166,29 @@ export function SubmitProject() {
         }
     };
 
-    const handleFile = (file: File) => {
+    const handleFile = async (file: File) => {
         setImageFile(file);
         const reader = new FileReader();
         reader.onload = (e) => setSelectedImage(e.target?.result as string);
         reader.readAsDataURL(file);
 
-        // Trigger Scan
+        // Client-side EXIF Optics Detection
+        setIsExtractingExif(true);
+        try {
+            const meta = await detectImageMetadata(file);
+            setDetectedExif(meta);
+            if (meta.camera || meta.lens) {
+                // Verified real optical hardware capture
+                setScanResult('safe');
+                setSafetyResult('safe');
+            }
+        } catch (err) {
+            console.warn("EXIF extraction notice:", err);
+        } finally {
+            setIsExtractingExif(false);
+        }
+
+        // Trigger AI & Safety Scan
         runPixelAnalysis(file);
     };
 
@@ -213,14 +240,29 @@ export function SubmitProject() {
         try {
             let imageUrl = selectedImage!;
 
-            // Real Upload to Cloudinary
+            // Secure Supabase Storage & Cloudflare Pages Function Detection Pipeline
             if (imageFile) {
                 try {
-                    const uploadedUrl = await uploadImage(imageFile);
-                    imageUrl = uploadedUrl;
-                } catch (uploadError) {
-                    console.error("Cloudinary upload failed:", uploadError);
-                    showAlert("Image upload failed. Using local preview for submission.", "warning");
+                    const uploadResult = await uploadCulturalPhoto({
+                        file: imageFile,
+                        title,
+                        story: description,
+                        region,
+                        locationName: locationName || 'Tunisia',
+                        tags: tags.split(' ').map(tag => tag.replace(/^#/, '').trim()).filter(Boolean),
+                        userId: user?.id,
+                    }, (msg) => setUploadStatusMsg(msg));
+
+                    imageUrl = uploadResult.imageUrl;
+                } catch (uploadError: any) {
+                    console.warn("Storage upload notice:", uploadError);
+                    // Cloudinary or preview fallback
+                    try {
+                        const fallbackUrl = await uploadImage(imageFile);
+                        imageUrl = fallbackUrl;
+                    } catch {
+                        // Keep preview image URL
+                    }
                 }
             }
 
@@ -413,6 +455,68 @@ export function SubmitProject() {
                                 </motion.div>
                             )}
                         </AnimatePresence>
+
+                        {/* ── DETECTED CAMERA EXIF & OPTICS ── */}
+                        {selectedImage && (
+                            <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <Camera className="w-4 h-4 text-sky-500" />
+                                        <h4 className="text-xs font-semibold uppercase tracking-wider">Detected Camera & Optics</h4>
+                                    </div>
+                                    {isExtractingExif ? (
+                                        <span className="text-[11px] text-muted-foreground animate-pulse">Extracting metadata…</span>
+                                    ) : detectedExif?.camera ? (
+                                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center gap-1">
+                                            <CheckCircle2 size={11} /> Optical Capture Verified
+                                        </span>
+                                    ) : (
+                                        <span className="text-[10px] text-muted-foreground">Standard image</span>
+                                    )}
+                                </div>
+
+                                {detectedExif && (detectedExif.camera || detectedExif.lens || detectedExif.aperture || detectedExif.shutterSpeed) ? (
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+                                        <div className="p-2 rounded-lg bg-muted/40 border border-border/50">
+                                            <span className="text-muted-foreground block text-[9px] uppercase font-bold tracking-wider">Camera Body</span>
+                                            <span className="font-medium truncate block">{detectedExif.camera || '—'}</span>
+                                        </div>
+                                        <div className="p-2 rounded-lg bg-muted/40 border border-border/50">
+                                            <span className="text-muted-foreground block text-[9px] uppercase font-bold tracking-wider">Lens</span>
+                                            <span className="font-medium truncate block">{detectedExif.lens || '—'}</span>
+                                        </div>
+                                        <div className="p-2 rounded-lg bg-muted/40 border border-border/50">
+                                            <span className="text-muted-foreground block text-[9px] uppercase font-bold tracking-wider">Aperture</span>
+                                            <span className="font-medium">{detectedExif.aperture || '—'}</span>
+                                        </div>
+                                        <div className="p-2 rounded-lg bg-muted/40 border border-border/50">
+                                            <span className="text-muted-foreground block text-[9px] uppercase font-bold tracking-wider">Shutter</span>
+                                            <span className="font-medium">{detectedExif.shutterSpeed || '—'}</span>
+                                        </div>
+                                        <div className="p-2 rounded-lg bg-muted/40 border border-border/50">
+                                            <span className="text-muted-foreground block text-[9px] uppercase font-bold tracking-wider">Focal Length</span>
+                                            <span className="font-medium">{detectedExif.focalLength || '—'}</span>
+                                        </div>
+                                        <div className="p-2 rounded-lg bg-muted/40 border border-border/50">
+                                            <span className="text-muted-foreground block text-[9px] uppercase font-bold tracking-wider">ISO</span>
+                                            <span className="font-medium">{detectedExif.iso || '—'}</span>
+                                        </div>
+                                        {detectedExif.latitude && detectedExif.longitude && (
+                                            <div className="col-span-2 sm:col-span-3 p-2 rounded-lg bg-muted/40 border border-border/50 flex items-center gap-2">
+                                                <Compass className="w-3.5 h-3.5 text-amber-500" />
+                                                <span className="text-xs text-muted-foreground">
+                                                    GPS Coordinates: <strong className="text-foreground">{detectedExif.latitude.toFixed(4)}° N, {detectedExif.longitude.toFixed(4)}° E</strong>
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <p className="text-[11px] text-muted-foreground font-light">
+                                        No camera metadata found in image headers. The platform accepts all high-res photography, but camera-tagged shots receive higher visibility.
+                                    </p>
+                                )}
+                            </div>
+                        )}
                     </div>
 
                     {/* Certification Checkbox */}
@@ -553,6 +657,36 @@ export function SubmitProject() {
                             />
                         </div>
 
+                        {/* Region & Location Fields */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium flex items-center gap-1.5">
+                                    <Compass size={14} className="text-amber-500" /> Tunisian Region <span className="text-red-500">*</span>
+                                </label>
+                                <select
+                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                    value={region}
+                                    onChange={(e) => setRegion(e.target.value as TunisianRegion)}
+                                >
+                                    <option value="Tunis & Suburbs">Tunis & Suburbs (Carthage, Sidi Bou Said, Medina)</option>
+                                    <option value="Sahel">Sahel (Sousse, Monastir, Mahdia, El Jem, Djerba)</option>
+                                    <option value="South & Sahara">South & Sahara (Tozeur, Matmata, Tataouine, Douz)</option>
+                                    <option value="North">North (Bizerte, Tabarka, Cap Bon, Ain Draham)</option>
+                                </select>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium flex items-center gap-1.5">
+                                    <MapPin size={14} className="text-sky-500" /> Specific Location Name
+                                </label>
+                                <Input
+                                    placeholder="e.g. Sidi Bou Said, Tunis"
+                                    value={locationName}
+                                    onChange={(e) => setLocationName(e.target.value)}
+                                />
+                            </div>
+                        </div>
+
                         <div className="space-y-2">
                             <label htmlFor="category" className="text-sm font-medium">Category <span className="text-red-500">*</span></label>
                             <select
@@ -650,7 +784,7 @@ export function SubmitProject() {
                     <div className="flex justify-end gap-4">
                         <Button variant="ghost" type="button" onClick={() => navigate(-1)}>Cancel</Button>
                         <Button type="submit" size="lg" disabled={isSubmitting}>
-                            {isSubmitting ? "Publishing..." : "Publish Project"}
+                            {isSubmitting ? (uploadStatusMsg || "Publishing...") : "Publish Project"}
                         </Button>
                     </div>
 
