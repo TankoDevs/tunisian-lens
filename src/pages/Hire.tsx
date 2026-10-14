@@ -31,7 +31,7 @@ export function Hire() {
     }
 
     const isVerified = isArtistVerified(artist.id);
-    const { formatPrice } = useCurrency();
+    const { formatPrice, symbol } = useCurrency();
     const mockRating = (4.5 + parseInt(artist.id.replace(/\D/g, '') || "1") * 0.07).toFixed(1);
     const mockReviews = 20 + parseInt(artist.id.replace(/\D/g, '') || "1") * 13;
 
@@ -168,7 +168,7 @@ export function Hire() {
                                             <Input required type="date" value={formData.date} onChange={e => setFormData({ ...formData, date: e.target.value })} className="h-10 text-sm" />
                                         </div>
                                         <div className="space-y-1.5">
-                                            <label className="text-xs font-semibold">Your Budget ($)</label>
+                                            <label className="text-xs font-semibold">Your Budget ({symbol})</label>
                                             <Input required type="number" placeholder="e.g. 500" value={formData.budget} onChange={e => setFormData({ ...formData, budget: e.target.value })} className="h-10 text-sm" />
                                         </div>
                                     </div>

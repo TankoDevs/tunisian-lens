@@ -1,6 +1,6 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
     Search, SlidersHorizontal, MapPin, Star, CheckCircle2, X,
     Camera, Video, Blend, ChevronLeft, ChevronRight, ArrowUpDown,
@@ -97,11 +97,12 @@ function ArtistHighlightCard({ artist }: { artist: typeof ARTISTS[number] }) {
 
 export function Photographers() {
     const { formatPrice } = useCurrency();
+    const [searchParams] = useSearchParams();
     const [searchQuery, setSearchQuery] = useState("");
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
-    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-    const [selectedType, setSelectedType] = useState<string | null>(null);
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(searchParams.get("category"));
+    const [selectedType, setSelectedType] = useState<string | null>(searchParams.get("type"));
     const [minPrice, setMinPrice] = useState("");
     const [maxPrice, setMaxPrice] = useState("");
     const [verifiedOnly, setVerifiedOnly] = useState(false);
@@ -115,6 +116,13 @@ export function Photographers() {
     const [minRating, setMinRating] = useState<number | null>(null);
     const [selectedStyleTags, setSelectedStyleTags] = useState<string[]>([]);
     const [discoveryTab, setDiscoveryTab] = useState("all");
+
+    useEffect(() => {
+        const cat = searchParams.get("category");
+        const type = searchParams.get("type");
+        if (cat) setSelectedCategory(cat);
+        if (type) setSelectedType(type);
+    }, [searchParams]);
 
     // Simulate network delay for skeletons
     useEffect(() => {
@@ -232,7 +240,7 @@ export function Photographers() {
         }
 
         return list;
-    }, [searchQuery, selectedCountry, selectedCategory, selectedType, verifiedOnly, intlOnly, minPrice, maxPrice, sortBy, discoveryTab]);
+    }, [searchQuery, selectedCountry, selectedCategory, selectedType, verifiedOnly, intlOnly, minPrice, maxPrice, sortBy, discoveryTab, minRating, selectedStyleTags]);
 
 
 

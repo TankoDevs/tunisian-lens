@@ -8,6 +8,7 @@ import { useTunisianAccess } from "../lib/useTunisianAccess";
 import { ConnectsBadge } from "../components/ui/ConnectsBadge";
 import { Button } from "../components/ui/button";
 import { ARTISTS } from "../data/mockData";
+import { useCurrency } from "../lib/useCurrency";
 
 function daysUntil(deadline: string): string {
     const diff = new Date(deadline).getTime() - Date.now();
@@ -70,6 +71,7 @@ export function JobDetail() {
     const { id } = useParams<{ id: string }>();
     const { jobs, applyToJob, getJobApplications, getConnects, hasApplied, closeJob } = useMarketplace();
     const { user, isAuthenticated } = useAuth();
+    const { formatPrice, symbol } = useCurrency();
 
     const [coverLetter, setCoverLetter] = useState('');
     const [proposedPrice, setProposedPrice] = useState('');
@@ -171,7 +173,7 @@ export function JobDetail() {
                     <div className="flex flex-wrap gap-4 text-sm mb-8">
                         <span className="flex items-center gap-1.5 font-semibold text-foreground">
                             <Banknote className="h-4 w-4 text-muted-foreground" strokeWidth={2} />
-                            ${job.budget.toLocaleString()} {job.currency}
+                            {formatPrice(job.budget)}
                         </span>
                         {job.location && (
                             <span className="flex items-center gap-1.5 text-muted-foreground">
@@ -423,13 +425,13 @@ export function JobDetail() {
                                 </div>
 
                                 <div className="space-y-1.5">
-                                    <label className="text-sm font-medium">Your proposed price ($)</label>
+                                    <label className="text-sm font-medium">Your proposed price ({symbol})</label>
                                     <input
                                         type="number"
                                         min="1"
                                         value={proposedPrice}
                                         onChange={e => setProposedPrice(e.target.value)}
-                                        placeholder={`Client budget: $${job.budget}`}
+                                        placeholder={`Client budget: ${formatPrice(job.budget)}`}
                                         className="w-full h-10 px-3 rounded-lg border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
                                     />
                                 </div>

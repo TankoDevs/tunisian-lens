@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase, isConfigured } from '../lib/supabaseClient';
 import { useAuth } from './AuthContext';
+import { PROJECTS as INITIAL_PROJECTS } from '../data/mockData';
 
 export interface Artist {
     id: string;
@@ -48,15 +49,40 @@ interface ProjectContextType {
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
 
+const DEFAULT_PROJECTS: Project[] = [
+    ...INITIAL_PROJECTS.map(p => ({
+        ...p,
+        description: `Stunning ${p.category.toLowerCase()} visual series from Tunisia captured with natural light and distinct atmosphere.`,
+        tags: [p.category, "Tunisia", "Visuals"],
+        date: "2026-02-14T10:00:00.000Z",
+        isPrivate: false,
+        isDownloadable: true,
+    })),
+    {
+        id: "demo-private-1",
+        title: "Exclusive Sidi Bou Said Bridal Preview",
+        image: "https://picsum.photos/seed/exclusive-bridal/800/600",
+        category: "Wedding",
+        likes: 45,
+        artist: { id: "a1", name: "Amine Benali", avatar: "https://randomuser.me/api/portraits/men/32.jpg" },
+        description: "Private client gallery session. Full high-resolution album for client download.",
+        tags: ["Wedding", "Private", "Client"],
+        date: "2026-03-01T12:00:00.000Z",
+        isPrivate: true,
+        isDownloadable: true,
+        accessCode: "X7K-9P2"
+    }
+];
+
 export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [projects, setProjects] = useState<Project[]>([]);
+    const [projects, setProjects] = useState<Project[]>(DEFAULT_PROJECTS);
     const [isLoading, setIsLoading] = useState(true);
     const { user } = useAuth();
 
     // Derived state for public projects
     const publicProjects = projects.filter(p => !p.isPrivate);
 
-    // Fetch projects — from Supabase if configured, otherwise from localStorage only
+    // Fetch projects — from Supabase if configured, otherwise from localStorage with DEFAULT_PROJECTS fallback
     const fetchProjects = async () => {
         setIsLoading(true);
         try {
@@ -70,10 +96,14 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
                     console.warn('Supabase fetch error, using localStorage fallback', error);
                     const stored = localStorage.getItem('tunisian_lens_projects_v2');
                     const parsed: Project[] = stored ? JSON.parse(stored) : [];
-                    setProjects(parsed.map((p) => ({
-                        ...p,
-                        image: p.image || ((p as unknown as Record<string, string>)['image_url']) || ''
-                    })));
+                    if (parsed.length > 0) {
+                        setProjects(parsed.map((p) => ({
+                            ...p,
+                            image: p.image || ((p as unknown as Record<string, string>)['image_url']) || ''
+                        })));
+                    } else {
+                        setProjects(DEFAULT_PROJECTS);
+                    }
                 } else if (data && data.length > 0) {
                     type SupabaseRow = Record<string, unknown>;
                     setProjects((data as SupabaseRow[]).map((p) => ({
@@ -91,20 +121,24 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
                         accessCode: p['access_code'] as string | undefined,
                     })));
                 } else {
-                    setProjects([]);
+                    setProjects(DEFAULT_PROJECTS);
                 }
             } else {
-                // No Supabase — use localStorage submissions only (no mock data)
                 const stored = localStorage.getItem('tunisian_lens_projects_v2');
                 const parsed: Project[] = stored ? JSON.parse(stored) : [];
-                setProjects(parsed.map((p) => ({
-                    ...p,
-                    image: p.image || ((p as unknown as Record<string, string>)['image_url']) || ''
-                })));
+                if (parsed.length > 0) {
+                    setProjects(parsed.map((p) => ({
+                        ...p,
+                        image: p.image || ((p as unknown as Record<string, string>)['image_url']) || ''
+                    })));
+                } else {
+                    setProjects(DEFAULT_PROJECTS);
+                    localStorage.setItem('tunisian_lens_projects_v2', JSON.stringify(DEFAULT_PROJECTS));
+                }
             }
         } catch (e) {
             console.warn('Project fetch failed:', e);
-            setProjects([]);
+            setProjects(DEFAULT_PROJECTS);
         } finally {
             setIsLoading(false);
         }

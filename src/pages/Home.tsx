@@ -203,13 +203,13 @@ export function Home() {
 
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                         {[
-                            { label: "Cameras", img: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400&q=80" },
-                            { label: "Lenses", img: "https://images.unsplash.com/photo-1617450365226-9bf28c04e130?w=400&q=80" },
-                            { label: "Drones", img: "https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=400&q=80" },
-                            { label: "Lighting", img: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&q=80" },
-                            { label: "Accessories", img: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&q=80" },
+                            { label: "Cameras", cat: "Camera", img: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400&q=80" },
+                            { label: "Lenses", cat: "Lens", img: "https://images.unsplash.com/photo-1617450365226-9bf28c04e130?w=400&q=80" },
+                            { label: "Drones", cat: "Drone", img: "https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=400&q=80" },
+                            { label: "Lighting", cat: "Lighting", img: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&q=80" },
+                            { label: "Accessories", cat: "Accessories", img: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&q=80" },
                         ].map((item, i) => (
-                            <Link key={i} to={`/gear?category=${item.label.slice(0, -1)}`} className="group relative aspect-square rounded-2xl overflow-hidden">
+                            <Link key={i} to={`/gear?category=${item.cat}`} className="group relative aspect-square rounded-2xl overflow-hidden">
                                 <img src={item.img} alt={item.label} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                                 <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors" />
                                 <div className="absolute inset-x-0 bottom-6 text-center">
@@ -405,7 +405,7 @@ export function Home() {
                                                 <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">{job.description}</p>
                                                 <div className="flex items-center justify-between pt-2 border-t border-border">
                                                     <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                                                        <span className="font-bold text-[hsl(var(--accent))] text-sm">${job.budget}</span>
+                                                        <span className="font-bold text-[hsl(var(--accent))] text-sm">{formatPrice(job.budget)}</span>
                                                         <span className="flex items-center gap-1">
                                                             <Zap className="h-3 w-3 text-[hsl(var(--accent))]" strokeWidth={2} fill="currentColor" />
                                                             {job.connectsRequired} connects

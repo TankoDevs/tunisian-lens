@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, Filter, Camera, CheckCircle2 } from "lucide-react";
-import { CATEGORIES, COUNTRIES } from "../data/mockData";
+import { CATEGORIES, COUNTRIES, ARTISTS, VIDEO_CATEGORIES } from "../data/mockData";
 import { ProjectCard } from "../components/ui/ProjectCard";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -8,15 +8,26 @@ import { Skeleton } from "../components/ui/Skeleton";
 import { cn } from "../lib/utils";
 import { useProjects } from "../context/ProjectContext";
 import { isArtistVerified } from "../lib/verification";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 export function Explore() {
     const { publicProjects, deleteProject, isLoading } = useProjects();
-    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+    const [searchParams] = useSearchParams();
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(searchParams.get("category"));
     const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [verifiedOnly, setVerifiedOnly] = useState(false);
     const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
+
+    useEffect(() => {
+        const cat = searchParams.get("category");
+        const type = searchParams.get("type");
+        if (cat) {
+            setSelectedCategory(cat);
+        } else if (type === "video") {
+            setSelectedCategory(VIDEO_CATEGORIES[0]);
+        }
+    }, [searchParams]);
 
     const filteredProjects = publicProjects.filter((project) => {
         const matchesCategory = selectedCategory ? project.category === selectedCategory : true;
@@ -26,7 +37,13 @@ export function Explore() {
             project.artist.name.toLowerCase().includes(searchLower) ||
             project.category.toLowerCase().includes(searchLower);
         const matchesVerified = !verifiedOnly || isArtistVerified(project.artist.id);
-        return matchesCategory && matchesSearch && matchesVerified;
+        
+        const artist = ARTISTS.find(a => a.id === project.artist.id);
+        const matchesCountry = !selectedCountry || 
+            (artist && artist.country.toLowerCase() === selectedCountry.toLowerCase()) ||
+            project.title.toLowerCase().includes(selectedCountry.toLowerCase());
+
+        return matchesCategory && matchesSearch && matchesVerified && matchesCountry;
     });
 
     return (
