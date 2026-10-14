@@ -8,9 +8,24 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
+        serif: ['"Playfair Display"', 'Cinzel', 'Georgia', 'serif'],
+        display: ['"Playfair Display"', 'Cinzel', 'Georgia', 'serif'],
       },
       colors: {
+        canvas: "#0B0C0E",
+        surface: "#15171C",
+        edge: "#262930",
+        sidi: {
+          DEFAULT: "#0284C7",
+          light: "#38BDF8",
+          dark: "#0369A1",
+        },
+        ochre: {
+          DEFAULT: "#D97706",
+          light: "#F59E0B",
+          dark: "#B45309",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

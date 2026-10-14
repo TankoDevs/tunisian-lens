@@ -1,4 +1,5 @@
-import { ArrowRight, Camera, Video, CheckCircle, Shield, Star, Zap, Crown, Heart, Package, Cloud, Layers } from "lucide-react";
+import { useState } from "react";
+import { ArrowRight, Camera, Video, CheckCircle, Shield, Star, Zap, Crown, Heart, Package, Cloud, Layers, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { ARTISTS, MOCK_JOBS } from "../data/mockData";
@@ -6,6 +7,10 @@ import { motion } from "framer-motion";
 import { isArtistVerified } from "../lib/verification";
 import { useCurrency } from "../lib/useCurrency";
 import { ProfileAvatar } from "../components/ui/ProfileAvatar";
+import { getPhotosByRegion } from "../data/photos";
+import { GalleryGrid } from "../components/GalleryGrid";
+import { PhotoModal } from "../components/PhotoModal";
+import type { PhotoItem } from "../types/photo";
 
 const FEATURED_ARTISTS = ARTISTS.slice(0, 3);
 const RECENT_JOBS = MOCK_JOBS.filter(j => j.status === "open").slice(0, 3);
@@ -39,6 +44,11 @@ function FadeUp({ children, delay = 0, className = "" }: { children: React.React
 
 export function Home() {
     const { formatPrice } = useCurrency();
+    const [selectedRegion, setSelectedRegion] = useState<string>('All');
+    const [activePhoto, setActivePhoto] = useState<PhotoItem | null>(null);
+
+    const displayedPhotos = getPhotosByRegion(selectedRegion);
+
     return (
         <div className="space-y-0">
 
@@ -114,8 +124,54 @@ export function Home() {
                     <div className="w-[1px] h-12 bg-gradient-to-b from-[#C8A97E] to-transparent" />
                 </motion.div>
             </section>
+ 
+            {/* ──────── CULTURAL STORIES & MASONRY GALLERY ──────── */}
+            <section className="bg-canvas text-white relative py-24 border-b border-edge">
+                <div className="container mx-auto px-4 md:px-8">
+                    <FadeUp className="text-center max-w-3xl mx-auto mb-14 space-y-3">
+                        <span className="text-xs font-bold uppercase tracking-[0.25em] text-ochre flex items-center justify-center gap-2">
+                            <Sparkles size={14} /> Heritage & Cultural Stories
+                        </span>
+                        <h2 className="text-3xl md:text-5xl font-serif font-bold text-white tracking-tight">
+                            Tunisia Through the Lens
+                        </h2>
+                        <p className="text-zinc-400 text-sm md:text-base font-light max-w-2xl mx-auto leading-relaxed">
+                            A curated visual archive capturing Tunisia’s living civilization—from the blue doors of Sidi Bou Said to the golden Roman arches of El Jem and the silent expanse of the Sahara.
+                        </p>
 
-            {/* ──────── POPULAR CATEGORIES ──────── */}
+                        {/* Region Filter Tabs */}
+                        <div className="flex flex-wrap items-center justify-center gap-2 pt-6">
+                            {(['All', 'Tunis & Suburbs', 'Sahel', 'South & Sahara', 'North'] as const).map((reg) => (
+                                <button
+                                    key={reg}
+                                    onClick={() => setSelectedRegion(reg)}
+                                    className={`text-xs font-semibold px-4 py-2 rounded-full transition-all duration-200 border ${
+                                        selectedRegion === reg
+                                            ? 'bg-sidi text-white border-sidi shadow-lg shadow-sidi/20 scale-105'
+                                            : 'bg-surface text-zinc-400 border-edge hover:text-white hover:border-zinc-700'
+                                    }`}
+                                >
+                                    {reg}
+                                </button>
+                            ))}
+                        </div>
+                    </FadeUp>
+
+                    {/* Responsive Multi-Column Masonry Grid */}
+                    <GalleryGrid
+                        photos={displayedPhotos}
+                        onPhotoClick={(photo) => setActivePhoto(photo)}
+                    />
+
+                    {/* Photo Deep-View Modal */}
+                    {activePhoto && (
+                        <PhotoModal
+                            photo={activePhoto}
+                            onClose={() => setActivePhoto(null)}
+                        />
+                    )}
+                </div>
+            </section>
             <section className="section-spacing bg-background relative">
                 <div className="container mx-auto section-padding">
                     <FadeUp className="text-center mb-20 space-y-4">

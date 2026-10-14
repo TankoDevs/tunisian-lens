@@ -27,6 +27,7 @@ import { ChatProvider } from "./context/ChatContext";
 import { GearMarket } from "./pages/GearMarket";
 import { SellGear } from "./pages/SellGear";
 import { GearListingDetail } from "./pages/GearListingDetail";
+import { PhotoDetail } from "./pages/PhotoDetail";
 import { ScrollToTop } from "./components/ui/ScrollToTop";
 
 function App() {
@@ -73,6 +74,7 @@ function App() {
             <Route path="/gear" element={<GearMarket />} />
             <Route path="/gear/sell" element={<SellGear />} />
             <Route path="/gear/:id" element={<GearListingDetail />} />
+            <Route path="/photo/:slug" element={<PhotoDetail />} />
           </Route>
         </Routes>
       </ChatProvider>
