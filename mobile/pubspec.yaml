@@ -1,0 +1,27 @@
+name: tunisian_lens_mobile
+description: "Tunisian Lens - Museum-grade cultural photography and visual storytelling mobile app."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  google_fonts: ^6.2.1
+  flutter_staggered_grid_view: ^0.7.0
+  cached_network_image: ^3.3.1
+  provider: ^6.1.2
+  intl: ^0.19.0
+  share_plus: ^10.0.0
+  url_launcher: ^6.3.0
+  photo_view: ^0.15.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
