@@ -42,25 +42,25 @@
   .dark {
     /* Premium Photography Palette — Dark Neutral Canvas */
     --background: 220 12% 5%; /* #0B0C0E */
-    --foreground: 210 20% 98%;
+    --foreground: 220 14% 96%; /* #F1F2F5 Alabaster */
 
     --card: 223 14% 10%; /* #15171C */
-    --card-foreground: 210 20% 98%;
+    --card-foreground: 220 14% 96%;
 
-    --popover: 223 14% 10%; /* #15171C */
-    --popover-foreground: 210 20% 98%;
+    --popover: 222 14% 13%; /* #1E2127 */
+    --popover-foreground: 220 14% 96%;
 
-    --primary: 199 89% 48%; /* #0284C7 Sidi Bou Said Sky Blue */
-    --primary-foreground: 0 0% 100%;
+    --primary: 34 66% 59%; /* #D99B56 Desert Ochre */
+    --primary-foreground: 220 12% 5%;
 
     --secondary: 222 14% 14%;
-    --secondary-foreground: 210 20% 98%;
+    --secondary-foreground: 220 14% 96%;
 
     --muted: 222 12% 13%;
-    --muted-foreground: 218 11% 65%;
+    --muted-foreground: 220 10% 68%; /* #A4AAB7 Mist */
 
-    /* Desert Ochre / Medina Brass */
-    --accent: 36 93% 44%; /* #D97706 */
+    /* Mediterranean Cobalt / Azure */
+    --accent: 213 80% 56%; /* #3884E6 */
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62.8% 35%;
@@ -68,35 +68,39 @@
 
     --border: 222 12% 17%; /* #262930 */
     --input: 222 12% 17%; /* #262930 */
-    --ring: 199 89% 48%;
+    --ring: 34 66% 59%;
   }
 
-  /* ── Typography ── */
+  /* ── Typography & Editorial Cadence ── */
 
   h1,
   h2,
   h3,
-  h4,
+  h4 {
+    font-family: 'Playfair Display', Georgia, serif;
+    @apply tracking-tight;
+  }
+
   h5,
   h6 {
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
     @apply tracking-tight;
   }
 
   h1 {
-    @apply text-4xl md:text-5xl lg:text-6xl font-bold;
+    @apply text-4xl md:text-5xl lg:text-6xl font-normal;
     letter-spacing: -0.02em;
-    line-height: 1.1;
+    line-height: 1.12;
   }
 
   h2 {
-    @apply text-3xl md:text-4xl font-semibold;
-    letter-spacing: -0.01em;
+    @apply text-3xl md:text-4xl font-normal;
+    letter-spacing: -0.015em;
     line-height: 1.2;
   }
 
   h3 {
-    @apply text-xl md:text-2xl font-semibold;
+    @apply text-xl md:text-2xl font-normal;
     line-height: 1.3;
   }
 
@@ -109,7 +113,7 @@
   textarea,
   select,
   button {
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   }
 
   button,
@@ -126,9 +130,14 @@
     @apply border-border;
   }
 
+  ::selection {
+    background-color: rgba(217, 155, 86, 0.28);
+    color: #F1F2F5;
+  }
+
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     font-weight: 400;
     font-feature-settings: "rlig" 1, "calt" 1;
     transition: background-color 0.4s ease, color 0.3s ease;

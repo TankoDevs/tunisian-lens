@@ -1,7 +1,7 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useMarketplace } from "../context/MarketplaceContext";
 import { Button } from "./ui/button";
-import { Menu, X, Camera, User, LogIn, UserPlus, LogOut, Briefcase, ShieldCheck, MessageSquare, Zap, TrendingUp, Bell, ChevronDown } from "lucide-react";
+import { Menu, X, Camera, User, LogIn, UserPlus, LogOut, Briefcase, ShieldCheck, MessageSquare, Zap, TrendingUp, Bell, ChevronDown, Sparkles } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
@@ -104,12 +104,21 @@ export function Navbar() {
                 <div className="flex items-center gap-10">
                     {/* Logo */}
                     <Link to="/" className="flex items-center space-x-3 group">
-                        <Camera className="h-6 w-6 text-sand-400 transition-transform duration-300 group-hover:rotate-12" strokeWidth={2} />
-                        <span className="font-sans text-2xl font-black tracking-tight text-foreground">Tunisian Lens</span>
+                        <div className="w-9 h-9 rounded-lg bg-surface border border-edge flex items-center justify-center text-ochre group-hover:border-ochre/50 transition-colors shadow-sm">
+                            <Camera className="h-5 w-5 transition-transform duration-300 group-hover:scale-110 text-ochre" strokeWidth={1.8} />
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="font-serif text-xl font-bold tracking-tight text-foreground">Tunisian Lens</span>
+                            <span className="text-[9px] uppercase tracking-[0.25em] text-ochre/90 font-medium -mt-0.5">Archival Platform</span>
+                        </div>
                     </Link>
 
                     {/* Desktop Nav Discovery Group */}
                     <div className="hidden md:flex items-center space-x-7">
+                        <Link to="/#stories" className={navLinkClass('/#stories')}>
+                            Stories
+                        </Link>
+
                         <div className="relative group/explore" ref={exploreMenuRef}>
                             <button
                                 onClick={() => setIsExploreOpen(!isExploreOpen)}
@@ -125,11 +134,11 @@ export function Navbar() {
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, y: 10 }}
                                         onMouseLeave={() => setIsExploreOpen(false)}
-                                        className="absolute top-full left-0 mt-1 w-48 bg-background border border-border rounded-xl shadow-xl p-2 z-50"
+                                        className="absolute top-full left-0 mt-1 w-48 bg-surface border border-edge rounded-xl shadow-2xl p-2 z-50 backdrop-blur-xl"
                                     >
-                                        <Link to="/explore" className="block px-3 py-2 text-sm hover:bg-muted rounded-lg transition-colors" onClick={() => setIsExploreOpen(false)}>Photography</Link>
-                                        <Link to="/explore?type=video" className="block px-3 py-2 text-sm hover:bg-muted rounded-lg transition-colors" onClick={() => setIsExploreOpen(false)}>Videography</Link>
-                                        <Link to="/creatives" className="block px-3 py-2 text-sm hover:bg-muted rounded-lg transition-colors" onClick={() => setIsExploreOpen(false)}>Top Creators</Link>
+                                        <Link to="/explore" className="block px-3 py-2 text-xs font-medium text-alabaster hover:bg-surface-elevated hover:text-ochre rounded-lg transition-colors" onClick={() => setIsExploreOpen(false)}>Photography Archive</Link>
+                                        <Link to="/explore?type=video" className="block px-3 py-2 text-xs font-medium text-alabaster hover:bg-surface-elevated hover:text-ochre rounded-lg transition-colors" onClick={() => setIsExploreOpen(false)}>Videography & Reels</Link>
+                                        <Link to="/creatives" className="block px-3 py-2 text-xs font-medium text-alabaster hover:bg-surface-elevated hover:text-ochre rounded-lg transition-colors" onClick={() => setIsExploreOpen(false)}>Featured Creatives</Link>
                                     </motion.div>
                                 )}
                             </AnimatePresence>
@@ -139,7 +148,7 @@ export function Navbar() {
                             Creatives
                         </Link>
                         <Link to="/jobs" className={navLinkClass('/jobs')}>
-                            Jobs
+                            Opportunities
                         </Link>
 
                         <div className="relative group/gear" ref={gearMenuRef}>
@@ -157,11 +166,11 @@ export function Navbar() {
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, y: 10 }}
                                         onMouseLeave={() => setIsGearOpen(false)}
-                                        className="absolute top-full left-0 mt-1 w-48 bg-background border border-border rounded-xl shadow-xl p-2 z-50"
+                                        className="absolute top-full left-0 mt-1 w-48 bg-surface border border-edge rounded-xl shadow-2xl p-2 z-50 backdrop-blur-xl"
                                     >
-                                        <Link to="/gear?cat=camera" className="block px-3 py-2 text-sm hover:bg-muted rounded-lg transition-colors" onClick={() => setIsGearOpen(false)}>Cameras</Link>
-                                        <Link to="/gear?cat=lens" className="block px-3 py-2 text-sm hover:bg-muted rounded-lg transition-colors" onClick={() => setIsGearOpen(false)}>Lenses</Link>
-                                        <Link to="/gear?cat=lighting" className="block px-3 py-2 text-sm hover:bg-muted rounded-lg transition-colors" onClick={() => setIsGearOpen(false)}>Lighting</Link>
+                                        <Link to="/gear?cat=camera" className="block px-3 py-2 text-xs font-medium text-alabaster hover:bg-surface-elevated hover:text-ochre rounded-lg transition-colors" onClick={() => setIsGearOpen(false)}>Cameras</Link>
+                                        <Link to="/gear?cat=lens" className="block px-3 py-2 text-xs font-medium text-alabaster hover:bg-surface-elevated hover:text-ochre rounded-lg transition-colors" onClick={() => setIsGearOpen(false)}>Lenses & Optics</Link>
+                                        <Link to="/gear?cat=lighting" className="block px-3 py-2 text-xs font-medium text-alabaster hover:bg-surface-elevated hover:text-ochre rounded-lg transition-colors" onClick={() => setIsGearOpen(false)}>Studio & Lighting</Link>
                                     </motion.div>
                                 )}
                             </AnimatePresence>
@@ -172,17 +181,17 @@ export function Navbar() {
                 {/* Desktop Actions Group */}
                 <div className="hidden md:flex items-center space-x-4">
                     <div className="flex items-center gap-4 mr-2">
-                        <Link to="/client-access" className="text-[13px] font-medium text-muted-foreground hover:text-foreground transition-colors duration-300">
+                        <Link to="/client-access" className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors duration-300">
                             Client Access
                         </Link>
-                        <div className="h-4 w-[1px] bg-border/60" /> {/* Subtle Divider */}
+                        <div className="h-4 w-[1px] bg-border/60" />
                     </div>
 
                     {(!isAuthenticated || user?.role === 'creative') && (
                         <Link to="/submit">
                             <Button
                                 size="sm"
-                                className="hidden lg:inline-flex rounded-full bg-sand-400 hover:bg-sand-500 text-white font-bold px-5 shadow-lg shadow-sand-400/20 hover:shadow-sand-400/30 transition-all"
+                                className="hidden lg:inline-flex rounded-lg bg-ochre hover:bg-ochre-light text-canvas font-semibold px-4 py-1.5 text-xs shadow-md shadow-ochre/15 transition-all"
                             >
                                 Submit Work
                             </Button>
@@ -200,7 +209,7 @@ export function Navbar() {
                                 >
                                     <MessageSquare className="h-4.5 w-4.5" strokeWidth={1.5} />
                                     {unreadCount > 0 && (
-                                        <span className="absolute top-0.5 right-0.5 h-3.5 w-3.5 bg-sand-400 text-white text-[9px] font-semibold rounded-full flex items-center justify-center">
+                                        <span className="absolute top-0.5 right-0.5 h-3.5 w-3.5 bg-ochre text-canvas text-[9px] font-bold rounded-full flex items-center justify-center">
                                             {unreadCount > 9 ? '9+' : unreadCount}
                                         </span>
                                     )}
@@ -212,11 +221,11 @@ export function Navbar() {
                                             animate={{ opacity: 1, y: 0, scale: 1 }}
                                             exit={{ opacity: 0, y: 10, scale: 0.95 }}
                                             transition={{ duration: 0.2 }}
-                                            className="absolute right-0 mt-2 w-80 bg-background border border-border rounded-2xl shadow-xl overflow-hidden z-50"
+                                            className="absolute right-0 mt-2 w-80 bg-surface border border-edge rounded-2xl shadow-2xl overflow-hidden z-50 backdrop-blur-xl"
                                         >
-                                            <div className="p-4 border-b border-border flex items-center justify-between bg-muted/30">
-                                                <h3 className="font-bold text-sm">Recent Messages</h3>
-                                                <Link to="/messages" onClick={() => setIsMessagesOpen(false)} className="text-xs text-[hsl(var(--accent))] hover:underline font-semibold">
+                                            <div className="p-4 border-b border-edge flex items-center justify-between bg-surface-elevated/40">
+                                                <h3 className="font-semibold text-sm text-foreground">Recent Messages</h3>
+                                                <Link to="/messages" onClick={() => setIsMessagesOpen(false)} className="text-xs text-ochre hover:underline font-medium">
                                                     View All
                                                 </Link>
                                             </div>
@@ -231,15 +240,15 @@ export function Navbar() {
                                                             key={conv.id}
                                                             to="/messages"
                                                             onClick={() => setIsMessagesOpen(false)}
-                                                            className="block p-4 hover:bg-muted transition-colors border-b border-border/50 last:border-0"
+                                                            className="block p-4 hover:bg-surface-elevated transition-colors border-b border-edge/60 last:border-0"
                                                         >
                                                             <div className="flex items-start gap-3">
-                                                                <div className="w-10 h-10 rounded-full bg-sand-100 flex items-center justify-center text-sand-600 font-bold text-xs uppercase flex-shrink-0">
+                                                                <div className="w-10 h-10 rounded-full bg-surface-elevated border border-edge flex items-center justify-center text-ochre font-bold text-xs uppercase flex-shrink-0">
                                                                     {(user?.id === conv.clientId ? conv.creativeName : conv.clientName).charAt(0)}
                                                                 </div>
                                                                 <div className="flex-1 min-w-0">
                                                                     <div className="flex items-center justify-between gap-2 mb-1">
-                                                                        <p className="font-bold text-xs truncate">
+                                                                        <p className="font-semibold text-xs text-foreground truncate">
                                                                             {user?.id === conv.clientId ? conv.creativeName : conv.clientName}
                                                                         </p>
                                                                         <span className="text-[10px] text-muted-foreground whitespace-nowrap">
@@ -268,7 +277,7 @@ export function Navbar() {
                                 title="Notifications"
                             >
                                 <Bell className="h-4.5 w-4.5" strokeWidth={1.5} />
-                                <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-sand-400 rounded-full" />
+                                <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-ochre rounded-full" />
                             </button>
                         )}
 
@@ -294,23 +303,23 @@ export function Navbar() {
                                     animate={{ opacity: 1, y: 0, scale: 1 }}
                                     exit={{ opacity: 0, y: 8, scale: 0.96 }}
                                     transition={{ duration: 0.2, ease: "easeOut" }}
-                                    className="absolute right-0 mt-3 w-56 bg-background border border-border rounded-lg shadow-lg overflow-hidden z-50"
+                                    className="absolute right-0 mt-3 w-56 bg-surface border border-edge rounded-xl shadow-2xl overflow-hidden z-50 backdrop-blur-xl"
                                 >
                                     {isAuthenticated ? (
                                         <>
-                                            <div className="px-4 py-3 border-b border-border">
-                                                <p className="text-sm font-medium truncate">{user?.name}</p>
+                                            <div className="px-4 py-3 border-b border-edge">
+                                                <p className="text-sm font-medium text-foreground truncate">{user?.name}</p>
                                                 <div className="flex items-center gap-1.5 mt-0.5">
-                                                    <span className="text-[10px] uppercase tracking-wider font-semibold px-1.5 py-0.5 rounded bg-sand-400/10 text-sand-600 dark:text-sand-400">
+                                                    <span className="text-[10px] uppercase tracking-wider font-semibold px-1.5 py-0.5 rounded bg-ochre/15 text-ochre border border-ochre/20">
                                                         {user?.role}
                                                     </span>
                                                     <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
                                                 </div>
                                             </div>
                                             {user?.role === 'creative' && (
-                                                <div className="px-4 py-2.5 border-b border-border flex items-center justify-between">
+                                                <div className="px-4 py-2.5 border-b border-edge flex items-center justify-between">
                                                     <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Connects</span>
-                                                    <span className="font-semibold text-sm text-sand-600 dark:text-sand-400">⚡ {getConnects(user.id)}</span>
+                                                    <span className="font-semibold text-sm text-ochre">⚡ {getConnects(user.id)}</span>
                                                 </div>
                                             )}
                                             <div className="p-1.5 space-y-0.5">
@@ -425,16 +434,17 @@ export function Navbar() {
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
                         transition={{ duration: 0.3, ease: 'easeInOut' }}
-                        className="md:hidden border-b border-border bg-background overflow-hidden"
+                        className="md:hidden border-b border-edge bg-surface/98 backdrop-blur-2xl overflow-hidden"
                     >
                         <div className="px-6 py-8 space-y-8 max-h-[85vh] overflow-y-auto">
                             {/* Main Navigation Group */}
                             <div className="space-y-2">
                                 <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60 px-2 mb-4">Menu</p>
                                 {[
-                                    { to: "/explore", label: "Explore Hub", icon: <TrendingUp className="h-4 w-4" /> },
+                                    { to: "/#stories", label: "Cultural Stories", icon: <Sparkles className="h-4 w-4 text-ochre" /> },
+                                    { to: "/explore", label: "Explore Gallery", icon: <TrendingUp className="h-4 w-4" /> },
                                     { to: "/creatives", label: "Find Creatives", icon: <User className="h-4 w-4" /> },
-                                    { to: "/jobs", label: "Job Board", icon: <Briefcase className="h-4 w-4" /> },
+                                    { to: "/jobs", label: "Opportunities", icon: <Briefcase className="h-4 w-4" /> },
                                     { to: "/gear", label: "Gear Market", icon: <Camera className="h-4 w-4" /> },
                                 ].map((item) => (
                                     <Link
@@ -444,13 +454,13 @@ export function Navbar() {
                                         className={cn(
                                             "flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300",
                                             isActive(item.to)
-                                                ? "bg-foreground text-background font-bold shadow-lg"
-                                                : "text-foreground/70 hover:bg-muted font-medium"
+                                                ? "bg-surface-elevated text-ochre font-bold shadow-lg border border-edge"
+                                                : "text-foreground/80 hover:bg-surface-elevated font-medium"
                                         )}
                                     >
                                         <div className={cn(
                                             "w-8 h-8 rounded-full flex items-center justify-center",
-                                            isActive(item.to) ? "bg-background/20" : "bg-muted"
+                                            isActive(item.to) ? "bg-ochre/15 text-ochre" : "bg-surface-elevated"
                                         )}>
                                             {item.icon}
                                         </div>

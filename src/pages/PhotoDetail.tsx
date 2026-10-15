@@ -69,9 +69,9 @@ export const PhotoDetail: React.FC = () => {
 
           <button
             onClick={handleShare}
-            className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full bg-surface border border-edge text-zinc-300 hover:text-white hover:border-zinc-700 transition"
+            className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-lg bg-surface border border-edge text-mist hover:text-alabaster hover:border-ochre/30 transition shadow-sm"
           >
-            {copied ? <Check size={14} className="text-green-400" /> : <Share2 size={14} />}
+            {copied ? <Check size={14} className="text-emerald-400" /> : <Share2 size={14} />}
             <span>{copied ? 'Link Copied!' : 'Share Story'}</span>
           </button>
         </div>
@@ -94,59 +94,59 @@ export const PhotoDetail: React.FC = () => {
             <div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5 text-xs font-semibold tracking-wider uppercase text-ochre">
-                  <MapPin size={14} />
+                  <MapPin size={13} />
                   <span>{photo.locationName}</span>
                 </div>
-                <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-sidi/10 text-sidi border border-sidi/20">
+                <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-sidi/10 text-sidi border border-sidi/20">
                   {photo.region}
                 </span>
               </div>
 
-              <h1 className="text-3xl font-serif font-bold text-white mt-3 leading-tight">
+              <h1 className="text-3xl font-serif font-normal text-alabaster mt-3 leading-tight">
                 {photo.title}
               </h1>
 
-              <div className="flex items-center gap-2 mt-3 text-xs text-zinc-400">
+              <div className="flex items-center gap-2 mt-3 text-xs text-mist">
                 <User size={14} />
                 <span>
-                  Photographed by <strong className="text-white">{photo.author.name}</strong> (
+                  Photographed by <strong className="text-alabaster font-medium">{photo.author.name}</strong> (
                   <span className="text-sidi">{photo.author.handle}</span>)
                 </span>
               </div>
 
               <div className="my-6 border-t border-edge" />
 
-              <h2 className="text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-2">
-                The Story
+              <h2 className="text-[11px] uppercase tracking-wider text-ochre font-semibold mb-2">
+                Curatorial Note & Story
               </h2>
-              <p className="text-sm text-zinc-300 font-light leading-relaxed">
+              <p className="text-sm text-mist/90 font-light leading-relaxed">
                 {photo.story}
               </p>
 
               {photo.exif && (
-                <div className="mt-6 bg-black/40 border border-edge rounded-xl p-4">
+                <div className="mt-6 bg-canvas border border-edge rounded-xl p-4">
                   <div className="flex items-center gap-2 text-xs font-semibold text-sidi mb-3">
                     <Camera size={14} />
                     <span>Technical EXIF & Optics</span>
                   </div>
-                  <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-xs text-zinc-300">
+                  <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-xs text-mist font-mono">
                     <div>
-                      <span className="text-zinc-500">Camera:</span> {photo.exif.camera || '—'}
+                      <span className="text-mist/50">Camera:</span> {photo.exif.camera || '—'}
                     </div>
                     <div>
-                      <span className="text-zinc-500">Lens:</span> {photo.exif.lens || '—'}
+                      <span className="text-mist/50">Lens:</span> {photo.exif.lens || '—'}
                     </div>
                     <div>
-                      <span className="text-zinc-500">Aperture:</span> {photo.exif.aperture || '—'}
+                      <span className="text-mist/50">Aperture:</span> {photo.exif.aperture || '—'}
                     </div>
                     <div>
                       <span className="text-zinc-500">Shutter:</span> {photo.exif.shutterSpeed || '—'}
                     </div>
                     <div>
-                      <span className="text-zinc-500">Focal:</span> {photo.exif.focalLength || '—'}
+                      <span className="text-mist/50">Focal:</span> {photo.exif.focalLength || '—'}
                     </div>
                     <div>
-                      <span className="text-zinc-500">ISO:</span> {photo.exif.iso || '—'}
+                      <span className="text-mist/50">ISO:</span> {photo.exif.iso || '—'}
                     </div>
                   </div>
                 </div>
@@ -159,7 +159,7 @@ export const PhotoDetail: React.FC = () => {
                 {photo.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="text-[11px] px-2.5 py-1 rounded-md bg-canvas text-zinc-400 border border-edge"
+                    className="text-[10px] px-2.5 py-1 rounded-md bg-canvas text-mist border border-edge"
                   >
                     #{tag}
                   </span>
@@ -174,10 +174,10 @@ export const PhotoDetail: React.FC = () => {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <span className="text-xs uppercase font-bold text-ochre tracking-widest flex items-center gap-1.5">
+                <span className="text-xs uppercase font-semibold text-ochre tracking-widest flex items-center gap-1.5">
                   <Sparkles size={13} /> More from {photo.region}
                 </span>
-                <h3 className="text-2xl font-serif font-bold text-white mt-1">
+                <h3 className="text-2xl font-serif font-normal text-alabaster mt-1">
                   Cultural Perspectives
                 </h3>
               </div>

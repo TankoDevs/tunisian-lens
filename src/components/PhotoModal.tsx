@@ -48,15 +48,15 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({ photo, onClose }) => {
       onClick={onClose}
     >
       <div 
-        className="relative flex flex-col lg:flex-row w-full max-w-6xl max-h-[92vh] bg-zinc-950 border border-zinc-800 rounded-3xl overflow-hidden shadow-2xl"
+        className="relative flex flex-col lg:flex-row w-full max-w-6xl max-h-[92vh] bg-surface border border-edge rounded-3xl overflow-hidden shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 p-2 rounded-full bg-black/60 text-zinc-300 hover:text-white transition backdrop-blur-md hover:bg-black/80"
+          className="absolute top-4 right-4 z-10 p-2 rounded-full bg-canvas/80 text-mist hover:text-alabaster transition backdrop-blur-md hover:bg-canvas border border-edge/60"
           aria-label="Close modal"
         >
-          <X size={20} />
+          <X size={18} />
         </button>
 
         {/* Media Frame (65% width on desktop) */}
@@ -69,66 +69,66 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({ photo, onClose }) => {
         </div>
 
         {/* Context & Metadata Sidebar (35% width) */}
-        <div className="lg:w-1/3 p-6 md:p-8 flex flex-col justify-between overflow-y-auto border-t lg:border-t-0 lg:border-l border-zinc-800/80 bg-[#15171C]">
+        <div className="lg:w-1/3 p-6 md:p-8 flex flex-col justify-between overflow-y-auto border-t lg:border-t-0 lg:border-l border-edge bg-surface">
           <div>
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5 text-xs font-semibold tracking-wider uppercase text-amber-400">
-                <MapPin size={14} />
+              <div className="flex items-center gap-1.5 text-xs font-semibold tracking-wider uppercase text-ochre">
+                <MapPin size={13} />
                 <span>{photo.locationName}</span>
               </div>
-              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20">
+              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-sidi/10 text-sidi border border-sidi/20">
                 {photo.region}
               </span>
             </div>
 
-            <h2 className="text-2xl font-serif font-bold text-white mt-2 leading-tight">
+            <h2 className="text-2xl font-serif font-normal text-alabaster mt-2 leading-tight">
               {photo.title}
             </h2>
 
-            <div className="flex items-center gap-2 mt-2 text-xs text-zinc-400">
+            <div className="flex items-center gap-2 mt-2 text-xs text-mist">
               <User size={13} />
-              <span>By {photo.author.name} (<span className="text-sky-400">{photo.author.handle}</span>)</span>
+              <span>By {photo.author.name} (<span className="text-sidi">{photo.author.handle}</span>)</span>
             </div>
 
-            <div className="my-5 border-t border-zinc-800" />
+            <div className="my-5 border-t border-edge" />
 
-            <h4 className="text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-2">The Story</h4>
-            <p className="text-sm text-zinc-300 font-light leading-relaxed">
+            <h4 className="text-[11px] uppercase tracking-wider text-ochre font-semibold mb-2">Curatorial Note</h4>
+            <p className="text-xs text-mist/90 font-light leading-relaxed">
               {photo.story}
             </p>
 
             {photo.exif && (
-              <div className="mt-6 bg-zinc-900/60 border border-zinc-800/80 rounded-xl p-4">
-                <div className="flex items-center gap-2 text-xs font-semibold text-sky-400 mb-3">
-                  <Camera size={14} />
-                  <span>Camera & Settings</span>
+              <div className="mt-5 bg-canvas border border-edge rounded-xl p-4">
+                <div className="flex items-center gap-2 text-xs font-semibold text-sidi mb-3">
+                  <Camera size={13} />
+                  <span>Technical EXIF & Optics</span>
                 </div>
-                <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-xs text-zinc-300">
-                  <div><span className="text-zinc-500">Body:</span> {photo.exif.camera || '—'}</div>
-                  <div><span className="text-zinc-500">Lens:</span> {photo.exif.lens || '—'}</div>
-                  <div><span className="text-zinc-500">Aperture:</span> {photo.exif.aperture || '—'}</div>
-                  <div><span className="text-zinc-500">Shutter:</span> {photo.exif.shutterSpeed || '—'}</div>
-                  <div><span className="text-zinc-500">Focal:</span> {photo.exif.focalLength || '—'}</div>
-                  <div><span className="text-zinc-500">ISO:</span> {photo.exif.iso || '—'}</div>
+                <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-xs text-mist font-mono">
+                  <div><span className="text-mist/50">Body:</span> {photo.exif.camera || '—'}</div>
+                  <div><span className="text-mist/50">Lens:</span> {photo.exif.lens || '—'}</div>
+                  <div><span className="text-mist/50">Aperture:</span> {photo.exif.aperture || '—'}</div>
+                  <div><span className="text-mist/50">Shutter:</span> {photo.exif.shutterSpeed || '—'}</div>
+                  <div><span className="text-mist/50">Focal:</span> {photo.exif.focalLength || '—'}</div>
+                  <div><span className="text-mist/50">ISO:</span> {photo.exif.iso || '—'}</div>
                 </div>
               </div>
             )}
           </div>
 
           {/* Footer: Tags & Share Button */}
-          <div className="mt-6 pt-4 border-t border-zinc-800/80 space-y-4">
+          <div className="mt-6 pt-4 border-t border-edge space-y-4">
             <div className="flex flex-wrap gap-1.5">
               {photo.tags.map((tag) => (
-                <span key={tag} className="text-[11px] px-2.5 py-1 rounded-md bg-zinc-900 text-zinc-400 border border-zinc-800">
+                <span key={tag} className="text-[10px] px-2 py-0.5 rounded bg-canvas text-mist border border-edge">
                   #{tag}
                 </span>
               ))}
             </div>
 
-            <div className="flex items-center gap-2 pt-2">
+            <div className="flex items-center gap-2 pt-1">
               <button
                 onClick={handleShare}
-                className="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold transition shadow-md"
+                className="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-ochre hover:bg-ochre-light text-canvas text-xs font-semibold transition shadow-md shadow-ochre/15"
               >
                 {copied ? <Check size={14} /> : <Share2 size={14} />}
                 <span>{copied ? 'Link Copied for WhatsApp / Social!' : 'Share Photo Story'}</span>
@@ -136,7 +136,7 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({ photo, onClose }) => {
               
               <a
                 href={`/photo/${photo.slug}`}
-                className="p-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 hover:text-white transition"
+                className="p-2 rounded-lg bg-surface-elevated hover:bg-canvas border border-edge text-mist hover:text-alabaster transition"
                 title="Open permalink page"
               >
                 <ExternalLink size={15} />

@@ -14,16 +14,22 @@ export default {
       },
       colors: {
         canvas: "#0B0C0E",
-        surface: "#15171C",
+        surface: {
+          DEFAULT: "#15171C",
+          elevated: "#1E2127",
+        },
         edge: "#262930",
+        alabaster: "#F1F2F5",
+        mist: "#A4AAB7",
         sidi: {
           DEFAULT: "#0284C7",
+          azure: "#3884E6",
           light: "#38BDF8",
           dark: "#0369A1",
         },
         ochre: {
-          DEFAULT: "#D97706",
-          light: "#F59E0B",
+          DEFAULT: "#D99B56",
+          light: "#E8B072",
           dark: "#B45309",
         },
         border: "hsl(var(--border))",

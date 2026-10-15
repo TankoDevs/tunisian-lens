@@ -47,20 +47,20 @@ export function Explore() {
     });
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen bg-canvas text-alabaster">
             {/* Header */}
-            <div className="border-b border-border">
+            <div className="border-b border-edge bg-canvas">
                 <div className="container mx-auto px-6 py-16">
                     <div className="flex flex-col md:flex-row gap-6 items-start md:items-end justify-between">
                         <div>
-                            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sand-500 mb-2">Gallery</p>
-                            <h1 className="text-3xl md:text-4xl font-sans font-bold">Explore Work</h1>
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-ochre mb-2">Curated Archive</p>
+                            <h1 className="text-3xl md:text-5xl font-serif font-normal text-alabaster tracking-tight">Explore Visual Archives</h1>
                         </div>
                         <div className="relative w-full md:w-80">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-mist" strokeWidth={1.5} />
                             <Input
-                                placeholder="Search projects, artists…"
-                                className="pl-10"
+                                placeholder="Search archives, stories, creators…"
+                                className="pl-10 bg-surface border-edge text-alabaster placeholder:text-mist/50 focus:border-ochre focus:ring-ochre/20 rounded-xl"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
@@ -73,9 +73,9 @@ export function Explore() {
                 {/* Filters */}
                 <div className="space-y-4">
                     <div className="flex items-center justify-between md:hidden">
-                        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Filters</span>
-                        <Button variant="ghost" size="sm" onClick={() => setIsFilterMenuOpen(!isFilterMenuOpen)}>
-                            <Filter className="h-3.5 w-3.5 mr-2" strokeWidth={1.5} />
+                        <span className="text-xs font-semibold uppercase tracking-wider text-mist">Filters</span>
+                        <Button variant="ghost" size="sm" onClick={() => setIsFilterMenuOpen(!isFilterMenuOpen)} className="text-mist hover:text-alabaster">
+                            <Filter className="h-3.5 w-3.5 mr-2 text-ochre" strokeWidth={1.5} />
                             {isFilterMenuOpen ? "Hide" : "Show"}
                         </Button>
                     </div>
@@ -86,19 +86,19 @@ export function Explore() {
                             <button
                                 onClick={() => setSelectedCategory(null)}
                                 className={cn(
-                                    "px-4 py-2 rounded-md text-xs font-medium transition-all duration-300",
-                                    selectedCategory === null ? "bg-foreground text-background" : "bg-muted text-muted-foreground hover:text-foreground"
+                                    "px-4 py-2 rounded-lg text-xs font-medium transition-all duration-300 border",
+                                    selectedCategory === null ? "bg-ochre text-canvas border-ochre font-semibold shadow-md shadow-ochre/15" : "bg-surface text-mist border-edge hover:text-alabaster hover:border-edge/90"
                                 )}
                             >
-                                All
+                                All Disciplines
                             </button>
                             {CATEGORIES.map((cat) => (
                                 <button
                                     key={cat}
                                     onClick={() => setSelectedCategory(cat === selectedCategory ? null : cat)}
                                     className={cn(
-                                        "px-4 py-2 rounded-md text-xs font-medium transition-all duration-300",
-                                        selectedCategory === cat ? "bg-foreground text-background" : "bg-muted text-muted-foreground hover:text-foreground"
+                                        "px-4 py-2 rounded-lg text-xs font-medium transition-all duration-300 border",
+                                        selectedCategory === cat ? "bg-ochre text-canvas border-ochre font-semibold shadow-md shadow-ochre/15" : "bg-surface text-mist border-edge hover:text-alabaster hover:border-edge/90"
                                     )}
                                 >
                                     {cat}
@@ -107,30 +107,30 @@ export function Explore() {
                         </div>
 
                         {/* Country + Verified */}
-                        <div className="flex flex-wrap gap-2 items-center">
-                            <span className="text-xs text-muted-foreground mr-1 uppercase tracking-wider font-semibold">Country:</span>
+                        <div className="flex flex-wrap gap-2 items-center text-xs">
+                            <span className="text-mist mr-1 uppercase tracking-wider font-semibold text-[10px]">Governorate / Region:</span>
                             {COUNTRIES.slice(0, 8).map((country) => (
                                 <button
                                     key={country}
                                     onClick={() => setSelectedCountry(country === selectedCountry ? null : country)}
                                     className={cn(
-                                        "text-xs px-2.5 py-1 rounded-md transition-all duration-200",
-                                        selectedCountry === country ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                                        "text-xs px-2.5 py-1 rounded-md transition-all duration-200 border",
+                                        selectedCountry === country ? "bg-sidi text-white border-sidi font-medium" : "bg-surface text-mist border-edge hover:text-alabaster"
                                     )}
                                 >
                                     {country}
                                 </button>
                             ))}
-                            <span className="mx-2 text-border">|</span>
+                            <span className="mx-2 text-edge">|</span>
                             <button
                                 onClick={() => setVerifiedOnly(!verifiedOnly)}
                                 className={cn(
-                                    "flex items-center gap-1.5 text-xs px-3 py-1 rounded-md transition-all duration-200",
-                                    verifiedOnly ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                                    "flex items-center gap-1.5 text-xs px-3 py-1 rounded-md transition-all duration-200 border",
+                                    verifiedOnly ? "bg-ochre text-canvas border-ochre font-semibold" : "bg-surface text-mist border-edge hover:text-alabaster"
                                 )}
                             >
                                 <CheckCircle2 className="h-3 w-3" strokeWidth={1.5} />
-                                Verified
+                                Verified Only
                             </button>
                         </div>
                     </div>

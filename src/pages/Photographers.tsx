@@ -58,36 +58,36 @@ function ArtistHighlightCard({ artist }: { artist: typeof ARTISTS[number] }) {
 
     return (
         <Link to={`/artist/${artist.id}`} className="group block">
-            <div className="relative aspect-[16/10] rounded-3xl overflow-hidden bg-card border border-border shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-500">
+            <div className="relative aspect-[16/10] rounded-2xl overflow-hidden bg-surface border border-edge shadow-md hover:shadow-2xl hover:border-ochre/40 hover:-translate-y-1 transition-all duration-300">
                 <img
                     src={coverImg}
                     alt={artist.name}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent" />
 
-                <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 group-hover:bg-[#C8A97E] group-hover:border-[#C8A97E] transition-colors">
-                    <Star className="h-3 w-3 fill-amber-400 text-amber-400 group-hover:fill-white group-hover:text-white transition-colors" strokeWidth={0} />
-                    <span className="text-white text-xs font-bold leading-none">{rating}</span>
-                    <span className="text-white/60 text-[10px] font-medium group-hover:text-white/80 transition-colors">({reviews})</span>
+                <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 group-hover:border-ochre/40 transition-colors">
+                    <Star className="h-3 w-3 fill-ochre text-ochre" strokeWidth={0} />
+                    <span className="text-alabaster text-xs font-bold leading-none">{rating}</span>
+                    <span className="text-mist text-[10px] font-medium">({reviews})</span>
                 </div>
 
                 <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between">
-                    <div className="flex items-center gap-4">
-                        <img src={artist.avatar} alt={artist.name} className="w-12 h-12 rounded-full border-2 border-white/80 object-cover" />
+                    <div className="flex items-center gap-3.5">
+                        <img src={artist.avatar} alt={artist.name} className="w-11 h-11 rounded-full border-2 border-edge object-cover" />
                         <div>
-                            <div className="flex items-center gap-2">
-                                <h3 className="text-white font-bold text-lg">{artist.name}</h3>
-                                {verified && <CheckCircle2 className="h-4 w-4 text-[#C8A97E]" fill="currentColor" />}
+                            <div className="flex items-center gap-1.5">
+                                <h3 className="text-alabaster font-serif font-normal text-lg">{artist.name}</h3>
+                                {verified && <CheckCircle2 className="h-4 w-4 text-ochre" fill="currentColor" />}
                             </div>
-                            <p className="text-white/70 text-xs flex items-center gap-1">
-                                <MapPin className="h-3 w-3" /> {artist.location}
+                            <p className="text-mist text-xs flex items-center gap-1 mt-0.5">
+                                <MapPin className="h-3 w-3 text-sidi" /> {artist.location}
                             </p>
                         </div>
                     </div>
                     <div className="text-right">
-                        <p className="text-[10px] uppercase font-bold text-white/50 tracking-widest mb-1">Starting from</p>
-                        <p className="text-[#C8A97E] font-bold text-xl">{formatPrice(artist.startingPrice)}</p>
+                        <p className="text-[10px] uppercase font-semibold text-mist tracking-widest mb-0.5">Starting from</p>
+                        <p className="text-ochre font-bold text-lg">{formatPrice(artist.startingPrice)}</p>
                     </div>
                 </div>
             </div>
@@ -269,9 +269,9 @@ export function Photographers() {
     useEffect(() => { setPage(1); }, [searchQuery, selectedCountry, selectedCategory, selectedType, verifiedOnly, minPrice, maxPrice, sortBy]);
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen bg-canvas text-alabaster">
             {/* ── Hero Header ── */}
-            <section className="relative overflow-hidden border-b border-border">
+            <section className="relative overflow-hidden border-b border-edge">
                 {/* Subtle background pattern */}
                 <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]"
                     style={{ backgroundImage: "radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)", backgroundSize: "28px 28px" }}
@@ -283,15 +283,15 @@ export function Photographers() {
                         transition={{ duration: 0.6 }}
                         className="space-y-4"
                     >
-                        <div className="flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-[hsl(var(--accent))]">
+                        <div className="flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-ochre">
                             <Sparkles className="h-3 w-3" strokeWidth={2} />
-                            <span>Creative Directory</span>
+                            <span>Verified Curators & Lens Artists</span>
                         </div>
-                        <h1 className="text-5xl md:text-6xl font-bold tracking-tight">
+                        <h1 className="font-serif text-5xl md:text-6xl font-normal tracking-tight text-alabaster">
                             Find Your Creative
                         </h1>
-                        <p className="text-muted-foreground max-w-lg mx-auto text-base leading-relaxed">
-                            Browse world-class photographers and videographers. Filter by style, location, and budget to find your perfect match.
+                        <p className="text-mist max-w-lg mx-auto text-base leading-relaxed font-sans">
+                            Connect with verified documentary photographers, aerial cinematographers, and archival visual storytellers across Tunisia.
                         </p>
                     </motion.div>
 
@@ -303,10 +303,10 @@ export function Photographers() {
                         className="max-w-xl mx-auto relative"
                         ref={searchRef}
                     >
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none z-10" />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-mist pointer-events-none z-10" />
                         <Input
-                            placeholder="Search by name, style, location…"
-                            className="pl-12 h-14 text-base md:text-sm pr-10 shadow-sm rounded-xl"
+                            placeholder="Search by name, region (Sidi Bou Said, Sahara), discipline…"
+                            className="pl-12 h-14 text-base md:text-sm pr-10 shadow-lg rounded-2xl bg-surface border-edge text-alabaster placeholder:text-mist/60 focus:border-ochre focus:ring-1 focus:ring-ochre/30 transition-all"
                             value={searchQuery}
                             onChange={e => { setSearchQuery(e.target.value); setShowSuggestions(true); }}
                             onFocus={() => setShowSuggestions(true)}
@@ -315,7 +315,7 @@ export function Photographers() {
                         {searchQuery && (
                             <button
                                 onClick={() => { setSearchQuery(""); setShowSuggestions(false); }}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-mist hover:text-alabaster transition-colors"
                             >
                                 <X className="h-4 w-4" />
                             </button>
@@ -329,18 +329,18 @@ export function Photographers() {
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: -8 }}
                                     transition={{ duration: 0.15 }}
-                                    className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-lg shadow-lg z-50 overflow-hidden"
+                                    className="absolute top-full left-0 right-0 mt-2 bg-surface.elevated border border-edge rounded-2xl shadow-2xl z-50 overflow-hidden divide-y divide-edge/60"
                                 >
                                     {suggestions.map(s => (
                                         <button
                                             key={s.id}
                                             onClick={() => { setSearchQuery(s.name); setShowSuggestions(false); }}
-                                            className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-muted text-left transition-colors"
+                                            className="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/5 text-left transition-colors"
                                         >
-                                            <img src={s.avatar} alt={s.name} className="w-7 h-7 rounded-full object-cover flex-shrink-0" />
+                                            <img src={s.avatar} alt={s.name} className="w-8 h-8 rounded-full object-cover flex-shrink-0 ring-1 ring-edge" />
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-medium truncate">{s.name}</p>
-                                                <p className="text-xs text-muted-foreground truncate">{s.categories.slice(0, 2).join(" · ")} · {s.country}</p>
+                                                <p className="text-sm font-medium text-alabaster truncate">{s.name}</p>
+                                                <p className="text-xs text-mist truncate">{s.categories.slice(0, 2).join(" · ")} · {s.country}</p>
                                             </div>
                                             {CREATIVE_TYPE_ICONS[s.creativeType]}
                                         </button>
@@ -355,15 +355,15 @@ export function Photographers() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.3 }}
-                        className="flex items-center justify-center gap-6 text-xs text-muted-foreground"
+                        className="flex items-center justify-center gap-6 text-xs text-mist"
                     >
                         {[
-                            { label: "creatives", value: ARTISTS.length },
-                            { label: "countries", value: COUNTRIES.length },
-                            { label: "specialities", value: CATEGORIES.length },
+                            { label: "lens artists", value: ARTISTS.length },
+                            { label: "governorates", value: COUNTRIES.length },
+                            { label: "genres & optics", value: CATEGORIES.length },
                         ].map(({ label, value }) => (
                             <div key={label} className="flex items-center gap-1.5">
-                                <span className="font-semibold text-foreground text-sm">{value}+</span>
+                                <span className="font-semibold text-alabaster text-sm">{value}+</span>
                                 <span>{label}</span>
                             </div>
                         ))}
@@ -375,45 +375,45 @@ export function Photographers() {
                 {/* ── Browse by Category ── */}
                 <div className="mb-20">
                     <div className="flex items-center gap-3 mb-8">
-                        <div className="h-6 w-1.5 bg-[#C8A97E] rounded-full" />
-                        <h2 className="text-2xl font-bold tracking-tight">Browse by Category</h2>
+                        <div className="h-6 w-1.5 bg-ochre rounded-full" />
+                        <h2 className="font-serif text-2xl font-normal tracking-tight text-alabaster">Browse by Discipline</h2>
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
                         {[
-                            { id: "Wedding", label: "Wedding", icon: <Sparkles className="h-5 w-5" />, color: "from-pink-500/10 to-rose-500/5", img: "https://images.unsplash.com/photo-1519741497674-611481863552?w=400&q=80" },
-                            { id: "Event", label: "Events", icon: <Zap className="h-5 w-5" />, color: "from-amber-500/10 to-orange-500/5", img: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=400&q=80" },
-                            { id: "Product", label: "Product", icon: <Camera className="h-5 w-5" />, color: "from-blue-500/10 to-indigo-500/5", img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80" },
-                            { id: "Drone", label: "Aerial/Drone", icon: <Globe className="h-5 w-5" />, color: "from-emerald-500/10 to-teal-500/5", img: "https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=400&q=80" },
-                            { id: "Videography", label: "Video", icon: <Video className="h-5 w-5" />, color: "from-purple-500/10 to-violet-500/5", img: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=400&q=80" },
+                            { id: "Wedding", label: "Wedding", icon: <Sparkles className="h-5 w-5" />, color: "from-amber-500/10 to-orange-500/5", img: "https://images.unsplash.com/photo-1519741497674-611481863552?w=400&q=80" },
+                            { id: "Event", label: "Cultural Events", icon: <Zap className="h-5 w-5" />, color: "from-amber-500/10 to-orange-500/5", img: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=400&q=80" },
+                            { id: "Product", label: "Artisan & Studio", icon: <Camera className="h-5 w-5" />, color: "from-blue-500/10 to-indigo-500/5", img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80" },
+                            { id: "Drone", label: "Aerial & Topo", icon: <Globe className="h-5 w-5" />, color: "from-emerald-500/10 to-teal-500/5", img: "https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=400&q=80" },
+                            { id: "Videography", label: "Cinema & Docs", icon: <Video className="h-5 w-5" />, color: "from-purple-500/10 to-violet-500/5", img: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=400&q=80" },
                         ].map((cat) => (
                             <motion.button
                                 key={cat.id}
-                                whileHover={{ y: -8 }}
+                                whileHover={{ y: -6 }}
                                 onClick={() => {
                                     setSelectedCategory(cat.id === selectedCategory ? null : cat.id);
                                     window.scrollTo({ top: 800, behavior: 'smooth' });
                                 }}
                                 className={cn(
-                                    "relative group overflow-hidden rounded-3xl border aspect-[4/5] flex flex-col justify-center items-center transition-all duration-500",
+                                    "relative group overflow-hidden rounded-2xl border aspect-[4/5] flex flex-col justify-center items-center transition-all duration-300 bg-surface",
                                     selectedCategory === cat.id
-                                        ? "border-[#C8A97E] ring-2 ring-[#C8A97E]/20"
-                                        : "border-border/50 hover:border-[#C8A97E]/30"
+                                        ? "border-ochre ring-2 ring-ochre/25 shadow-lg shadow-ochre/10"
+                                        : "border-edge hover:border-ochre/50"
                                 )}
                             >
-                                <img src={cat.img} alt={cat.label} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-40" />
-                                <div className={cn("absolute inset-0 bg-gradient-to-br transition-opacity", cat.color)} />
+                                <img src={cat.img} alt={cat.label} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-30" />
+                                <div className={cn("absolute inset-0 bg-gradient-to-t from-canvas via-canvas/40 to-transparent transition-opacity", cat.color)} />
 
                                 <div className={cn(
-                                    "relative z-10 p-4 rounded-2xl backdrop-blur-md border transition-all duration-300 mb-3",
+                                    "relative z-10 p-3.5 rounded-xl backdrop-blur-md border transition-all duration-300 mb-3",
                                     selectedCategory === cat.id
-                                        ? "bg-[#C8A97E] text-white border-white/20 scale-110"
-                                        : "bg-white/10 border-white/10 text-muted-foreground group-hover:text-foreground"
+                                        ? "bg-ochre text-black border-ochre/30 scale-105"
+                                        : "bg-surface/80 border-edge text-mist group-hover:text-alabaster"
                                 )}>
                                     {cat.icon}
                                 </div>
                                 <span className={cn(
-                                    "relative z-10 text-xs font-bold uppercase tracking-widest transition-colors",
-                                    selectedCategory === cat.id ? "text-[#C8A97E]" : "text-muted-foreground group-hover:text-foreground"
+                                    "relative z-10 text-[11px] font-semibold uppercase tracking-widest transition-colors",
+                                    selectedCategory === cat.id ? "text-ochre" : "text-mist group-hover:text-alabaster"
                                 )}>
                                     {cat.label}
                                 </span>
@@ -497,23 +497,23 @@ export function Photographers() {
                 )}
 
                 {/* ── Sticky Toolbar ── */}
-                <div id="all-creatives" className="sticky top-0 z-30 bg-background/90 backdrop-blur-sm border-b border-border -mx-6 px-6 py-4 mb-10">
+                <div id="all-creatives" className="sticky top-0 z-30 bg-canvas/90 backdrop-blur-md border-b border-edge -mx-6 px-6 py-4 mb-10">
                     <div className="flex items-center justify-between gap-4 flex-wrap">
                         {/* Left: Section Title & Count */}
                         <div className="flex items-center gap-6">
-                            <h2 className="text-xl font-bold tracking-tight hidden sm:block">
+                            <h2 className="font-serif text-xl font-normal tracking-tight text-alabaster hidden sm:block">
                                 {discoveryTab === "all" ? "All Creatives" :
                                     discoveryTab === "trending" ? "Trending Professionals" :
                                         discoveryTab === "top_rated" ? "Top Rated Creatives" : "New Talent"}
                             </h2>
-                            <div className="flex items-center gap-2 bg-muted/50 px-3 py-1 rounded-full border border-border/50">
-                                <span className="text-xs font-bold text-foreground">{filteredArtists.length}</span>
-                                <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Pros Found</span>
+                            <div className="flex items-center gap-2 bg-surface px-3 py-1 rounded-full border border-edge">
+                                <span className="text-xs font-bold text-ochre">{filteredArtists.length}</span>
+                                <span className="text-[10px] uppercase tracking-wider text-mist font-semibold">Pros Found</span>
                             </div>
                             {hasActiveFilters && (
                                 <button
                                     onClick={clearFilters}
-                                    className="flex items-center gap-1.5 text-xs text-[#C8A97E] font-bold hover:opacity-80 transition-opacity"
+                                    className="flex items-center gap-1.5 text-xs text-ochre font-semibold hover:opacity-80 transition-opacity"
                                 >
                                     <X className="h-3 w-3" /> Reset
                                 </button>
@@ -528,10 +528,10 @@ export function Photographers() {
                                     key={type}
                                     onClick={() => setSelectedType(selectedType === type ? null : type)}
                                     className={cn(
-                                        "flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border transition-all duration-200 capitalize",
+                                        "flex items-center gap-1.5 text-xs px-3.5 py-1.5 rounded-full border transition-all duration-200 capitalize font-medium",
                                         selectedType === type
-                                            ? "bg-foreground text-background border-foreground"
-                                            : "border-border hover:bg-muted"
+                                            ? "bg-ochre text-black border-ochre"
+                                            : "border-edge bg-surface text-mist hover:text-alabaster hover:border-zinc-700"
                                     )}
                                 >
                                     {CREATIVE_TYPE_ICONS[type]} {type}
@@ -541,9 +541,9 @@ export function Photographers() {
                             <div className="relative" ref={sortRef}>
                                 <button
                                     onClick={() => setShowSortMenu(v => !v)}
-                                    className="flex items-center gap-2 text-sm md:text-xs px-4 py-2 bg-background rounded-full border border-border hover:bg-muted transition-colors shadow-sm"
+                                    className="flex items-center gap-2 text-sm md:text-xs px-4 py-2 bg-surface text-alabaster rounded-full border border-edge hover:border-zinc-700 transition-colors shadow-sm"
                                 >
-                                    <ArrowUpDown className="h-4 w-4 md:h-3 md:w-3" strokeWidth={2} />
+                                    <ArrowUpDown className="h-4 w-4 md:h-3 md:w-3 text-ochre" strokeWidth={2} />
                                     {currentSortLabel}
                                 </button>
                                 <AnimatePresence>
@@ -553,15 +553,15 @@ export function Photographers() {
                                             animate={{ opacity: 1, scale: 1, y: 0 }}
                                             exit={{ opacity: 0, scale: 0.95, y: -4 }}
                                             transition={{ duration: 0.12 }}
-                                            className="absolute right-0 top-full mt-1 w-40 bg-card border border-border rounded-md shadow-lg z-50 py-1 overflow-hidden"
+                                            className="absolute right-0 top-full mt-2 w-44 bg-surface.elevated border border-edge rounded-xl shadow-2xl z-50 py-1.5 overflow-hidden divide-y divide-edge/40"
                                         >
                                             {SORT_OPTIONS.map(opt => (
                                                 <button
                                                     key={opt.value}
                                                     onClick={() => { setSortBy(opt.value); setShowSortMenu(false); }}
                                                     className={cn(
-                                                        "w-full text-left px-3 py-2 text-xs hover:bg-muted transition-colors",
-                                                        sortBy === opt.value ? "font-semibold text-foreground" : "text-muted-foreground"
+                                                        "w-full text-left px-3.5 py-2 text-xs hover:bg-white/5 transition-colors",
+                                                        sortBy === opt.value ? "font-semibold text-ochre" : "text-mist hover:text-alabaster"
                                                     )}
                                                 >
                                                     {opt.label}
@@ -599,23 +599,23 @@ export function Photographers() {
                             animate={{ opacity: 1, height: "auto" }}
                             exit={{ opacity: 0, height: 0 }}
                             transition={{ duration: 0.25 }}
-                            className="mb-6 overflow-hidden"
+                            className="mb-8 overflow-hidden"
                         >
-                            <div className="p-5 border border-border rounded-xl bg-card space-y-5">
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                            <div className="p-6 border border-edge rounded-2xl bg-surface space-y-6 shadow-xl">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                                     {/* Country */}
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Country</label>
+                                    <div className="space-y-2.5">
+                                        <label className="text-[11px] font-semibold uppercase tracking-wider text-mist">Region / Governorate</label>
                                         <div className="flex flex-wrap gap-1.5">
                                             {COUNTRIES.map(country => (
                                                 <button
                                                     key={country}
                                                     onClick={() => setSelectedCountry(selectedCountry === country ? null : country)}
                                                     className={cn(
-                                                        "text-xs px-2.5 py-1 rounded-md border transition-all duration-200",
+                                                        "text-xs px-3 py-1.5 rounded-lg border transition-all duration-200",
                                                         selectedCountry === country
-                                                            ? "bg-foreground text-background border-foreground"
-                                                            : "hover:bg-muted border-border"
+                                                            ? "bg-ochre text-black font-semibold border-ochre"
+                                                            : "bg-surface.elevated text-mist hover:text-alabaster border-edge hover:border-zinc-700"
                                                     )}
                                                 >
                                                     {country}
@@ -624,18 +624,18 @@ export function Photographers() {
                                         </div>
                                     </div>
                                     {/* Category */}
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Category</label>
+                                    <div className="space-y-2.5">
+                                        <label className="text-[11px] font-semibold uppercase tracking-wider text-mist">Discipline</label>
                                         <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto scrollbar-hide">
                                             {CATEGORIES.map(cat => (
                                                 <button
                                                     key={cat}
                                                     onClick={() => setSelectedCategory(selectedCategory === cat ? null : cat)}
                                                     className={cn(
-                                                        "text-xs px-2.5 py-1 rounded-md border transition-all duration-200 whitespace-nowrap",
+                                                        "text-xs px-2.5 py-1 rounded-lg border transition-all duration-200 whitespace-nowrap",
                                                         selectedCategory === cat
-                                                            ? "bg-foreground text-background border-foreground"
-                                                            : "hover:bg-muted border-border"
+                                                            ? "bg-ochre text-black font-semibold border-ochre"
+                                                            : "bg-surface.elevated text-mist hover:text-alabaster border-edge hover:border-zinc-700"
                                                     )}
                                                 >
                                                     {cat}
@@ -644,12 +644,12 @@ export function Photographers() {
                                         </div>
                                     </div>
                                     {/* Price Range */}
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Price Range (USD)</label>
+                                    <div className="space-y-2.5">
+                                        <label className="text-[11px] font-semibold uppercase tracking-wider text-mist">Price Range (TND / USD)</label>
                                         <div className="flex gap-2 items-center">
-                                            <Input type="number" placeholder="Min" value={minPrice} onChange={e => setMinPrice(e.target.value)} className="h-9 text-sm" />
-                                            <span className="text-muted-foreground text-xs">–</span>
-                                            <Input type="number" placeholder="Max" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} className="h-9 text-sm" />
+                                            <Input type="number" placeholder="Min" value={minPrice} onChange={e => setMinPrice(e.target.value)} className="h-9 text-sm bg-surface.elevated border-edge text-alabaster focus:border-ochre rounded-lg" />
+                                            <span className="text-mist text-xs">–</span>
+                                            <Input type="number" placeholder="Max" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} className="h-9 text-sm bg-surface.elevated border-edge text-alabaster focus:border-ochre rounded-lg" />
                                         </div>
                                     </div>
                                     {/* Verification + Rating */}
@@ -777,12 +777,12 @@ export function Photographers() {
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ duration: 0.35, delay: i * 0.05 }}
-                                        className="group relative bg-card border border-border rounded-2xl overflow-hidden cursor-pointer"
+                                        className="group relative bg-surface border border-edge hover:border-ochre/40 rounded-2xl overflow-hidden cursor-pointer transition-all duration-300"
                                         style={{
                                             transform: isHovered ? "translateY(-6px)" : "translateY(0)",
                                             boxShadow: isHovered
-                                                ? "0 20px 60px rgba(0,0,0,0.15), 0 4px 20px rgba(0,0,0,0.08)"
-                                                : "0 1px 4px rgba(0,0,0,0.04)",
+                                                ? "0 20px 60px rgba(0,0,0,0.5), 0 4px 20px rgba(217, 155, 86, 0.1)"
+                                                : "0 2px 8px rgba(0,0,0,0.2)",
                                             transition: "transform 0.3s cubic-bezier(.25,.8,.25,1), box-shadow 0.3s cubic-bezier(.25,.8,.25,1)"
                                         }}
                                         onMouseEnter={() => setHoveredCard(artist.id)}
@@ -860,13 +860,13 @@ export function Photographers() {
                                         </div>
 
                                         {/* ── Card Body ── */}
-                                        <div className="p-4 space-y-3">
+                                        <div className="p-5 space-y-3.5">
                                             {/* Categories */}
-                                            <div className="flex flex-wrap gap-1">
+                                            <div className="flex flex-wrap gap-1.5">
                                                 {artist.categories.map(cat => (
                                                     <span
                                                         key={cat}
-                                                        className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 bg-muted text-muted-foreground rounded-md"
+                                                        className="text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 bg-surface.elevated text-mist rounded-md border border-edge/60"
                                                     >
                                                         {cat}
                                                     </span>
@@ -874,50 +874,50 @@ export function Photographers() {
                                             </div>
 
                                             {/* Bio */}
-                                            <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                                            <p className="text-xs text-mist line-clamp-2 leading-relaxed">
                                                 {artist.bio}
                                             </p>
 
                                             {/* Footer: rating + price + actions */}
-                                            <div className="flex items-center justify-between pt-2 border-t border-border">
+                                            <div className="flex items-center justify-between pt-3 border-t border-edge/60">
                                                 <div className="flex flex-col gap-0.5">
                                                     {/* Rating */}
                                                     <Tooltip content={`${reviews} verified client reviews`}>
                                                         <div className="flex items-center gap-1 cursor-help">
-                                                            <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" strokeWidth={0} />
-                                                            <span className="text-sm font-bold text-foreground">{rating}</span>
-                                                            <span className="text-[10px] text-muted-foreground">({reviews})</span>
+                                                            <Star className="h-3.5 w-3.5 fill-ochre text-ochre" strokeWidth={0} />
+                                                            <span className="text-sm font-semibold text-alabaster">{rating}</span>
+                                                            <span className="text-[10px] text-mist">({reviews})</span>
                                                         </div>
                                                     </Tooltip>
                                                     {/* Jobs Completed */}
                                                     {artist.stats?.jobsCompleted !== undefined && (
-                                                        <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
-                                                            <CheckCircle2 className="h-3 w-3 text-green-500" strokeWidth={2} />
-                                                            <span className="font-semibold text-foreground">{artist.stats.jobsCompleted}</span> jobs done
+                                                        <div className="flex items-center gap-1 text-[10px] text-mist">
+                                                            <CheckCircle2 className="h-3 w-3 text-emerald-400" strokeWidth={2} />
+                                                            <span className="font-semibold text-alabaster">{artist.stats.jobsCompleted}</span> dispatches
                                                         </div>
                                                     )}
                                                     {/* Response Rate */}
                                                     {artist.stats?.avgResponseHours !== undefined && (
-                                                        <div className="flex items-center gap-1 text-[10px] text-muted-foreground mt-0.5">
-                                                            <Zap className="h-3 w-3 text-amber-500 fill-amber-500/20" strokeWidth={2} />
-                                                            Replies in <span className="font-semibold text-foreground">~{artist.stats.avgResponseHours}h</span>
+                                                        <div className="flex items-center gap-1 text-[10px] text-mist mt-0.5">
+                                                            <Zap className="h-3 w-3 text-ochre fill-ochre/20" strokeWidth={2} />
+                                                            Replies in <span className="font-semibold text-alabaster">~{artist.stats.avgResponseHours}h</span>
                                                         </div>
                                                     )}
                                                 </div>
 
                                                 {/* Actions */}
                                                 <div className="flex flex-col gap-1.5 items-end">
-                                                    <div className="text-xs text-muted-foreground text-right">
-                                                        from <span className="font-bold text-foreground text-sm">{formatPrice(artist.startingPrice)}</span>
+                                                    <div className="text-xs text-mist text-right">
+                                                        from <span className="font-serif font-bold text-alabaster text-sm">{formatPrice(artist.startingPrice)}</span>
                                                     </div>
                                                     <div className="flex gap-1.5">
                                                         <Link to={`/artist/${artist.id}`}>
-                                                            <Button variant="outline" size="sm" className="text-xs h-8 px-3 gap-1">
-                                                                View Profile
+                                                            <Button variant="outline" size="sm" className="text-xs h-8 px-3 gap-1 border-edge bg-surface text-alabaster hover:border-ochre/50">
+                                                                Profile
                                                             </Button>
                                                         </Link>
                                                         <Link to={`/hire/${artist.id}`}>
-                                                            <Button size="sm" className="text-xs h-8 px-3 font-semibold shadow-sm">
+                                                            <Button size="sm" className="text-xs h-8 px-3 font-semibold shadow-sm bg-ochre text-black hover:bg-ochre-light">
                                                                 Hire
                                                             </Button>
                                                         </Link>

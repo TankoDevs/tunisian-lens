@@ -33,9 +33,9 @@ export function ProjectCard({ id, image, title, artist, category, likes, classNa
 
     return (
         <div className={cn("group relative break-inside-avoid", className)}>
-            <div className="relative overflow-hidden rounded-lg bg-muted img-hover-zoom">
+            <div className="relative overflow-hidden rounded-2xl bg-surface border border-edge transition-all duration-300 hover:border-ochre/40 hover:-translate-y-1 hover:shadow-xl">
                 <Link to={`/project/${id}`} className="block">
-                    <div className="relative aspect-[4/3] overflow-hidden">
+                    <div className="relative aspect-[4/3] overflow-hidden bg-canvas">
                         <img
                             src={image || "https://picsum.photos/seed/fallback/800/600"}
                             alt={title}
@@ -49,12 +49,14 @@ export function ProjectCard({ id, image, title, artist, category, likes, classNa
                             }}
                         />
                         {/* Subtle gradient overlay on hover */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
                         {/* Hover metadata */}
-                        <div className="absolute bottom-0 left-0 w-full p-4 text-white opacity-0 transition-all duration-500 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0">
-                            <h3 className="font-sans font-semibold text-base truncate">{title}</h3>
-                            <p className="text-xs text-white/70 mt-0.5">{category}</p>
+                        <div className="absolute bottom-0 left-0 w-full p-4 text-alabaster opacity-0 transition-all duration-300 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0">
+                            <span className="text-[10px] font-semibold uppercase tracking-wider text-ochre bg-ochre/15 px-2 py-0.5 rounded border border-ochre/20 inline-block mb-1">
+                                {category}
+                            </span>
+                            <h3 className="font-serif font-normal text-base text-alabaster truncate">{title}</h3>
                         </div>
                     </div>
                 </Link>
@@ -74,17 +76,17 @@ export function ProjectCard({ id, image, title, artist, category, likes, classNa
             </div>
 
             {/* Artist info */}
-            <div className="mt-3 flex items-center justify-between">
+            <div className="mt-2.5 px-1 flex items-center justify-between">
                 <Link to={`/artist/${artist.id}`} className="flex items-center space-x-2 group/artist">
-                    <img src={artist.avatar} alt={artist.name} className="h-6 w-6 rounded-full object-cover ring-1 ring-border" />
+                    <img src={artist.avatar} alt={artist.name} className="h-6 w-6 rounded-full object-cover ring-1 ring-edge" />
                     <div className="flex items-center space-x-1">
-                        <span className="text-sm text-foreground/80 group-hover/artist:text-foreground transition-colors duration-300">{artist.name}</span>
-                        {artist.isVerified && <VerificationBadge size={13} />}
+                        <span className="text-xs text-mist group-hover/artist:text-alabaster transition-colors duration-300">{artist.name}</span>
+                        {artist.isVerified && <VerificationBadge size={12} />}
                     </div>
                 </Link>
-                <div className="flex items-center space-x-1 text-muted-foreground">
-                    <Heart className="h-3.5 w-3.5" strokeWidth={1.5} />
-                    <span className="text-xs">{likes}</span>
+                <div className="flex items-center space-x-1 text-mist text-xs">
+                    <Heart className="h-3 w-3 text-mist/60 group-hover:text-red-400 transition-colors" strokeWidth={1.5} />
+                    <span className="text-[11px]">{likes}</span>
                 </div>
             </div>
         </div>

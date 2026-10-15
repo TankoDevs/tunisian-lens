@@ -13,7 +13,7 @@ export function MainLayout() {
     const { isAuthenticated } = useAuth();
     const { unreadCount } = useChat();
     return (
-        <div className="min-h-screen flex flex-col font-sans text-foreground bg-background">
+        <div className="min-h-screen flex flex-col font-sans text-alabaster bg-canvas selection:bg-ochre/25 selection:text-alabaster">
             <GlobalAlert />
             <Navbar />
             <main className="flex-1">
@@ -34,11 +34,11 @@ export function MainLayout() {
                         <motion.button
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            className="w-14 h-14 bg-background border border-border rounded-full shadow-2xl flex items-center justify-center relative text-foreground"
+                            className="w-13 h-13 bg-surface border border-edge rounded-full shadow-2xl flex items-center justify-center relative text-alabaster backdrop-blur-xl"
                         >
-                            <MessageSquare className="h-6 w-6" strokeWidth={1.5} />
+                            <MessageSquare className="h-5 w-5 text-ochre" strokeWidth={1.6} />
                             {unreadCount > 0 && (
-                                <span className="absolute -top-1 -right-1 h-5 w-5 bg-sand-400 text-white text-[10px] font-bold rounded-full flex items-center justify-center ring-2 ring-background">
+                                <span className="absolute -top-1 -right-1 h-5 w-5 bg-ochre text-canvas text-[10px] font-bold rounded-full flex items-center justify-center ring-2 ring-canvas">
                                     {unreadCount > 9 ? '9+' : unreadCount}
                                 </span>
                             )}
@@ -54,10 +54,10 @@ export function MainLayout() {
                     <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        className="h-14 px-6 bg-[hsl(var(--accent))] text-white rounded-full shadow-2xl flex items-center gap-2 font-bold text-sm"
+                        className="h-12 px-5 bg-ochre hover:bg-ochre-light text-canvas rounded-full shadow-2xl flex items-center gap-2 font-semibold text-xs uppercase tracking-wider"
                     >
-                        <Plus className="h-5 w-5" strokeWidth={2.5} />
-                        Post Job
+                        <Plus className="h-4 w-4" strokeWidth={2.5} />
+                        Commission
                     </motion.button>
                 </Link>
             </div>
