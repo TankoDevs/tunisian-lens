@@ -1,12 +1,10 @@
 import { useState } from "react";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
-import { Camera } from "lucide-react";
+import { Camera, ArrowRight, ShieldCheck } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useAlert } from "../context/AlertContext";
 import { Captcha } from "../components/ui/Captcha";
-import { PHOTO_CATEGORIES, VIDEO_CATEGORIES } from "../data/mockData";
+import { PHOTO_CATEGORIES } from "../data/mockData";
 
 export function Login() {
     const [email, setEmail] = useState("");
@@ -20,7 +18,7 @@ export function Login() {
         e.preventDefault();
         if (!email) { showAlert("Please enter your email to continue", "error"); return; }
         if (!password) { showAlert("Password is required", "error"); return; }
-        if (!isVerified) { showAlert("Please complete the verification slider", "warning"); return; }
+        if (!isVerified) { showAlert("Please complete the human verification slider", "warning"); return; }
         try {
             await login(email, password);
             navigate("/");
@@ -30,96 +28,127 @@ export function Login() {
     };
 
     return (
-        <div className="min-h-[calc(100vh-4rem)] grid grid-cols-1 md:grid-cols-2">
-            {/* Form */}
-            <div className="flex items-center justify-center p-8 md:p-16 bg-background">
-                <div className="w-full max-w-sm space-y-8">
+        <div className="min-h-[calc(100vh-4.5rem)] grid grid-cols-1 md:grid-cols-2 bg-canvas text-alabaster">
+            {/* Form Column */}
+            <div className="flex items-center justify-center p-8 md:p-16">
+                <div className="w-full max-w-md space-y-8">
                     <div className="space-y-3">
                         <Link to="/" className="inline-flex items-center space-x-2 md:hidden mb-4">
-                            <Camera className="h-5 w-5 text-sand-400" strokeWidth={1.8} />
-                            <span className="font-sans text-xl font-bold">Tunisian Lens</span>
+                            <Camera className="h-5 w-5 text-ochre" strokeWidth={1.8} />
+                            <span className="font-serif text-xl text-alabaster">Tunisian Lens</span>
                         </Link>
-                        <div className="hidden md:block w-10 h-[1.5px] bg-sand-400 mb-4" />
-                        <h1 className="text-3xl font-sans font-bold tracking-tight">Welcome back</h1>
-                        <p className="text-sm text-muted-foreground">Enter your credentials to access your account</p>
+                        <div className="hidden md:block w-8 h-[2px] bg-ochre mb-4" />
+                        <span className="text-xs font-mono uppercase tracking-[0.2em] text-ochre">Archival Portal</span>
+                        <h1 className="text-3xl md:text-4xl font-serif text-alabaster tracking-tight">Welcome Back</h1>
+                        <p className="text-sm text-mist font-light">Enter your credentials to access your creative studio</p>
                     </div>
 
                     <form className="space-y-5" onSubmit={handleSubmit} noValidate>
                         <div className="space-y-2">
-                            <label htmlFor="email" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Email</label>
-                            <Input id="email" type="email" placeholder="name@example.com" value={email} onChange={(e) => setEmail(e.target.value)} />
+                            <label htmlFor="email" className="text-xs font-mono uppercase tracking-wider text-mist">
+                                Email Address
+                            </label>
+                            <input
+                                id="email"
+                                type="email"
+                                placeholder="photographer@tunisianlens.com"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="w-full h-11 px-4 rounded-xl border border-edge bg-surface text-alabaster text-sm placeholder:text-mist/40 focus:outline-none focus:border-ochre transition-all"
+                            />
                         </div>
+
                         <div className="space-y-2">
-                            <label htmlFor="password" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Password</label>
-                            <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                            <div className="flex items-center justify-between">
+                                <label htmlFor="password" className="text-xs font-mono uppercase tracking-wider text-mist">
+                                    Password
+                                </label>
+                            </div>
+                            <input
+                                id="password"
+                                type="password"
+                                placeholder="••••••••"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="w-full h-11 px-4 rounded-xl border border-edge bg-surface text-alabaster text-sm placeholder:text-mist/40 focus:outline-none focus:border-ochre transition-all"
+                            />
                         </div>
-                        <div className="pt-1">
+
+                        <div className="pt-2">
                             <Captcha onVerify={setIsVerified} />
                         </div>
-                        <Button className="w-full h-11" type="submit" disabled={!isVerified}>Sign In</Button>
+
+                        <button
+                            type="submit"
+                            disabled={!isVerified}
+                            className="w-full h-12 rounded-full bg-ochre hover:bg-ochre-light disabled:opacity-50 text-canvas font-medium text-xs font-mono uppercase tracking-widest transition-all shadow-md flex items-center justify-center gap-2"
+                        >
+                            <span>Access Portfolio</span>
+                            <ArrowRight className="w-4 h-4" />
+                        </button>
                     </form>
 
                     <div className="relative">
                         <div className="absolute inset-0 flex items-center">
-                            <span className="w-full border-t border-border"></span>
+                            <span className="w-full border-t border-edge"></span>
                         </div>
                         <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-background px-2 text-muted-foreground font-medium">Or continue with</span>
+                            <span className="bg-canvas px-3 text-mist/60 font-mono tracking-widest">Or continue with</span>
                         </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
-                        <Button variant="outline" className="h-11 font-medium bg-background" onClick={() => showAlert("Google login will be available soon!", "warning")}>
-                            <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
-                                <path
-                                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                                    fill="#4285F4"
-                                />
-                                <path
-                                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                                    fill="#34A853"
-                                />
-                                <path
-                                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
-                                    fill="#FBBC05"
-                                />
-                                <path
-                                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                                    fill="#EA4335"
-                                />
+                        <button
+                            type="button"
+                            className="h-11 rounded-xl border border-edge bg-surface hover:bg-surface-elevated text-xs font-mono uppercase tracking-wider text-mist hover:text-alabaster transition-colors flex items-center justify-center gap-2"
+                            onClick={() => showAlert("Google authentication will be active shortly.", "warning")}
+                        >
+                            <svg className="h-4 w-4" viewBox="0 0 24 24">
+                                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+                                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+                                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05" />
+                                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
                             </svg>
                             Google
-                        </Button>
-                        <Button variant="outline" className="h-11 font-medium bg-background" onClick={() => showAlert("Facebook login will be available soon!", "warning")}>
-                            <svg className="mr-2 h-4 w-4 fill-[#1877F2]" viewBox="0 0 24 24">
+                        </button>
+                        <button
+                            type="button"
+                            className="h-11 rounded-xl border border-edge bg-surface hover:bg-surface-elevated text-xs font-mono uppercase tracking-wider text-mist hover:text-alabaster transition-colors flex items-center justify-center gap-2"
+                            onClick={() => showAlert("Facebook login will be active shortly.", "warning")}
+                        >
+                            <svg className="h-4 w-4 fill-[#1877F2]" viewBox="0 0 24 24">
                                 <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                             </svg>
                             Facebook
-                        </Button>
+                        </button>
                     </div>
 
-                    <div className="text-center text-sm text-muted-foreground">
-                        Don't have an account?{" "}
-                        <Link to="/signup" className="text-sand-600 dark:text-sand-400 hover:underline underline-offset-4">
-                            Sign up
+                    <div className="text-center text-sm text-mist">
+                        Don't have an account yet?{" "}
+                        <Link to="/signup" className="text-ochre hover:text-ochre-light underline underline-offset-4 font-medium">
+                            Join the Guild
                         </Link>
                     </div>
 
-                    <div className="pt-8 border-t border-border">
-                        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">Quick Demo Login (Testing)</p>
+                    {/* Quick Demo Logins for Testing */}
+                    <div className="pt-8 border-t border-edge space-y-4">
+                        <div className="flex items-center gap-2">
+                            <ShieldCheck className="w-4 h-4 text-ochre" />
+                            <p className="text-xs font-mono uppercase tracking-wider text-mist">Quick Testing Profiles</p>
+                        </div>
 
-                        <div className="space-y-4">
+                        <div className="space-y-3 text-xs">
                             <div>
-                                <p className="text-xs text-muted-foreground mb-2">Photographers</p>
-                                <div className="flex flex-wrap gap-2">
-                                    {PHOTO_CATEGORIES.map(cat => {
-                                        const email = `${cat.toLowerCase().replace(/[^a-z0-9]/g, '')}@demo.com`;
+                                <span className="text-[11px] text-mist/60 block mb-1.5 font-mono">Photographer Profiles:</span>
+                                <div className="flex flex-wrap gap-1.5">
+                                    {PHOTO_CATEGORIES.slice(0, 5).map(cat => {
+                                        const demoEmail = `${cat.toLowerCase().replace(/[^a-z0-9]/g, '')}@demo.com`;
                                         return (
                                             <button
                                                 key={`photo-${cat}`}
                                                 type="button"
-                                                onClick={() => { setEmail(email); setPassword('demo123'); setIsVerified(true); }}
-                                                className="text-[10px] px-2.5 py-1 rounded-full border border-border bg-muted/30 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors"
+                                                onClick={() => { setEmail(demoEmail); setPassword('demo123'); setIsVerified(true); }}
+                                                className="text-[10px] font-mono px-2.5 py-1 rounded-full border border-edge bg-surface hover:border-ochre hover:text-ochre transition-colors"
                                             >
                                                 {cat}
                                             </button>
@@ -129,40 +158,21 @@ export function Login() {
                             </div>
 
                             <div>
-                                <p className="text-xs text-muted-foreground mb-2">Videographers</p>
-                                <div className="flex flex-wrap gap-2">
-                                    {VIDEO_CATEGORIES.map(cat => {
-                                        const email = `${cat.toLowerCase().replace(/[^a-z0-9]/g, '')}@demo.com`;
-                                        return (
-                                            <button
-                                                key={`video-${cat}`}
-                                                type="button"
-                                                onClick={() => { setEmail(email); setPassword('demo123'); setIsVerified(true); }}
-                                                className="text-[10px] px-2.5 py-1 rounded-full border border-border bg-muted/30 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors"
-                                            >
-                                                {cat}
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-
-                            <div>
-                                <p className="text-xs text-muted-foreground mb-2">Other Roles</p>
+                                <span className="text-[11px] text-mist/60 block mb-1.5 font-mono">Administrative & Client:</span>
                                 <div className="flex gap-2">
                                     <button
                                         type="button"
                                         onClick={() => { setEmail('client@tunisianlens.com'); setPassword('client123'); setIsVerified(true); }}
-                                        className="text-[10px] px-2.5 py-1 rounded-full border border-sandbox bg-sand-100 hover:bg-sand-500 hover:text-white transition-colors text-sand-800"
+                                        className="text-[10px] font-mono px-3 py-1 rounded-full border border-edge bg-surface text-sidi-azure hover:border-sidi-azure transition-colors"
                                     >
-                                        Client
+                                        Client Role
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => { setEmail('admin@tunisianlens.com'); setPassword('admin123'); setIsVerified(true); }}
-                                        className="text-[10px] px-2.5 py-1 rounded-full border border-red-200 bg-red-50 hover:bg-red-500 hover:text-white transition-colors text-red-800"
+                                        className="text-[10px] font-mono px-3 py-1 rounded-full border border-ochre/40 bg-ochre/10 text-ochre hover:bg-ochre/20 transition-colors"
                                     >
-                                        Admin
+                                        Admin Curator
                                     </button>
                                 </div>
                             </div>
@@ -171,12 +181,12 @@ export function Login() {
                 </div>
             </div>
 
-            {/* Image */}
-            <div className="hidden md:block relative bg-muted">
+            {/* Visual Photography Column */}
+            <div className="hidden md:block relative bg-surface border-l border-edge overflow-hidden">
                 <img
-                    src="https://images.unsplash.com/photo-1554080353-a576cf803bda?w=1200&q=80"
-                    alt="Photography"
-                    className="absolute inset-0 h-full w-full object-cover"
+                    src="https://images.unsplash.com/photo-1554080353-a576cf803bda?w=1400&q=85"
+                    alt="Mediterranean visual study"
+                    className="absolute inset-0 h-full w-full object-cover filter brightness-[0.75] contrast-[1.05]"
                     onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         if (!target.src.includes('placeholder')) {
@@ -184,10 +194,19 @@ export function Login() {
                         }
                     }}
                 />
-                <div className="absolute inset-0 bg-black/30" />
-                <div className="absolute bottom-10 left-10 right-10 text-white">
-                    <p className="text-lg font-sans italic leading-relaxed">"Photography is the story I fail to put into words."</p>
-                    <p className="text-xs mt-3 text-white/60 tracking-wider uppercase">— Destin Sparks</p>
+                <div className="absolute inset-0 bg-gradient-to-t from-canvas via-canvas/40 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-r from-canvas/60 via-transparent to-transparent" />
+
+                <div className="absolute bottom-16 left-12 right-12 text-alabaster max-w-md">
+                    <span className="text-xs font-mono uppercase tracking-[0.2em] text-ochre block mb-3">
+                        Tunisian Lens Archives
+                    </span>
+                    <blockquote className="text-2xl font-serif leading-relaxed text-alabaster">
+                        "Photography is the austere art of seizing light before history conceals it."
+                    </blockquote>
+                    <p className="text-xs mt-3 text-mist font-mono tracking-widest uppercase">
+                        — Archival Curators, Sidi Bou Said
+                    </p>
                 </div>
             </div>
         </div>

@@ -133,10 +133,10 @@ export function PostJob() {
     }
 
     return (
-        <div className="min-h-screen bg-background py-10">
+        <div className="min-h-screen bg-canvas text-alabaster py-12 md:py-16">
             <div className="container mx-auto px-4 max-w-2xl">
-                <Link to="/jobs" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6">
-                    <ArrowLeft className="h-4 w-4" strokeWidth={2} /> Back to jobs
+                <Link to="/jobs" className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-mist hover:text-ochre transition-colors mb-6">
+                    <ArrowLeft className="h-4 w-4" strokeWidth={1.5} /> Return to assignments
                 </Link>
 
                 <motion.div
@@ -144,49 +144,50 @@ export function PostJob() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4 }}
                 >
-                    <h1 className="font-sans text-3xl font-bold mb-1">Post a Job</h1>
-                    <p className="text-muted-foreground mb-8">Reach the best creatives in Tunisia.</p>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-ochre mb-2">Commission Briefing</p>
+                    <h1 className="font-serif text-3xl md:text-4xl font-normal text-alabaster mb-2">Post a Production Call</h1>
+                    <p className="text-mist text-sm mb-8 leading-relaxed">Engage verified documentary, commercial, and architectural creatives across the Tunisian territory.</p>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {/* Title */}
-                        <div className="space-y-1.5">
-                            <label className="text-sm font-medium">Job Title <span className="text-red-500">*</span></label>
+                        <div className="space-y-2">
+                            <label className="text-xs font-semibold uppercase tracking-wider text-mist">Assignment Title <span className="text-ochre">*</span></label>
                             <input
                                 type="text"
                                 value={form.title}
                                 onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
-                                placeholder="e.g. Wedding Photographer for June Event"
-                                className="w-full h-10 px-3 rounded-lg border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                                placeholder="e.g. Architectural & Aerial Study: Djerba Dwellings"
+                                className="w-full h-11 px-4 rounded-xl border border-edge bg-surface text-sm text-alabaster focus:outline-none focus:border-ochre placeholder:text-mist/40"
                             />
                         </div>
 
                         {/* Creative Type Required */}
-                        <div className="space-y-1.5">
-                            <label className="text-sm font-medium">Creative Type Required <span className="text-red-500">*</span></label>
-                            <div className="flex gap-2">
+                        <div className="space-y-2">
+                            <label className="text-xs font-semibold uppercase tracking-wider text-mist">Creative Discipline <span className="text-ochre">*</span></label>
+                            <div className="flex gap-2.5">
                                 {(['photographer', 'videographer', 'both'] as CreativeType[]).map(t => (
                                     <button
                                         key={t}
                                         type="button"
                                         onClick={() => setForm(f => ({ ...f, creativeTypeRequired: t, category: '' }))}
-                                        className={`flex-1 h-10 rounded-lg border text-sm font-medium transition-all duration-200 capitalize ${form.creativeTypeRequired === t
-                                            ? 'bg-foreground text-background border-foreground'
-                                            : 'border-border hover:bg-accent text-muted-foreground hover:text-foreground'
+                                        className={`flex-1 h-11 rounded-xl border text-xs font-semibold uppercase tracking-wider transition-all duration-200 capitalize ${form.creativeTypeRequired === t
+                                            ? 'bg-ochre text-canvas border-ochre shadow-sm'
+                                            : 'bg-surface border-edge text-mist hover:text-alabaster hover:border-ochre/40'
                                             }`}
                                     >
-                                        {t === 'both' ? 'Both' : t === 'photographer' ? 'Photographer' : 'Videographer'}
+                                        {t === 'both' ? 'Both' : t === 'photographer' ? 'Photographer' : 'Cinematographer'}
                                     </button>
                                 ))}
                             </div>
                         </div>
 
                         {/* Category */}
-                        <div className="space-y-1.5">
-                            <label className="text-sm font-medium">Category <span className="text-red-500">*</span></label>
+                        <div className="space-y-2">
+                            <label className="text-xs font-semibold uppercase tracking-wider text-mist">Curatorial Category <span className="text-ochre">*</span></label>
                             <select
                                 value={form.category}
                                 onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
-                                className="w-full h-10 px-3 rounded-lg border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                                className="w-full h-11 px-4 rounded-xl border border-edge bg-surface text-xs text-alabaster focus:outline-none focus:border-ochre cursor-pointer"
                             >
                                 {(form.creativeTypeRequired === 'photographer'
                                     ? PHOTO_CATEGORIES
@@ -198,98 +199,97 @@ export function PostJob() {
                         </div>
 
                         {/* Description */}
-                        <div className="space-y-1.5">
-                            <label className="text-sm font-medium">Description <span className="text-red-500">*</span></label>
+                        <div className="space-y-2">
+                            <label className="text-xs font-semibold uppercase tracking-wider text-mist">Creative Brief &amp; Scope <span className="text-ochre">*</span></label>
                             <textarea
                                 value={form.description}
                                 onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-                                placeholder="Describe the job in detail: what you need, the event, your style preference, timeline, etc."
+                                placeholder="Detail the shoot context, expected deliverables (RAW/graded), location nuances, and timeline..."
                                 rows={5}
-                                className="w-full px-3 py-2 rounded-lg border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
+                                className="w-full px-4 py-3 rounded-xl border border-edge bg-surface text-xs text-alabaster focus:outline-none focus:border-ochre resize-none placeholder:text-mist/40"
                             />
                         </div>
 
                         {/* Budget + Currency */}
-                        <div className="space-y-1.5">
-                            <label className="text-sm font-medium">Budget <span className="text-red-500">*</span></label>
-                            <div className="flex gap-2">
+                        <div className="space-y-2">
+                            <label className="text-xs font-semibold uppercase tracking-wider text-mist">Allocated Budget <span className="text-ochre">*</span></label>
+                            <div className="flex gap-2.5">
                                 <input
                                     type="number"
                                     min="1"
                                     value={form.budget}
                                     onChange={e => setForm(f => ({ ...f, budget: e.target.value }))}
-                                    placeholder="e.g. 800"
-                                    className="flex-1 h-10 px-3 rounded-lg border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                                    placeholder="e.g. 1200"
+                                    className="flex-1 h-11 px-4 rounded-xl border border-edge bg-surface text-sm text-alabaster focus:outline-none focus:border-ochre placeholder:text-mist/40"
                                 />
                                 <select
                                     value={form.currency}
                                     onChange={e => setForm(f => ({ ...f, currency: e.target.value }))}
-                                    className="w-24 h-10 px-2 rounded-lg border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                                    className="w-28 h-11 px-3 rounded-xl border border-edge bg-surface text-xs text-alabaster focus:outline-none focus:border-ochre cursor-pointer"
                                 >
                                     {['USD', 'EUR', 'TND', 'GBP', 'AED'].map(c => <option key={c} value={c}>{c}</option>)}
                                 </select>
                             </div>
                             {/* Budget Guidance */}
                             {budgetRange && (
-                                <div className="flex items-start gap-2 mt-2 p-3 rounded-lg bg-sky-50 dark:bg-sky-950/20 border border-sky-200 dark:border-sky-800 text-xs text-sky-700 dark:text-sky-300">
-                                    <Info className="h-3.5 w-3.5 flex-shrink-0 mt-0.5" strokeWidth={2} />
-                                    <span>
-                                        Typical <strong>{form.category}</strong> shoot in Tunisia: <strong>${budgetRange[0]}–${budgetRange[1]}</strong>. Helps attract the right creatives.
+                                <div className="flex items-start gap-2.5 mt-2 p-3.5 rounded-xl bg-sidi.azure/10 border border-sidi.azure/20 text-xs text-sidi.azure">
+                                    <Info className="h-4 w-4 flex-shrink-0 mt-0.5" strokeWidth={1.5} />
+                                    <span className="text-alabaster/90">
+                                        Standard bracket for <strong>{form.category}</strong> production: <strong className="text-ochre">${budgetRange[0]}–${budgetRange[1]}</strong>. Ensures high-caliber submissions.
                                     </span>
                                 </div>
                             )}
                         </div>
 
                         {/* Location */}
-                        <div className="space-y-1.5">
-                            <label className="text-sm font-medium">Location <span className="text-muted-foreground text-xs">(optional)</span></label>
+                        <div className="space-y-2">
+                            <label className="text-xs font-semibold uppercase tracking-wider text-mist">Governorate / Location <span className="text-mist/50 lowercase">(optional)</span></label>
                             <input
                                 type="text"
                                 value={form.location}
                                 onChange={e => setForm(f => ({ ...f, location: e.target.value }))}
-                                placeholder="e.g. Tunis, Tunisia"
-                                className="w-full h-10 px-3 rounded-lg border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                                placeholder="e.g. Sidi Bou Said, Tunis"
+                                className="w-full h-11 px-4 rounded-xl border border-edge bg-surface text-sm text-alabaster focus:outline-none focus:border-ochre placeholder:text-mist/40"
                             />
-                            <label className="flex items-center gap-2 text-sm cursor-pointer mt-1">
+                            <label className="flex items-center gap-2 text-xs cursor-pointer mt-1 text-mist">
                                 <input
                                     type="checkbox"
                                     checked={form.isRemote}
                                     onChange={e => setForm(f => ({ ...f, isRemote: e.target.checked }))}
-                                    className="rounded"
+                                    className="rounded accent-ochre"
                                 />
-                                Remote / brief coordination only
+                                Remote post-production / editing only
                             </label>
                         </div>
 
-                        <hr className="border-border my-8" />
-                        <h2 className="font-sans text-xl font-bold mb-4">Visibility & Requirements</h2>
+                        <hr className="border-edge my-8" />
+                        <h2 className="font-serif text-xl font-normal text-alabaster mb-4">Quality &amp; Discretion Settings</h2>
 
                         {/* Deadline */}
-                        <div className="space-y-1.5">
-                            <label className="text-sm font-medium">Deadline <span className="text-red-500">*</span></label>
+                        <div className="space-y-2">
+                            <label className="text-xs font-semibold uppercase tracking-wider text-mist">Filing Deadline <span className="text-ochre">*</span></label>
                             <input
                                 type="date"
                                 value={form.deadline}
                                 min={new Date().toISOString().split('T')[0]}
                                 onChange={e => setForm(f => ({ ...f, deadline: e.target.value }))}
-                                className="w-full h-10 px-3 rounded-lg border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                                className="w-full h-11 px-4 rounded-xl border border-edge bg-surface text-xs text-alabaster focus:outline-none focus:border-ochre"
                             />
                         </div>
 
                         {/* Connects Required */}
-                        <div className="space-y-3 p-5 rounded-xl border border-border bg-muted/20">
+                        <div className="space-y-3 p-5 rounded-2xl border border-edge bg-surface">
                             <div className="flex justify-between items-center mb-1">
-                                <label className="text-sm font-semibold flex items-center gap-2">
-                                    Connects Required to Apply
+                                <label className="text-xs font-semibold uppercase tracking-wider text-alabaster">
+                                    Proposal Connects Threshold
                                 </label>
-                                <span className="bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-500 font-bold px-3 py-1 rounded-md text-sm shadow-sm border border-amber-200 dark:border-amber-900/50">
+                                <span className="bg-ochre/10 text-ochre font-mono font-medium px-3 py-1 rounded-md text-xs border border-ochre/20">
                                     {form.connectsRequired} Connect{form.connectsRequired > 1 ? 's' : ''}
                                 </span>
                             </div>
 
-                            <p className="text-xs text-muted-foreground leading-relaxed">
-                                Connects are the platform currency creatives use to apply for jobs. Requiring more connects acts as a filter, ensuring only highly motivated and suitable creatives apply to your job.
-                                <br /><span className="mt-1 block"><strong>Recommendation:</strong> 2 for small gigs, up to 6–10 for premium budgets.</span>
+                            <p className="text-xs text-mist leading-relaxed">
+                                Connects act as a quality filter, ensuring only serious photographers with capacity submit comprehensive proposals.
                             </p>
 
                             <input
@@ -298,37 +298,37 @@ export function PostJob() {
                                 max="10"
                                 value={form.connectsRequired}
                                 onChange={e => setForm(f => ({ ...f, connectsRequired: parseInt(e.target.value) }))}
-                                className="w-full accent-amber-500 mt-2"
+                                className="w-full accent-ochre mt-2"
                             />
-                            <div className="flex justify-between text-[11px] font-medium text-muted-foreground">
-                                <span>1 (low barrier)</span>
-                                <span>10 (high barrier)</span>
+                            <div className="flex justify-between text-[10px] font-mono text-mist">
+                                <span>1 (broad open call)</span>
+                                <span>10 (exclusive masterclass)</span>
                             </div>
                         </div>
 
                         {/* Job Visibility Plans */}
                         <div className="space-y-3 pt-2">
-                            <label className="text-sm font-medium">Select a Visibility Plan</label>
+                            <label className="text-xs font-semibold uppercase tracking-wider text-mist">Placement Elevation</label>
 
                             {/* Standard Plan */}
                             <div
                                 className={cn(
-                                    "flex items-start gap-4 p-4 rounded-xl border cursor-pointer select-none transition-all",
+                                    "flex items-start gap-4 p-4 rounded-2xl border cursor-pointer select-none transition-all",
                                     form.plan === 'standard'
-                                        ? "bg-foreground text-background border-foreground"
-                                        : "bg-card hover:bg-muted border-border"
+                                        ? "bg-surface.elevated border-ochre shadow-sm"
+                                        : "bg-surface hover:bg-surface.elevated border-edge"
                                 )}
                                 onClick={() => setForm(f => ({ ...f, plan: 'standard' }))}
                             >
                                 <div className="mt-1">
-                                    <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center", form.plan === 'standard' ? "border-background" : "border-muted-foreground")}>
-                                        {form.plan === 'standard' && <div className="w-2.5 h-2.5 rounded-full bg-background" />}
+                                    <div className={cn("w-4 h-4 rounded-full border-2 flex items-center justify-center", form.plan === 'standard' ? "border-ochre" : "border-edge")}>
+                                        {form.plan === 'standard' && <div className="w-2 h-2 rounded-full bg-ochre" />}
                                     </div>
                                 </div>
                                 <div className="flex-1">
-                                    <p className="font-semibold text-base">Standard Listing</p>
-                                    <p className={cn("text-xs mt-1 leading-relaxed", form.plan === 'standard' ? "text-background/80" : "text-muted-foreground")}>
-                                        Your job appears in the standard feed. Free to post for verified clients.
+                                    <p className="font-medium text-sm text-alabaster">Standard Curation</p>
+                                    <p className="text-xs mt-0.5 text-mist leading-relaxed">
+                                        Included in community assignment feed. Free for registered production partners.
                                     </p>
                                 </div>
                             </div>
@@ -336,24 +336,22 @@ export function PostJob() {
                             {/* Featured Plan */}
                             <div
                                 className={cn(
-                                    "flex items-start gap-4 p-4 rounded-xl border cursor-pointer select-none transition-all",
+                                    "flex items-start gap-4 p-4 rounded-2xl border cursor-pointer select-none transition-all",
                                     form.plan === 'featured'
-                                        ? "bg-[hsl(var(--accent))]/10 border-[hsl(var(--accent))]"
-                                        : "bg-card hover:bg-muted border-border"
+                                        ? "bg-ochre/10 border-ochre shadow-sm"
+                                        : "bg-surface hover:bg-surface.elevated border-edge"
                                 )}
                                 onClick={() => setForm(f => ({ ...f, plan: 'featured' }))}
                             >
                                 <div className="mt-1">
-                                    <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center", form.plan === 'featured' ? "border-[hsl(var(--accent))]" : "border-muted-foreground")}>
-                                        {form.plan === 'featured' && <div className="w-2.5 h-2.5 rounded-full bg-[hsl(var(--accent))]" />}
+                                    <div className={cn("w-4 h-4 rounded-full border-2 flex items-center justify-center", form.plan === 'featured' ? "border-ochre" : "border-edge")}>
+                                        {form.plan === 'featured' && <div className="w-2 h-2 rounded-full bg-ochre" />}
                                     </div>
                                 </div>
                                 <div className="flex-1">
-                                    <div className="flex justify-between items-center">
-                                        <p className={cn("font-semibold text-base", form.plan === 'featured' && "text-[hsl(var(--accent))]")}>Featured Boost</p>
-                                    </div>
-                                    <p className={cn("text-xs mt-1 leading-relaxed text-muted-foreground")}>
-                                        Highlighted styling and pinned higher in search results to attract top-tier talent faster.
+                                    <p className="font-medium text-sm text-ochre">Curatorial Spotlight</p>
+                                    <p className="text-xs mt-0.5 text-mist leading-relaxed">
+                                        Pinned header banner across the marketplace and highlighted in weekly creative dispatch.
                                     </p>
                                 </div>
                             </div>
@@ -361,55 +359,55 @@ export function PostJob() {
                             {/* Urgent Plan */}
                             <div
                                 className={cn(
-                                    "flex items-start gap-4 p-4 rounded-xl border cursor-pointer select-none transition-all",
+                                    "flex items-start gap-4 p-4 rounded-2xl border cursor-pointer select-none transition-all",
                                     form.plan === 'urgent'
-                                        ? "bg-red-50 dark:bg-red-950/20 border-red-500"
-                                        : "bg-card hover:bg-muted border-border"
+                                        ? "bg-red-500/10 border-red-500 shadow-sm"
+                                        : "bg-surface hover:bg-surface.elevated border-edge"
                                 )}
                                 onClick={() => setForm(f => ({ ...f, plan: 'urgent' }))}
                             >
                                 <div className="mt-1">
-                                    <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center", form.plan === 'urgent' ? "border-red-500" : "border-muted-foreground")}>
-                                        {form.plan === 'urgent' && <div className="w-2.5 h-2.5 rounded-full bg-red-500" />}
+                                    <div className={cn("w-4 h-4 rounded-full border-2 flex items-center justify-center", form.plan === 'urgent' ? "border-red-500" : "border-edge")}>
+                                        {form.plan === 'urgent' && <div className="w-2 h-2 rounded-full bg-red-500" />}
                                     </div>
                                 </div>
                                 <div className="flex-1">
-                                    <div className="flex flex-wrap items-center gap-2">
-                                        <p className={cn("font-semibold text-base", form.plan === 'urgent' && "text-red-600 dark:text-red-400")}>Urgent Hire</p>
-                                        <span className="text-[10px] uppercase tracking-wider font-bold bg-red-100 text-red-600 px-2 py-0.5 rounded-sm">24h Priority</span>
+                                    <div className="flex items-center gap-2">
+                                        <p className="font-medium text-sm text-red-400">Urgent Dispatch</p>
+                                        <span className="text-[9px] uppercase tracking-wider font-semibold bg-red-500/20 text-red-400 px-2 py-0.5 rounded-sm">24h Priority</span>
                                     </div>
-                                    <p className="text-xs mt-1 leading-relaxed text-muted-foreground">
-                                        Absolute top placement and flagged as urgent. Alerts nearby matching creatives immediately.
+                                    <p className="text-xs mt-0.5 text-mist leading-relaxed">
+                                        Immediate push notification dispatched to nearby verified creatives.
                                     </p>
                                 </div>
                             </div>
                         </div>
 
                         {/* Verified Only Toggle */}
-                        <div className={`flex items-start gap-3 p-4 rounded-xl border cursor-pointer select-none transition-colors ${form.verifiedOnly
-                            ? 'bg-primary/5 border-primary/30 dark:border-primary/40'
-                            : 'bg-muted/30 border-border hover:bg-muted/50'
+                        <div className={`flex items-start gap-3.5 p-4 rounded-2xl border cursor-pointer select-none transition-colors ${form.verifiedOnly
+                            ? 'bg-emerald-500/10 border-emerald-500/30'
+                            : 'bg-surface border-edge hover:bg-surface.elevated'
                             }`}
                             onClick={() => setForm(f => ({ ...f, verifiedOnly: !f.verifiedOnly }))}
                         >
-                            <ShieldCheck className={`h-5 w-5 flex-shrink-0 mt-0.5 ${form.verifiedOnly ? 'text-primary' : 'text-muted-foreground'}`} strokeWidth={2} />
+                            <ShieldCheck className={`h-5 w-5 flex-shrink-0 mt-0.5 ${form.verifiedOnly ? 'text-emerald-400' : 'text-mist'}`} strokeWidth={1.5} />
                             <div className="flex-1">
-                                <p className={`text-sm font-semibold ${form.verifiedOnly ? 'text-foreground' : 'text-muted-foreground'}`}>
-                                    Verified creatives only
+                                <p className="text-xs font-semibold uppercase tracking-wider text-alabaster">
+                                    Verified Creatives Only
                                 </p>
-                                <p className="text-xs text-muted-foreground mt-0.5">
-                                    Only verified creatives who passed our manual verification can apply.
+                                <p className="text-xs text-mist mt-0.5">
+                                    Restrict submissions exclusively to creators whose identity and portfolio have been vetted.
                                 </p>
                             </div>
-                            <div className={`w-10 h-5 rounded-full flex-shrink-0 mt-0.5 relative transition-colors ${form.verifiedOnly ? 'bg-primary' : 'bg-muted-foreground/30'
+                            <div className={`w-9 h-5 rounded-full flex-shrink-0 mt-0.5 relative transition-colors ${form.verifiedOnly ? 'bg-emerald-500' : 'bg-surface.elevated border border-edge'
                                 }`}>
-                                <div className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${form.verifiedOnly ? 'translate-x-5' : 'translate-x-0'
+                                <div className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${form.verifiedOnly ? 'translate-x-4' : 'translate-x-0'
                                     }`} />
                             </div>
                         </div>
 
-                        <Button type="submit" className="w-full h-11" size="lg">
-                            Post Job
+                        <Button type="submit" className="w-full h-12 bg-ochre hover:bg-ochre/90 text-canvas font-semibold rounded-xl border-none shadow-md" size="lg">
+                            Publish Assignment Call
                         </Button>
                     </form>
                 </motion.div>

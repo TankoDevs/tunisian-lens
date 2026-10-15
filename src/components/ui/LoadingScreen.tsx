@@ -15,14 +15,14 @@ export function LoadingScreen({ onFinished }: LoadingScreenProps) {
                     onFinished();
                 }
             }}
-            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0A0A0A]"
+            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-canvas"
         >
-            {/* Warm sand line animation */}
+            {/* Ochre line animation */}
             <motion.div
                 initial={{ width: 0 }}
-                animate={{ width: 48 }}
+                animate={{ width: 56 }}
                 transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-                className="h-[1.5px] bg-[#C8A97E] mb-8"
+                className="h-[2px] bg-ochre mb-8 rounded-full shadow-lg shadow-ochre/20"
             />
 
             {/* Brand wordmark */}
@@ -30,7 +30,7 @@ export function LoadingScreen({ onFinished }: LoadingScreenProps) {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, ease: "easeOut", delay: 0.4 }}
-                className="font-sans text-2xl md:text-3xl text-white/90 tracking-tight font-bold"
+                className="font-serif text-3xl md:text-4xl text-alabaster tracking-tight font-normal"
             >
                 Tunisian Lens
             </motion.h1>
@@ -39,10 +39,10 @@ export function LoadingScreen({ onFinished }: LoadingScreenProps) {
             <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 0.6, delay: 0.8 }}
-                className="text-white/30 text-xs tracking-[0.3em] uppercase mt-3"
+                transition={{ duration: 0.6, delay: 0.7 }}
+                className="text-mist/70 text-xs tracking-[0.25em] uppercase mt-3 font-sans"
             >
-                Where vision meets opportunity
+                Archival Visual Platform · Tunis
             </motion.p>
         </motion.div>
     );

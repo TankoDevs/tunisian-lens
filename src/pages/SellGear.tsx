@@ -98,48 +98,48 @@ export function SellGear() {
     }
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen bg-canvas text-alabaster">
             {/* Header */}
-            <div className="border-b border-border bg-background">
-                <div className="container mx-auto px-4 sm:px-6 py-10 md:py-12">
+            <div className="border-b border-edge bg-surface/40 backdrop-blur-md">
+                <div className="container mx-auto px-4 sm:px-6 py-10 md:py-14">
                     <button
                         onClick={() => navigate('/gear')}
-                        className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors text-sm mb-6"
+                        className="flex items-center gap-2 text-mist hover:text-ochre transition-colors text-xs font-semibold uppercase tracking-wider mb-6"
                     >
                         <ArrowLeft className="h-4 w-4" strokeWidth={1.5} />
-                        Back to Gear Market
+                        Back to Gear Exchange
                     </button>
-                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[hsl(var(--accent))] mb-2">Gear Market</p>
-                    <h1 className="font-sans text-3xl md:text-4xl font-bold tracking-tight mb-2">Sell Your Gear</h1>
-                    <p className="text-muted-foreground text-sm max-w-xl">
-                        List your photography or videography equipment and reach thousands of creatives across Tunisia and beyond.
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-ochre mb-2">Equipment Provenance</p>
+                    <h1 className="font-serif text-3xl md:text-4xl font-normal tracking-tight text-alabaster mb-2">List Photographic Equipment</h1>
+                    <p className="text-mist text-sm max-w-xl leading-relaxed">
+                        Circulate bodies, optics, and studio lighting to fellow working creatives across Tunisia.
                     </p>
                 </div>
             </div>
 
-            <div className="container mx-auto px-4 sm:px-6 py-8">
+            <div className="container mx-auto px-4 sm:px-6 py-10">
                 <form onSubmit={handleSubmit} className="max-w-2xl mx-auto space-y-8">
 
                     {/* ── Photo Upload ── */}
                     <section className="space-y-3">
                         <div className="flex items-center justify-between">
-                            <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Photos</h2>
-                            <span className="text-xs text-muted-foreground">{previewImages.length}/4 photos</span>
+                            <h2 className="text-[10px] font-bold uppercase tracking-widest text-ochre">Hardware Imagery</h2>
+                            <span className="text-xs font-mono text-mist">{previewImages.length}/4 captures</span>
                         </div>
 
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                             {previewImages.map((src, i) => (
-                                <div key={i} className="relative aspect-square rounded-xl overflow-hidden bg-muted group border border-border">
+                                <div key={i} className="relative aspect-square rounded-2xl overflow-hidden bg-surface.elevated group border border-edge">
                                     <img src={src} alt="" className="w-full h-full object-cover" />
                                     <button
                                         type="button"
                                         onClick={() => removeImage(i)}
-                                        className="absolute top-1.5 right-1.5 w-6 h-6 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                        className="absolute top-2 right-2 w-6 h-6 bg-canvas/80 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity border border-edge"
                                     >
-                                        <X className="h-3.5 w-3.5 text-white" />
+                                        <X className="h-3.5 w-3.5 text-alabaster" />
                                     </button>
                                     {i === 0 && (
-                                        <span className="absolute bottom-1.5 left-1.5 text-[9px] font-bold uppercase bg-black/60 text-white px-1.5 py-0.5 rounded">Cover</span>
+                                        <span className="absolute bottom-2 left-2 text-[9px] font-semibold uppercase tracking-wider bg-canvas/90 text-ochre px-2 py-0.5 rounded-md border border-edge">Hero</span>
                                     )}
                                 </div>
                             ))}
@@ -148,10 +148,10 @@ export function SellGear() {
                                 <button
                                     type="button"
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="aspect-square rounded-xl border-2 border-dashed border-border hover:border-[hsl(var(--accent))/50] bg-muted/30 hover:bg-muted/60 transition-all duration-200 flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-foreground"
+                                    className="aspect-square rounded-2xl border-2 border-dashed border-edge hover:border-ochre/50 bg-surface hover:bg-surface.elevated transition-all duration-200 flex flex-col items-center justify-center gap-2 text-mist hover:text-alabaster"
                                 >
-                                    <Upload className="h-5 w-5" strokeWidth={1.5} />
-                                    <span className="text-[10px] font-medium">Add Photo</span>
+                                    <Upload className="h-5 w-5 text-ochre" strokeWidth={1.5} />
+                                    <span className="text-[10px] font-semibold uppercase tracking-wider">Add Capture</span>
                                 </button>
                             )}
                         </div>
@@ -166,48 +166,48 @@ export function SellGear() {
                         />
 
                         {previewImages.length === 0 && (
-                            <p className="text-xs text-muted-foreground">
-                                Add at least 1 photo. Good photos get more inquiries.
+                            <p className="text-xs text-mist">
+                                Provide at least 1 crisp photo showing optical elements, serial labels, or mount condition.
                             </p>
                         )}
                     </section>
 
                     {/* ── Listing Info ── */}
                     <section className="space-y-5">
-                        <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Listing Details</h2>
+                        <h2 className="text-[10px] font-bold uppercase tracking-widest text-ochre">Specification &amp; Model</h2>
 
                         {/* Title */}
                         <div className="space-y-2">
-                            <label className="text-sm font-medium">Title <span className="text-red-500">*</span></label>
+                            <label className="text-xs font-semibold uppercase tracking-wider text-mist">Equipment Title <span className="text-ochre">*</span></label>
                             <input
                                 type="text"
-                                placeholder="e.g. Sony A7 IV Mirrorless Camera Body"
+                                placeholder="e.g. Sony FE 24-70mm f/2.8 GM II Lens"
                                 value={title}
                                 onChange={e => setTitle(e.target.value)}
                                 maxLength={80}
-                                className="w-full h-11 px-4 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--accent))/50] placeholder:text-muted-foreground/60 transition-all"
+                                className="w-full h-11 px-4 rounded-xl border border-edge bg-surface text-sm text-alabaster focus:outline-none focus:border-ochre placeholder:text-mist/40 transition-all"
                             />
                         </div>
 
                         {/* Category + Brand */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <label className="text-sm font-medium">Category <span className="text-red-500">*</span></label>
+                                <label className="text-xs font-semibold uppercase tracking-wider text-mist">Category <span className="text-ochre">*</span></label>
                                 <select
                                     value={category}
                                     onChange={e => setCategory(e.target.value)}
-                                    className="w-full h-11 px-4 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--accent))/50] text-muted-foreground cursor-pointer transition-all"
+                                    className="w-full h-11 px-4 rounded-xl border border-edge bg-surface text-xs text-alabaster focus:outline-none focus:border-ochre cursor-pointer transition-all"
                                 >
                                     <option value="">Select category</option>
                                     {GEAR_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                                 </select>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-sm font-medium">Brand <span className="text-red-500">*</span></label>
+                                <label className="text-xs font-semibold uppercase tracking-wider text-mist">Brand / System <span className="text-ochre">*</span></label>
                                 <select
                                     value={brand}
                                     onChange={e => setBrand(e.target.value)}
-                                    className="w-full h-11 px-4 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--accent))/50] text-muted-foreground cursor-pointer transition-all"
+                                    className="w-full h-11 px-4 rounded-xl border border-edge bg-surface text-xs text-alabaster focus:outline-none focus:border-ochre cursor-pointer transition-all"
                                 >
                                     <option value="">Select brand</option>
                                     {GEAR_BRANDS.map(b => <option key={b} value={b}>{b}</option>)}
@@ -218,27 +218,27 @@ export function SellGear() {
                         {/* Price + Location */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <label className="text-sm font-medium">Price (USD) <span className="text-red-500">*</span></label>
+                                <label className="text-xs font-semibold uppercase tracking-wider text-mist">Asking Price (USD) <span className="text-ochre">*</span></label>
                                 <div className="relative">
-                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium text-sm">$</span>
+                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-mist font-mono text-sm">$</span>
                                     <input
                                         type="number"
                                         placeholder="0"
                                         min="1"
                                         value={price}
                                         onChange={e => setPrice(e.target.value)}
-                                        className="w-full h-11 pl-8 pr-4 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--accent))/50] placeholder:text-muted-foreground/60 transition-all"
+                                        className="w-full h-11 pl-8 pr-4 rounded-xl border border-edge bg-surface text-sm text-alabaster focus:outline-none focus:border-ochre placeholder:text-mist/40 transition-all"
                                     />
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-sm font-medium">Location <span className="text-red-500">*</span></label>
+                                <label className="text-xs font-semibold uppercase tracking-wider text-mist">Governorate Location <span className="text-ochre">*</span></label>
                                 <select
                                     value={location}
                                     onChange={e => setLocation(e.target.value)}
-                                    className="w-full h-11 px-4 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--accent))/50] text-muted-foreground cursor-pointer transition-all"
+                                    className="w-full h-11 px-4 rounded-xl border border-edge bg-surface text-xs text-alabaster focus:outline-none focus:border-ochre cursor-pointer transition-all"
                                 >
-                                    <option value="">Select city</option>
+                                    <option value="">Select region</option>
                                     {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
                                 </select>
                             </div>
@@ -246,7 +246,7 @@ export function SellGear() {
 
                         {/* Condition */}
                         <div className="space-y-3">
-                            <label className="text-sm font-medium">Condition <span className="text-red-500">*</span></label>
+                            <label className="text-xs font-semibold uppercase tracking-wider text-mist">Appraised Condition <span className="text-ochre">*</span></label>
                             <div className="grid grid-cols-3 gap-3">
                                 {CONDITIONS.map(opt => (
                                     <button
@@ -254,14 +254,14 @@ export function SellGear() {
                                         type="button"
                                         onClick={() => setCondition(opt.value)}
                                         className={cn(
-                                            "flex flex-col gap-0.5 p-4 rounded-xl border text-left transition-all duration-200",
+                                            "flex flex-col gap-1 p-4 rounded-xl border text-left transition-all duration-200",
                                             condition === opt.value
-                                                ? "border-[hsl(var(--accent))] bg-[hsl(var(--accent))/5] ring-1 ring-[hsl(var(--accent))/30]"
-                                                : "border-border hover:bg-muted"
+                                                ? "border-ochre bg-ochre/10 text-ochre shadow-sm"
+                                                : "border-edge bg-surface hover:bg-surface.elevated text-mist"
                                         )}
                                     >
-                                        <span className="text-sm font-semibold">{opt.label}</span>
-                                        <span className="text-[10px] text-muted-foreground leading-tight">{opt.desc}</span>
+                                        <span className="text-xs font-semibold uppercase tracking-wider text-alabaster">{opt.label}</span>
+                                        <span className="text-[10px] text-mist leading-tight">{opt.desc}</span>
                                     </button>
                                 ))}
                             </div>
@@ -269,15 +269,15 @@ export function SellGear() {
 
                         {/* Description */}
                         <div className="space-y-2">
-                            <label className="text-sm font-medium">Description <span className="text-red-500">*</span></label>
+                            <label className="text-xs font-semibold uppercase tracking-wider text-mist">Technical Summary &amp; Accessories Included <span className="text-ochre">*</span></label>
                             <textarea
-                                placeholder="Describe the item, its condition, what's included, reason for selling…"
+                                placeholder="Detail shutter count, sensor cleanliness, included lens caps, original packaging, and receipt provenance..."
                                 value={description}
                                 onChange={e => setDescription(e.target.value)}
                                 rows={5}
-                                className="w-full px-4 py-3 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--accent))/50] placeholder:text-muted-foreground/60 transition-all resize-none"
+                                className="w-full px-4 py-3 rounded-xl border border-edge bg-surface text-xs text-alabaster focus:outline-none focus:border-ochre placeholder:text-mist/40 transition-all resize-none"
                             />
-                            <p className="text-xs text-muted-foreground text-right">{description.length} characters</p>
+                            <p className="text-[10px] font-mono text-mist/60 text-right">{description.length} characters</p>
                         </div>
                     </section>
 
@@ -286,7 +286,7 @@ export function SellGear() {
                         <Button
                             type="submit"
                             disabled={!isValid || isSubmitting}
-                            className="flex-1 h-12 text-base font-semibold gap-2"
+                            className="flex-1 h-12 text-sm font-semibold gap-2 bg-ochre hover:bg-ochre/90 text-canvas border-none rounded-xl"
                         >
                             <AnimatePresence mode="wait">
                                 {isSubmitting ? (
@@ -297,18 +297,18 @@ export function SellGear() {
                                         exit={{ opacity: 0 }}
                                         className="flex items-center gap-2"
                                     >
-                                        <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                        Publishing…
+                                        <span className="w-4 h-4 border-2 border-canvas/30 border-t-canvas rounded-full animate-spin" />
+                                        Publishing to Catalog…
                                     </motion.span>
                                 ) : (
                                     <motion.span key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex items-center gap-2">
                                         <Camera className="h-4 w-4" strokeWidth={1.8} />
-                                        Publish Listing
+                                        Publish to Gear Exchange
                                     </motion.span>
                                 )}
                             </AnimatePresence>
                         </Button>
-                        <Button type="button" variant="outline" className="h-12 px-6" onClick={() => navigate('/gear')}>
+                        <Button type="button" variant="outline" className="h-12 px-6 border-edge text-alabaster hover:bg-surface.elevated rounded-xl" onClick={() => navigate('/gear')}>
                             Cancel
                         </Button>
                     </div>

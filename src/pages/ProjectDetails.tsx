@@ -27,29 +27,31 @@ export function ProjectDetails() {
     };
 
     return (
-        <div className="min-h-screen pb-12">
+        <div className="min-h-screen bg-canvas text-alabaster pb-20">
             {/* Navigation Back */}
-            <div className="container mx-auto px-4 py-6 flex justify-between items-center">
-                <Link to="/explore">
-                    <Button variant="ghost" className="pl-0 gap-2">
-                        <ArrowLeft className="h-4 w-4" /> Back to Explore
-                    </Button>
-                </Link>
+            <div className="border-b border-edge bg-canvas/80 backdrop-blur-md sticky top-16 z-20">
+                <div className="container mx-auto px-6 h-14 flex justify-between items-center">
+                    <Link to="/explore">
+                        <Button variant="ghost" className="pl-0 gap-2 text-mist hover:text-alabaster">
+                            <ArrowLeft className="h-4 w-4" /> Back to Archives
+                        </Button>
+                    </Link>
 
-                {isOwner && (
-                    <Button variant="destructive" className="gap-2" onClick={handleDelete}>
-                        <Trash2 className="h-4 w-4" /> Delete Project
-                    </Button>
-                )}
+                    {isOwner && (
+                        <Button variant="destructive" size="sm" className="gap-2" onClick={handleDelete}>
+                            <Trash2 className="h-4 w-4" /> Delete Plate
+                        </Button>
+                    )}
+                </div>
             </div>
 
-            {/* Hero Image */}
-            <div className="w-full bg-black">
-                <div className="container mx-auto px-0 md:px-4">
+            {/* Hero Image Stage */}
+            <div className="w-full bg-[#050607] border-b border-edge py-6">
+                <div className="container mx-auto px-4 md:px-8">
                     <img
                         src={project.image || "https://picsum.photos/seed/fallback/1200/800"}
                         alt={project.title}
-                        className="w-full max-h-[85vh] object-contain mx-auto"
+                        className="w-full max-h-[80vh] object-contain mx-auto rounded-lg shadow-2xl"
                         onError={(e) => {
                             const target = e.target as HTMLImageElement;
                             if (!target.src.includes('placeholder')) {
@@ -60,32 +62,40 @@ export function ProjectDetails() {
                 </div>
             </div>
 
-            <div className="container mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <div className="container mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-3 gap-12">
                 {/* Main Info */}
-                <div className="lg:col-span-2 space-y-6">
-                    <div className="space-y-2">
-                        <h1 className="text-3xl md:text-4xl font-sans font-bold">{project.title}</h1>
-                        <div className="flex items-center space-x-4 text-muted-foreground">
-                            <span className="px-3 py-1 bg-secondary rounded-full text-sm">{project.category}</span>
-                            <span className="text-sm">Published on {project.date ? new Date(project.date).toLocaleDateString() : 'Feb 14, 2026'}</span>
+                <div className="lg:col-span-2 space-y-8">
+                    <div className="space-y-3">
+                        <div className="flex items-center space-x-3 text-xs flex-wrap gap-y-2">
+                            <span className="px-3 py-1 bg-surface.elevated border border-edge rounded-full text-ochre font-semibold tracking-wider uppercase text-[10px]">
+                                {project.category}
+                            </span>
+                            <span className="text-mist">
+                                Catalogued {project.date ? new Date(project.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : '14 February 2026'}
+                            </span>
                             {project.isPrivate && (
-                                <span className="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium flex items-center gap-1">
-                                    <Lock className="h-3 w-3" /> Private Gallery
+                                <span className="px-2.5 py-0.5 bg-red-950/40 text-red-400 border border-red-800/40 rounded-full text-[10px] font-semibold flex items-center gap-1 uppercase tracking-wider">
+                                    <Lock className="h-3 w-3" /> Private Archive
                                 </span>
                             )}
                         </div>
+                        <h1 className="font-serif text-3xl md:text-5xl font-normal text-alabaster tracking-tight leading-tight">
+                            {project.title}
+                        </h1>
                     </div>
 
-                    <div className="flex items-center space-x-4 py-4 border-y">
-                        <Button variant="outline" className="gap-2">
-                            <Heart className="h-4 w-4" /> Like
+                    <div className="flex items-center space-x-3 py-4 border-y border-edge">
+                        <Button variant="outline" className="gap-2 bg-surface border-edge text-alabaster hover:border-ochre/40">
+                            <Heart className="h-4 w-4 text-ochre" /> Like Plate
                         </Button>
-                        <Button variant="ghost" className="gap-2">
+                        <Button variant="ghost" className="gap-2 text-mist hover:text-alabaster" onClick={() => {
+                            navigator.clipboard.writeText(window.location.href);
+                        }}>
                             <Share2 className="h-4 w-4" /> Share
                         </Button>
                         {project.isPrivate ? (
                             <Button
-                                className="ml-auto gap-2"
+                                className="ml-auto gap-2 bg-ochre text-black hover:bg-ochre-light font-semibold"
                                 onClick={() => {
                                     const link = document.createElement("a");
                                     link.href = project.image;
@@ -93,37 +103,41 @@ export function ProjectDetails() {
                                     link.click();
                                 }}
                             >
-                                <Download className="h-4 w-4" /> Download High-Res
+                                <Download className="h-4 w-4" /> Download Master File
                             </Button>
                         ) : (
-                            <span className="text-sm text-muted-foreground ml-auto">{project.likes} Likes</span>
+                            <span className="text-xs text-mist ml-auto font-mono tracking-wider">{project.likes} Appreciation{project.likes !== 1 ? 's' : ''}</span>
                         )}
                     </div>
 
-                    <div className="prose max-w-none text-muted-foreground">
+                    <div className="prose prose-invert max-w-none text-mist leading-relaxed text-base font-sans">
                         <p>
-                            {project.description || "Captured in the heart of Tunisia. This image represents the intersection of tradition and modernity."}
+                            {project.description || "Captured across the distinctive light and heritage landscape of Tunisia. An architectural and human study balancing cultural memory with modern visual narrative."}
                         </p>
                     </div>
                 </div>
 
                 {/* Sidebar: Artist Info */}
                 <div className="space-y-6">
-                    <div className="bg-muted/30 p-6 rounded-lg border">
-                        <h3 className="font-medium mb-4 flex items-center gap-2">
-                            <Info className="h-4 w-4" /> About the Artist
+                    <div className="bg-surface border border-edge p-6 rounded-2xl space-y-6 shadow-xl">
+                        <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-ochre flex items-center gap-2">
+                            <Info className="h-3.5 w-3.5" /> Curatorial Provenance
                         </h3>
                         {artist && (
-                            <div className="flex items-center space-x-4 mb-4">
-                                <img src={artist.avatar} alt={artist.name} className="h-12 w-12 rounded-full object-cover" />
+                            <div className="flex items-center space-x-4">
+                                <img src={artist.avatar} alt={artist.name} className="h-14 w-14 rounded-full object-cover ring-2 ring-edge" />
                                 <div>
-                                    <Link to={`/artist/${artist.id}`} className="font-bold hover:underline">{artist.name}</Link>
-                                    <p className="text-xs text-muted-foreground">{artist.location || "Tunisia"}</p>
+                                    <Link to={`/artist/${artist.id}`} className="font-serif text-lg text-alabaster font-normal hover:text-ochre transition-colors block">
+                                        {artist.name}
+                                    </Link>
+                                    <p className="text-xs text-mist mt-0.5">{artist.location || "Tunisia"}</p>
                                 </div>
                             </div>
                         )}
-                        <Link to={`/artist/${project.artist.id}`}>
-                            <Button className="w-full">View Profile</Button>
+                        <Link to={`/artist/${project.artist.id}`} className="block">
+                            <Button className="w-full bg-surface.elevated hover:bg-white/5 border border-edge text-alabaster text-xs font-semibold h-11 rounded-xl">
+                                View Full Portfolio
+                            </Button>
                         </Link>
                     </div>
                 </div>
@@ -131,8 +145,8 @@ export function ProjectDetails() {
 
             {/* More from Artist */}
             {moreProjects.length > 0 && (
-                <div className="container mx-auto px-4 mt-12 pt-12 border-t">
-                    <h2 className="text-2xl font-sans font-bold mb-6">More from {project.artist.name}</h2>
+                <div className="container mx-auto px-6 mt-12 pt-12 border-t border-edge">
+                    <h2 className="font-serif text-2xl font-normal text-alabaster mb-8 tracking-tight">More from {project.artist.name}</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {moreProjects.map(p => (
                             <ProjectCard key={p.id} {...p} />
@@ -140,7 +154,6 @@ export function ProjectDetails() {
                     </div>
                 </div>
             )}
-
         </div>
     );
 }

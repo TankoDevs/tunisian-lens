@@ -79,32 +79,32 @@ export function GearMarket() {
     });
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen bg-canvas text-alabaster">
             {/* ── Header ── */}
-            <div className="border-b border-border bg-background">
+            <div className="border-b border-edge bg-surface/40 backdrop-blur-md">
                 <div className="container mx-auto px-4 sm:px-6 py-12 md:py-16">
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                         <div>
-                            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[hsl(var(--accent))] mb-2">
-                                Marketplace
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-ochre mb-2">
+                                Hardware &amp; Optics Exchange
                             </p>
-                            <h1 className="font-sans text-3xl md:text-5xl font-bold tracking-tight mb-2">
-                                Gear Market
+                            <h1 className="font-serif text-3xl md:text-5xl font-normal tracking-tight text-alabaster mb-2">
+                                Gear Exchange
                             </h1>
-                            <p className="text-muted-foreground max-w-xl text-sm">
-                                Buy &amp; sell photography and videography equipment from verified creatives.
+                            <p className="text-mist max-w-xl text-sm leading-relaxed">
+                                Acquire and trade verified camera bodies, prime cinema glass, drones, and studio lighting within the Tunisian creative collective.
                             </p>
                         </div>
                         <div className="flex items-center gap-3 flex-shrink-0">
                             {/* Stats pill */}
-                            <div className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl bg-muted border border-border text-sm">
-                                <ShieldCheck className="h-3.5 w-3.5 text-[hsl(var(--accent))]" strokeWidth={2} />
-                                <span className="text-muted-foreground text-xs">{MOCK_GEAR_LISTINGS.filter(g => g.isVerifiedSeller).length} verified sellers</span>
+                            <div className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl bg-surface border border-edge text-sm">
+                                <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" strokeWidth={2} />
+                                <span className="text-mist text-xs">{MOCK_GEAR_LISTINGS.filter(g => g.isVerifiedSeller).length} verified equipment owners</span>
                             </div>
                             <Link to="/gear/sell">
-                                <Button className="gap-2 font-semibold">
+                                <Button className="gap-2 bg-ochre hover:bg-ochre/90 text-canvas font-semibold border-none rounded-xl">
                                     <PlusCircle className="h-4 w-4" strokeWidth={1.8} />
-                                    Sell Gear
+                                    List Equipment
                                 </Button>
                             </Link>
                         </div>
@@ -112,33 +112,33 @@ export function GearMarket() {
                 </div>
             </div>
 
-            <div className="container mx-auto px-4 sm:px-6 py-8">
+            <div className="container mx-auto px-4 sm:px-6 py-10 md:py-14">
                 {/* ── Search + Filter Row ── */}
                 <div className="flex flex-col sm:flex-row gap-3 mb-6">
                     <div className="relative flex-1">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-mist/60" strokeWidth={1.5} />
                         <input
                             type="text"
-                            placeholder="Search gear, brand, location…"
+                            placeholder="Search bodies, focal lengths, brands, governorates…"
                             value={search}
                             onChange={e => setSearch(e.target.value)}
-                            className="w-full pl-11 pr-4 h-11 rounded-xl border border-border bg-card text-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[hsl(var(--accent))/50] placeholder:text-muted-foreground/60"
+                            className="w-full pl-11 pr-4 h-11 rounded-xl border border-edge bg-surface text-sm text-alabaster transition-all duration-200 focus:outline-none focus:border-ochre placeholder:text-mist/40"
                         />
                         {search && (
-                            <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
+                            <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-mist hover:text-alabaster transition-colors">
                                 <X className="h-4 w-4" />
                             </button>
                         )}
                     </div>
                     <Button
                         variant="outline"
-                        className={cn("gap-2 h-11 rounded-xl px-5 flex-shrink-0", activeFilterCount > 0 && "border-[hsl(var(--accent))] text-[hsl(var(--accent))]")}
+                        className={cn("gap-2 h-11 rounded-xl px-5 flex-shrink-0 bg-surface border-edge text-alabaster hover:bg-surface.elevated", activeFilterCount > 0 && "border-ochre text-ochre")}
                         onClick={() => setShowFilters(v => !v)}
                     >
                         <SlidersHorizontal className="h-4 w-4" strokeWidth={1.5} />
-                        Filters
+                        <span className="text-xs font-medium">Filters</span>
                         {activeFilterCount > 0 && (
-                            <span className="bg-[hsl(var(--accent))] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold">
+                            <span className="bg-ochre text-canvas rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold">
                                 {activeFilterCount}
                             </span>
                         )}
@@ -155,55 +155,55 @@ export function GearMarket() {
                             transition={{ duration: 0.22 }}
                             className="overflow-hidden mb-6"
                         >
-                            <div className="p-5 border border-border rounded-xl bg-card space-y-5">
+                            <div className="p-5 border border-edge rounded-2xl bg-surface space-y-5">
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                                     {/* Brand */}
                                     <div className="space-y-2">
-                                        <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Brand</label>
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-mist">Brand / Manufacturer</label>
                                         <select
                                             value={selectedBrand}
                                             onChange={e => setSelectedBrand(e.target.value)}
-                                            className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))/50] text-muted-foreground cursor-pointer"
+                                            className="w-full h-10 px-3 rounded-lg border border-edge bg-surface.elevated text-xs text-alabaster focus:outline-none focus:border-ochre cursor-pointer"
                                         >
-                                            <option value="">Any Brand</option>
+                                            <option value="">All Brands</option>
                                             {GEAR_BRANDS.map(b => <option key={b} value={b}>{b}</option>)}
                                         </select>
                                     </div>
 
                                     {/* Price Range */}
                                     <div className="space-y-2">
-                                        <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Price Range (USD)</label>
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-mist">Price Bracket (USD)</label>
                                         <div className="flex gap-2">
                                             <input
                                                 type="number"
                                                 placeholder="Min"
                                                 value={minPrice}
                                                 onChange={e => setMinPrice(e.target.value)}
-                                                className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))/50] placeholder:text-muted-foreground/60"
+                                                className="w-full h-10 px-3 rounded-lg border border-edge bg-surface.elevated text-xs text-alabaster focus:outline-none focus:border-ochre placeholder:text-mist/40"
                                             />
                                             <input
                                                 type="number"
                                                 placeholder="Max"
                                                 value={maxPrice}
                                                 onChange={e => setMaxPrice(e.target.value)}
-                                                className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))/50] placeholder:text-muted-foreground/60"
+                                                className="w-full h-10 px-3 rounded-lg border border-edge bg-surface.elevated text-xs text-alabaster focus:outline-none focus:border-ochre placeholder:text-mist/40"
                                             />
                                         </div>
                                     </div>
 
                                     {/* Condition */}
                                     <div className="space-y-2">
-                                        <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Condition</label>
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-mist">Physical Condition</label>
                                         <div className="flex flex-wrap gap-1.5">
                                             {CONDITIONS.map(c => (
                                                 <button
                                                     key={c}
                                                     onClick={() => toggleCondition(c)}
                                                     className={cn(
-                                                        "text-xs px-3 py-1.5 rounded-full border font-medium transition-all duration-200",
+                                                        "text-[11px] px-3 py-1.5 rounded-lg border font-medium transition-all duration-200",
                                                         selectedConditions.includes(c)
                                                             ? conditionBadgeClass[c]
-                                                            : "border-border hover:bg-muted"
+                                                            : "bg-surface.elevated border-edge text-mist hover:text-alabaster"
                                                     )}
                                                 >
                                                     {c}
@@ -214,26 +214,26 @@ export function GearMarket() {
 
                                     {/* Location */}
                                     <div className="space-y-2">
-                                        <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Location</label>
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-mist">Governorate</label>
                                         <select
                                             value={location}
                                             onChange={e => setLocation(e.target.value)}
-                                            className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))/50] text-muted-foreground cursor-pointer"
+                                            className="w-full h-10 px-3 rounded-lg border border-edge bg-surface.elevated text-xs text-alabaster focus:outline-none focus:border-ochre cursor-pointer"
                                         >
-                                            <option value="">Any Location</option>
+                                            <option value="">All Regions</option>
                                             {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
                                         </select>
                                     </div>
                                 </div>
 
                                 {activeFilterCount > 0 && (
-                                    <div className="pt-3 border-t border-border">
+                                    <div className="pt-3 border-t border-edge">
                                         <button
                                             onClick={clearFilters}
-                                            className="flex items-center gap-1.5 text-xs text-[hsl(var(--accent))] hover:opacity-80 transition-opacity font-medium"
+                                            className="flex items-center gap-1.5 text-xs text-ochre hover:opacity-80 transition-opacity font-medium"
                                         >
                                             <X className="h-3.5 w-3.5" />
-                                            Clear all filters
+                                            Reset filters
                                         </button>
                                     </div>
                                 )}
@@ -249,10 +249,10 @@ export function GearMarket() {
                             key={cat}
                             onClick={() => setSelectedCategory(cat)}
                             className={cn(
-                                "flex-shrink-0 px-4 py-2 rounded-full text-xs font-medium transition-all duration-200 border",
+                                "flex-shrink-0 px-4 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all duration-200 border",
                                 selectedCategory === cat
-                                    ? 'bg-foreground text-background border-foreground'
-                                    : 'bg-card border-border text-muted-foreground hover:text-foreground hover:bg-muted'
+                                    ? 'bg-ochre text-canvas border-ochre shadow-sm'
+                                    : 'bg-surface border-edge text-mist hover:text-alabaster hover:border-ochre/40'
                             )}
                         >
                             {cat}
@@ -262,34 +262,34 @@ export function GearMarket() {
 
                 {/* ── Results count ── */}
                 <div className="flex items-center justify-between mb-6">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider">
-                        <span className="font-semibold text-foreground text-sm">{filtered.length}</span>
-                        {' '}listing{filtered.length !== 1 ? 's' : ''} found
+                    <p className="text-xs text-mist uppercase tracking-widest">
+                        <span className="font-mono font-medium text-alabaster text-sm">{filtered.length}</span>
+                        {' '}item{filtered.length !== 1 ? 's' : ''} listed
                     </p>
                 </div>
 
                 {/* ── Grid ── */}
                 {isLoading ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-                        {Array.from({ length: 9 }).map((_, i) => (
-                            <div key={i} className="border border-border rounded-2xl overflow-hidden bg-card">
+                        {Array.from({ length: 6 }).map((_, i) => (
+                            <div key={i} className="border border-edge rounded-2xl overflow-hidden bg-surface">
                                 <Skeleton className="aspect-[4/3] w-full rounded-none" />
-                                <div className="p-4 space-y-3">
-                                    <Skeleton className="h-4 w-3/4" />
-                                    <Skeleton className="h-6 w-1/3" />
-                                    <Skeleton className="h-3 w-1/2" />
+                                <div className="p-5 space-y-3">
+                                    <Skeleton className="h-4 w-3/4 rounded-md" />
+                                    <Skeleton className="h-6 w-1/3 rounded-md" />
+                                    <Skeleton className="h-3 w-1/2 rounded-md" />
                                 </div>
                             </div>
                         ))}
                     </div>
                 ) : filtered.length === 0 ? (
-                    <div className="text-center py-32 text-muted-foreground">
-                        <ShoppingBag className="h-10 w-10 mx-auto mb-4 opacity-20" strokeWidth={1.2} />
-                        <p className="text-lg font-semibold mb-1">No listings match your filters</p>
-                        <p className="text-sm">Try adjusting the category or search term</p>
+                    <div className="text-center py-32 text-mist">
+                        <ShoppingBag className="h-10 w-10 mx-auto mb-4 opacity-30 text-ochre" strokeWidth={1.2} />
+                        <p className="font-serif text-lg font-normal text-alabaster mb-1">No equipment matches your filter criteria</p>
+                        <p className="text-sm text-mist">Try adjusting the brand, price bracket, or keyword search</p>
                         {(activeFilterCount > 0 || search) && (
-                            <button onClick={() => { clearFilters(); setSearch(''); }} className="mt-4 text-xs text-[hsl(var(--accent))] underline underline-offset-2">
-                                Clear all filters
+                            <button onClick={() => { clearFilters(); setSearch(''); }} className="mt-4 text-xs text-ochre underline underline-offset-4">
+                                Reset active filters
                             </button>
                         )}
                     </div>

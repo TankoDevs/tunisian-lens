@@ -66,25 +66,25 @@ export function Messages() {
     const showList = !conversationId;
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen bg-canvas text-alabaster">
             <div className="container mx-auto px-0 md:px-4 py-0 md:py-8 max-w-5xl">
-                <div className="flex h-[calc(100vh-4rem)] md:h-[calc(100vh-8rem)] md:rounded-2xl border overflow-hidden shadow-sm">
+                <div className="flex h-[calc(100vh-4rem)] md:h-[calc(100vh-8rem)] md:rounded-2xl border border-edge overflow-hidden shadow-2xl bg-surface">
 
                     {/* ── Conversation List ─────────────────────────────── */}
-                    <div className={`${showList ? 'flex' : 'hidden'} md:flex flex-col w-full md:w-80 border-r bg-card flex-shrink-0`}>
-                        <div className="p-4 border-b">
-                            <h1 className="font-sans text-xl font-bold flex items-center gap-2">
-                                <MessageSquare className="h-5 w-5" strokeWidth={2} />
-                                Messages
+                    <div className={`${showList ? 'flex' : 'hidden'} md:flex flex-col w-full md:w-80 border-r border-edge bg-surface flex-shrink-0`}>
+                        <div className="p-4 border-b border-edge">
+                            <h1 className="font-serif text-lg font-normal text-alabaster flex items-center gap-2">
+                                <MessageSquare className="h-4 w-4 text-ochre" strokeWidth={1.5} />
+                                Encrypted Dispatches
                             </h1>
                         </div>
 
                         <div className="flex-1 overflow-y-auto">
                             {conversations.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center h-full gap-3 text-center px-6 text-muted-foreground">
-                                    <MessageSquare className="h-10 w-10 opacity-20" strokeWidth={1.5} />
-                                    <p className="text-sm font-medium">No conversations yet</p>
-                                    <p className="text-xs">When a client accepts your proposal, a chat will open here.</p>
+                                <div className="flex flex-col items-center justify-center h-full gap-3 text-center px-6 text-mist">
+                                    <MessageSquare className="h-10 w-10 opacity-20 text-ochre" strokeWidth={1.5} />
+                                    <p className="text-sm font-medium text-alabaster">No active dispatches</p>
+                                    <p className="text-xs">When a client reviews your treatment, a secure direct channel initiates here.</p>
                                 </div>
                             ) : (
                                 <ul>
@@ -97,20 +97,20 @@ export function Messages() {
                                             <li key={conv.id}>
                                                 <button
                                                     onClick={() => navigate(`/messages/${conv.id}`)}
-                                                    className={`w-full text-left px-4 py-3.5 border-b last:border-b-0 hover:bg-accent/50 transition-colors
-                                                        ${isActive ? 'bg-accent' : ''}`}
+                                                    className={`w-full text-left px-4 py-3.5 border-b border-edge last:border-b-0 hover:bg-surface.elevated transition-colors
+                                                        ${isActive ? 'bg-surface.elevated border-l-2 border-l-ochre' : ''}`}
                                                 >
                                                     <div className="flex items-start justify-between gap-2 mb-0.5">
-                                                        <p className="text-sm font-semibold truncate">{otherName}</p>
+                                                        <p className="text-xs font-semibold text-alabaster truncate">{otherName}</p>
                                                         {conv.lastMessageAt && (
-                                                            <span className="text-[10px] text-muted-foreground flex-shrink-0 mt-0.5">
+                                                            <span className="text-[10px] font-mono text-mist/60 flex-shrink-0 mt-0.5">
                                                                 {formatTime(conv.lastMessageAt)}
                                                             </span>
                                                         )}
                                                     </div>
-                                                    <p className="text-xs text-muted-foreground truncate">{conv.jobTitle}</p>
+                                                    <p className="text-[11px] text-ochre truncate">{conv.jobTitle}</p>
                                                     {conv.lastMessage && (
-                                                        <p className="text-xs text-muted-foreground truncate mt-0.5 italic">
+                                                        <p className="text-[11px] text-mist truncate mt-0.5 italic">
                                                             {conv.lastMessage}
                                                         </p>
                                                     )}
@@ -124,37 +124,37 @@ export function Messages() {
                     </div>
 
                     {/* ── Chat Thread ────────────────────────────────────── */}
-                    <div className={`${!showList ? 'flex' : 'hidden'} md:flex flex-col flex-1 bg-background`}>
+                    <div className={`${!showList ? 'flex' : 'hidden'} md:flex flex-col flex-1 bg-canvas`}>
                         {activeConv ? (
                             <>
                                 {/* Thread Header */}
-                                <div className="flex items-center gap-3 px-4 py-3 border-b bg-card">
+                                <div className="flex items-center gap-3 px-5 py-3.5 border-b border-edge bg-surface">
                                     <button
                                         onClick={() => navigate('/messages')}
-                                        className="md:hidden p-1 rounded-lg hover:bg-accent transition-colors"
+                                        className="md:hidden p-1 rounded-lg hover:bg-surface.elevated text-mist transition-colors"
                                     >
-                                        <ArrowLeft className="h-5 w-5" strokeWidth={2} />
+                                        <ArrowLeft className="h-5 w-5" strokeWidth={1.5} />
                                     </button>
                                     <div className="flex-1 min-w-0">
-                                        <p className="font-semibold text-sm truncate">
+                                        <p className="font-medium text-sm text-alabaster truncate">
                                             {user.role === 'client' ? activeConv.creativeName : activeConv.clientName}
                                         </p>
-                                        <p className="text-xs text-muted-foreground truncate">{activeConv.jobTitle}</p>
+                                        <p className="text-[11px] text-ochre truncate">{activeConv.jobTitle}</p>
                                     </div>
                                     <Link
                                         to={`/jobs/${activeConv.jobId}`}
-                                        className="text-xs text-primary hover:underline flex-shrink-0"
+                                        className="text-xs text-mist hover:text-ochre transition-colors flex-shrink-0 uppercase tracking-wider font-semibold"
                                     >
-                                        View Job →
+                                        Inspect Brief →
                                     </Link>
                                 </div>
 
                                 {/* Messages */}
-                                <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                                <div className="flex-1 overflow-y-auto p-5 space-y-3.5">
                                     {msgs.length === 0 ? (
-                                        <div className="flex flex-col items-center justify-center h-full gap-2 text-muted-foreground">
-                                            <Clock className="h-8 w-8 opacity-20" strokeWidth={1.5} />
-                                            <p className="text-sm">No messages yet. Say hello!</p>
+                                        <div className="flex flex-col items-center justify-center h-full gap-2 text-mist">
+                                            <Clock className="h-8 w-8 opacity-20 text-ochre" strokeWidth={1.5} />
+                                            <p className="text-sm">Initiate the brief dialogue.</p>
                                         </div>
                                     ) : (
                                         <AnimatePresence initial={false}>
@@ -167,13 +167,13 @@ export function Messages() {
                                                         animate={{ opacity: 1, y: 0 }}
                                                         className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}
                                                     >
-                                                        <div className={`max-w-[75%] px-3.5 py-2.5 rounded-2xl text-sm
+                                                        <div className={`max-w-[75%] px-4 py-3 rounded-2xl text-xs leading-relaxed
                                                             ${isOwn
-                                                                ? 'bg-primary text-primary-foreground rounded-br-sm'
-                                                                : 'bg-muted text-foreground rounded-bl-sm'
+                                                                ? 'bg-ochre text-canvas font-medium rounded-br-sm shadow-md'
+                                                                : 'bg-surface border border-edge text-alabaster rounded-bl-sm shadow-sm'
                                                             }`}>
-                                                            <p className="leading-relaxed">{msg.text}</p>
-                                                            <p className={`text-[10px] mt-1 ${isOwn ? 'text-primary-foreground/60 text-right' : 'text-muted-foreground'}`}>
+                                                            <p className="leading-relaxed whitespace-pre-wrap">{msg.text}</p>
+                                                            <p className={`text-[9px] font-mono mt-1 ${isOwn ? 'text-canvas/70 text-right' : 'text-mist'}`}>
                                                                 {formatTime(msg.createdAt)}
                                                             </p>
                                                         </div>
@@ -186,34 +186,34 @@ export function Messages() {
                                 </div>
 
                                 {/* Input */}
-                                <div className="border-t p-3 bg-card">
-                                    <div className="flex items-end gap-2">
+                                <div className="border-t border-edge p-3.5 bg-surface">
+                                    <div className="flex items-end gap-2.5">
                                         <textarea
                                             ref={inputRef}
                                             value={draft}
                                             onChange={e => setDraft(e.target.value)}
                                             onKeyDown={handleKeyDown}
-                                            placeholder="Type a message… (Enter to send)"
+                                            placeholder="Transmit secure message… (Enter to dispatch)"
                                             rows={1}
-                                            className="flex-1 resize-none px-3.5 py-2.5 rounded-xl border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 max-h-32 overflow-y-auto"
+                                            className="flex-1 resize-none px-4 py-2.5 rounded-xl border border-edge bg-surface.elevated text-alabaster text-xs focus:outline-none focus:border-ochre max-h-32 overflow-y-auto placeholder:text-mist/40"
                                             style={{ minHeight: '42px' }}
                                         />
                                         <Button
                                             size="icon"
                                             onClick={handleSend}
                                             disabled={!draft.trim()}
-                                            className="h-10 w-10 rounded-xl flex-shrink-0"
+                                            className="h-10 w-10 rounded-xl flex-shrink-0 bg-ochre hover:bg-ochre/90 text-canvas border-none"
                                         >
-                                            <Send className="h-4 w-4" strokeWidth={2} />
+                                            <Send className="h-4 w-4" strokeWidth={1.8} />
                                         </Button>
                                     </div>
                                 </div>
                             </>
                         ) : (
-                            <div className="flex flex-col items-center justify-center h-full gap-3 text-muted-foreground">
-                                <MessageSquare className="h-12 w-12 opacity-20" strokeWidth={1.5} />
-                                <p className="text-base font-medium">Select a conversation</p>
-                                <p className="text-sm text-center max-w-xs">Choose a conversation from the left to start chatting.</p>
+                            <div className="flex flex-col items-center justify-center h-full gap-3 text-mist">
+                                <MessageSquare className="h-12 w-12 opacity-20 text-ochre" strokeWidth={1.5} />
+                                <p className="font-serif text-lg font-normal text-alabaster">Select a Dispatch Channel</p>
+                                <p className="text-xs text-center max-w-xs text-mist">Choose an active client or photographer conversation from the index to exchange details.</p>
                             </div>
                         )}
                     </div>

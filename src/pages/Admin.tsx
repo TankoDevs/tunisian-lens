@@ -6,7 +6,6 @@ import {
     ChevronDown, ChevronUp, Search, SlidersHorizontal, Crown, Star
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-import { Button } from "../components/ui/button";
 import { ARTISTS } from "../data/mockData";
 import { BadgePill } from "../components/ui/BadgePill";
 import { type BadgeLevel } from "../data/mockData";
@@ -26,23 +25,23 @@ const STATUS_CONFIG = {
     pending: {
         icon: Clock,
         label: 'Under Review',
-        dot: 'bg-sand-400',
-        badge: 'text-sand-700 bg-sand-50 border-sand-200 dark:text-sand-400 dark:bg-sand-900/20 dark:border-sand-800',
-        card: 'border-sand-200/60 dark:border-sand-800/40',
+        dot: 'bg-ochre',
+        badge: 'text-ochre bg-ochre/10 border-ochre/25',
+        card: 'border-edge hover:border-ochre/40',
     },
     approved: {
         icon: CheckCircle2,
         label: 'Approved',
         dot: 'bg-emerald-400',
-        badge: 'text-emerald-700 bg-emerald-50 border-emerald-200 dark:text-emerald-300 dark:bg-emerald-950/40 dark:border-emerald-800',
-        card: 'border-emerald-200/60 dark:border-emerald-800/40',
+        badge: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/25',
+        card: 'border-edge hover:border-emerald-500/40',
     },
     denied: {
         icon: XCircle,
         label: 'Denied',
         dot: 'bg-rose-400',
-        badge: 'text-rose-700 bg-rose-50 border-rose-200 dark:text-rose-400 dark:bg-rose-950/40 dark:border-rose-800',
-        card: 'border-rose-200/60 dark:border-rose-800/40',
+        badge: 'text-rose-400 bg-rose-500/10 border-rose-500/25',
+        card: 'border-edge hover:border-rose-500/40',
     },
 } as const;
 
@@ -68,46 +67,46 @@ function RequestCard({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.97 }}
             transition={{ duration: 0.25 }}
-            className={`group rounded-lg border bg-card overflow-hidden transition-all duration-300 card-hover ${cfg.card}`}
+            className={`group rounded-2xl border bg-surface overflow-hidden transition-all duration-300 shadow-md ${cfg.card}`}
         >
             {/* Top accent line */}
-            <div className={`h-[1.5px] w-full ${cfg.dot}`} />
+            <div className={`h-[2px] w-full ${cfg.dot}`} />
 
-            <div className="p-5">
+            <div className="p-6">
                 {/* Header row */}
                 <div className="flex items-start gap-4">
                     {/* Avatar */}
                     <div className="relative flex-shrink-0">
-                        <div className="w-10 h-10 rounded-full bg-muted border border-border flex items-center justify-center overflow-hidden">
-                            <User className="h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
+                        <div className="w-11 h-11 rounded-full bg-canvas border border-edge flex items-center justify-center overflow-hidden">
+                            <User className="h-5 w-5 text-mist" strokeWidth={1.5} />
                         </div>
-                        <span className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-background ${cfg.dot}`} />
+                        <span className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-surface ${cfg.dot}`} />
                     </div>
 
                     {/* Name + email */}
                     <div className="flex-1 min-w-0">
-                        <p className="font-sans font-semibold text-sm leading-tight truncate">{req.userName}</p>
-                        <p className="text-xs text-muted-foreground truncate mt-0.5">{req.userEmail}</p>
-                        <p className="text-[10px] text-muted-foreground/60 mt-1">
+                        <p className="font-serif text-base text-alabaster font-normal truncate">{req.userName}</p>
+                        <p className="text-xs text-mist font-mono truncate mt-0.5">{req.userEmail}</p>
+                        <p className="text-[10px] text-mist/60 mt-1 font-mono">
                             Submitted {formatDate(req.submittedAt)}
                         </p>
                     </div>
 
                     {/* Status badge */}
-                    <span className={`inline-flex items-center gap-1.5 text-[10px] font-semibold px-2 py-0.5 rounded border whitespace-nowrap ${cfg.badge}`}>
+                    <span className={`inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-wider px-2.5 py-1 rounded border whitespace-nowrap ${cfg.badge}`}>
                         <Icon className="h-3 w-3" strokeWidth={2} />
                         {cfg.label}
                     </span>
                 </div>
 
                 {/* Message preview / expand */}
-                <div className="mt-4">
+                <div className="mt-5">
                     <button
                         onClick={() => setExpanded(v => !v)}
                         className="w-full text-left group/msg"
                     >
-                        <div className="flex items-center justify-between text-xs font-medium text-muted-foreground mb-2">
-                            <span>Message</span>
+                        <div className="flex items-center justify-between text-xs font-mono uppercase tracking-wider text-mist mb-2">
+                            <span>Photographer Statement</span>
                             {expanded
                                 ? <ChevronUp className="h-3.5 w-3.5" strokeWidth={2} />
                                 : <ChevronDown className="h-3.5 w-3.5" strokeWidth={2} />}
@@ -116,7 +115,7 @@ function RequestCard({
                             animate={{ height: expanded ? 'auto' : '3.5rem' }}
                             className="overflow-hidden"
                         >
-                            <p className={`text-sm text-foreground/75 leading-relaxed italic bg-muted/40 rounded-lg px-4 py-3 border border-border/50 ${!expanded ? 'line-clamp-2' : ''}`}>
+                            <p className={`text-sm text-alabaster/80 leading-relaxed italic bg-canvas/60 rounded-xl px-4 py-3 border border-edge font-serif ${!expanded ? 'line-clamp-2' : ''}`}>
                                 "{req.message}"
                             </p>
                         </motion.div>
@@ -124,36 +123,31 @@ function RequestCard({
                 </div>
 
                 {/* Actions */}
-                <div className="mt-4 flex items-center justify-end gap-2">
+                <div className="mt-5 flex items-center justify-end gap-2 pt-3 border-t border-edge/60">
                     {req.status === 'pending' ? (
                         <>
-                            <Button
-                                size="sm"
-                                variant="outline"
-                                className="h-8 px-4 text-xs border-rose-200 text-rose-600 hover:bg-rose-50 hover:border-rose-300 dark:border-rose-800 dark:text-rose-400 dark:hover:bg-rose-950/40"
+                            <button
+                                className="h-8 px-4 text-xs font-mono tracking-wider rounded-lg border border-rose-500/30 text-rose-400 hover:bg-rose-500/10 transition-colors flex items-center"
                                 onClick={onDeny}
                             >
                                 <XCircle className="h-3.5 w-3.5 mr-1.5" strokeWidth={2} />
                                 Deny
-                            </Button>
-                            <Button
-                                size="sm"
-                                className="h-8 px-4 text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm"
+                            </button>
+                            <button
+                                className="h-8 px-4 text-xs font-mono tracking-wider rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition-colors flex items-center shadow-sm"
                                 onClick={onApprove}
                             >
                                 <CheckCircle2 className="h-3.5 w-3.5 mr-1.5" strokeWidth={2} />
                                 Approve
-                            </Button>
+                            </button>
                         </>
                     ) : (
-                        <Button
-                            size="sm"
-                            variant="ghost"
-                            className="h-8 px-3 text-xs text-muted-foreground hover:text-foreground"
+                        <button
+                            className="h-8 px-3 text-xs font-mono text-mist hover:text-alabaster transition-colors"
                             onClick={onUndo}
                         >
                             Undo
-                        </Button>
+                        </button>
                     )}
                 </div>
             </div>
@@ -190,23 +184,19 @@ export function Admin() {
 
     if (!isAuthenticated || user?.role !== 'admin') {
         return (
-            <div className="min-h-screen flex flex-col items-center justify-center gap-6 text-center px-4">
-                {/* Inspiring background image */}
-                <div className="absolute inset-0 -z-10 overflow-hidden">
-                    <img
-                        src="https://picsum.photos/seed/admin-lock/1920/1080"
-                        alt=""
-                        className="h-full w-full object-cover opacity-10 dark:opacity-5"
-                    />
-                </div>
-                <div className="w-16 h-16 rounded-2xl bg-muted border flex items-center justify-center">
-                    <ShieldCheck className="h-8 w-8 text-muted-foreground" strokeWidth={1.5} />
+            <div className="min-h-screen bg-canvas text-alabaster flex flex-col items-center justify-center gap-6 text-center px-4">
+                <div className="w-16 h-16 rounded-2xl bg-surface border border-edge flex items-center justify-center text-ochre">
+                    <ShieldCheck className="h-8 w-8" strokeWidth={1.5} />
                 </div>
                 <div>
-                    <h1 className="text-2xl font-bold font-sans mb-2">Admin Access Only</h1>
-                    <p className="text-muted-foreground text-sm">You need admin privileges to view this page.</p>
+                    <h1 className="text-3xl font-serif text-alabaster mb-2">Curatorial Access Restricted</h1>
+                    <p className="text-mist text-sm font-light">You need administrator privileges to govern verification requests.</p>
                 </div>
-                <Link to="/"><Button variant="outline">Go Back Home</Button></Link>
+                <Link to="/">
+                    <button className="px-5 py-2.5 rounded-full border border-edge bg-surface hover:bg-surface-elevated text-alabaster text-xs font-mono tracking-wider uppercase transition-colors">
+                        Return to Archive
+                    </button>
+                </Link>
             </div>
         );
     }
@@ -234,47 +224,39 @@ export function Admin() {
         { key: 'pending', label: 'Pending', count: pendingCount },
         { key: 'approved', label: 'Approved', count: approvedCount },
         { key: 'denied', label: 'Denied', count: deniedCount },
-        { key: 'all', label: 'All', count: requests.length },
+        { key: 'all', label: 'All Records', count: requests.length },
     ];
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen bg-canvas text-alabaster">
 
             {/* ── Hero Header ──────────────────────────────────────── */}
-            <div className="relative overflow-hidden border-b">
-                {/* Background image */}
-                <div className="absolute inset-0 -z-10">
-                    <img
-                        src="https://picsum.photos/seed/tunis-cityscape/1920/600"
-                        alt=""
-                        className="h-full w-full object-cover"
-                    />
-                    {/* Gradient overlay — adapts to dark/light */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-background via-background/90 to-background/40 dark:from-black dark:via-black/80 dark:to-black/30" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent dark:from-black" />
+            <div className="relative overflow-hidden border-b border-edge">
+                <div className="absolute inset-0 -z-10 pointer-events-none">
+                    <div className="absolute top-0 right-10 w-[500px] h-[300px] bg-ochre/10 rounded-full blur-[120px]" />
                 </div>
 
-                <div className="container mx-auto px-6 py-16 max-w-4xl">
+                <div className="container mx-auto px-6 py-16 max-w-5xl">
                     <div>
-                        <p className="text-xs font-semibold tracking-[0.2em] uppercase text-sand-500 mb-3">Administration</p>
-                        <h1 className="font-sans text-4xl md:text-5xl font-bold tracking-tight mb-3">
-                            Verification Panel
+                        <p className="text-xs font-mono uppercase tracking-[0.2em] text-ochre mb-3">Archive Governance</p>
+                        <h1 className="font-serif text-4xl md:text-5xl text-alabaster tracking-tight mb-3">
+                            Verification & Guild Administration
                         </h1>
-                        <p className="text-muted-foreground max-w-lg text-sm leading-relaxed">
-                            Review and manage creative verification requests.
+                        <p className="text-mist max-w-xl text-sm leading-relaxed font-light">
+                            Review candidate portfolio submissions, verify optical authenticity, and manage national creative credentials.
                         </p>
                     </div>
 
                     {/* Stat pills */}
                     <div className="flex flex-wrap gap-3 mt-8">
                         {[
-                            { label: 'Pending Review', value: pendingCount, color: 'text-sand-700 dark:text-sand-400 bg-sand-50 dark:bg-sand-900/20 border-sand-200 dark:border-sand-800' },
-                            { label: 'Approved', value: approvedCount, color: 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800' },
-                            { label: 'Denied', value: deniedCount, color: 'text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800' },
+                            { label: 'Pending Review', value: pendingCount, color: 'text-ochre bg-ochre/10 border-ochre/25' },
+                            { label: 'Verified Artists', value: approvedCount, color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/25' },
+                            { label: 'Denied / Incomplete', value: deniedCount, color: 'text-rose-400 bg-rose-500/10 border-rose-500/25' },
                         ].map(s => (
-                            <div key={s.label} className={`flex items-center gap-2 px-4 py-2 rounded-md border text-sm font-semibold ${s.color}`}>
-                                <span className="text-xl font-bold">{s.value}</span>
-                                <span className="text-xs font-medium opacity-75">{s.label}</span>
+                            <div key={s.label} className={`flex items-center gap-3 px-4 py-2 rounded-xl border text-sm ${s.color}`}>
+                                <span className="text-xl font-serif font-bold">{s.value}</span>
+                                <span className="text-xs font-mono uppercase tracking-wider opacity-80">{s.label}</span>
                             </div>
                         ))}
                     </div>
@@ -282,41 +264,39 @@ export function Admin() {
             </div>
 
             {/* ── Main Content ─────────────────────────────────────── */}
-            <div className="container mx-auto px-6 py-10 max-w-4xl">
+            <div className="container mx-auto px-6 py-12 max-w-5xl">
 
                 {/* Toolbar */}
-                <div className="flex flex-col sm:flex-row gap-3 mb-6">
+                <div className="flex flex-col sm:flex-row gap-3 mb-8">
                     {/* Search */}
                     <div className="relative flex-1">
-                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" strokeWidth={2} />
+                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-mist" strokeWidth={1.8} />
                         <input
                             type="text"
-                            placeholder="Search by name or email…"
+                            placeholder="Filter applicants by name or email…"
                             value={search}
                             onChange={e => setSearch(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2.5 text-sm rounded-md border border-border bg-card focus:outline-none focus:ring-2 focus:ring-sand-400/30 focus:border-sand-400 transition-all duration-300"
+                            className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-edge bg-surface text-alabaster placeholder:text-mist/40 focus:outline-none focus:border-ochre transition-all"
                         />
                     </div>
 
                     {/* Filter chips */}
                     <div className="flex items-center gap-1.5 flex-wrap">
-                        <SlidersHorizontal className="h-4 w-4 text-muted-foreground flex-shrink-0" strokeWidth={2} />
+                        <SlidersHorizontal className="h-4 w-4 text-mist flex-shrink-0" strokeWidth={1.8} />
                         {FILTERS.map(f => (
                             <button
                                 key={f.key}
                                 onClick={() => setFilter(f.key)}
-                                className={`inline-flex items-center gap-1.5 h-9 px-3.5 rounded-md text-xs font-semibold border transition-all duration-300 ${filter === f.key
-                                    ? 'bg-foreground text-background border-foreground shadow-sm'
-                                    : 'border-border hover:bg-accent text-muted-foreground hover:text-foreground'
+                                className={`inline-flex items-center gap-1.5 h-10 px-4 rounded-xl text-xs font-mono uppercase tracking-wider border transition-all ${filter === f.key
+                                    ? 'bg-ochre text-canvas border-ochre font-semibold shadow-sm'
+                                    : 'border-edge bg-surface text-mist hover:text-alabaster hover:border-edge/80'
                                     }`}
                             >
                                 {f.label}
                                 {f.count !== undefined && f.count > 0 && (
-                                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${filter === f.key
-                                        ? 'bg-background/20 text-background'
-                                        : f.key === 'pending'
-                                            ? 'bg-sky-500 text-white'
-                                            : 'bg-muted text-muted-foreground'
+                                    <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded-full ${filter === f.key
+                                        ? 'bg-canvas/20 text-canvas'
+                                        : 'bg-canvas text-mist'
                                         }`}>
                                         {f.count}
                                     </span>
@@ -328,17 +308,17 @@ export function Admin() {
 
                 {/* Card grid */}
                 {filtered.length === 0 ? (
-                    <div className="rounded-lg border border-dashed border-border p-16 text-center bg-card/40">
-                        <div className="w-16 h-16 rounded-2xl bg-muted mx-auto mb-4 flex items-center justify-center">
-                            <ShieldCheck className="h-8 w-8 text-muted-foreground opacity-40" strokeWidth={1.5} />
+                    <div className="rounded-2xl border border-dashed border-edge p-16 text-center bg-surface/30">
+                        <div className="w-16 h-16 rounded-2xl bg-surface border border-edge mx-auto mb-4 flex items-center justify-center text-mist">
+                            <ShieldCheck className="h-8 w-8 opacity-40" strokeWidth={1.5} />
                         </div>
-                        <p className="font-sans text-base font-semibold mb-1">No requests found</p>
-                        <p className="text-sm text-muted-foreground">
-                            {search ? 'Try a different search query' : filter === 'pending' ? 'All caught up — no pending requests' : `No ${filter} requests yet`}
+                        <p className="font-serif text-lg text-alabaster mb-1">No requests found</p>
+                        <p className="text-sm text-mist font-light">
+                            {search ? 'Try adjusting your search criteria' : filter === 'pending' ? 'All caught up — no pending applications' : `No ${filter} requests on record`}
                         </p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
                         <AnimatePresence>
                             {filtered.map(req => (
                                 <RequestCard
@@ -355,89 +335,78 @@ export function Admin() {
                     </div>
                 )}
 
-                {/* Empty-state inspiration quote */}
-                {pendingCount === 0 && filter === 'pending' && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 12 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 }}
-                        className="mt-12 relative rounded-lg overflow-hidden"
-                    >
-                        <img
-                            src="https://picsum.photos/seed/photography-inspiration/1200/300"
-                            alt="Inspiring photography"
-                            className="w-full h-44 object-cover"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex flex-col items-center justify-end pb-8 text-center px-4">
-                            <p className="font-sans text-white text-xl font-bold">"Every great photograph begins with a single shutter click."</p>
-                            <p className="text-white/60 text-sm mt-1">Keep verifying the talent that captures the world.</p>
-                        </div>
-                    </motion.div>
-                )}
-
                 {/* ── CREATIVE OF THE MONTH PICKER ── */}
-                <div className="mt-16 border-t border-border pt-10">
-                    <div className="flex items-center gap-2 mb-6">
-                        <Crown className="h-5 w-5 text-amber-400" strokeWidth={1.5} />
+                <div className="mt-16 border-t border-edge pt-12">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="w-9 h-9 rounded-xl bg-ochre/10 border border-ochre/25 flex items-center justify-center text-ochre">
+                            <Crown className="h-5 w-5" strokeWidth={1.5} />
+                        </div>
                         <div>
-                            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sand-500">Spotlight</p>
-                            <h2 className="font-sans text-xl font-bold">Creative of the Month</h2>
+                            <p className="text-xs font-mono uppercase tracking-[0.2em] text-ochre">Curatorial Spotlight</p>
+                            <h2 className="font-serif text-2xl text-alabaster">Creative of the Month</h2>
                         </div>
                     </div>
                     <div className="flex items-center gap-3 flex-wrap">
                         <select
                             value={cotmId}
                             onChange={e => setCOTM(e.target.value)}
-                            className="h-10 px-3 rounded-lg border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 min-w-[240px]"
+                            className="h-11 px-4 rounded-xl border border-edge bg-surface text-alabaster text-sm focus:outline-none focus:border-ochre min-w-[280px]"
                         >
-                            <option value="">-- No Creative of the Month --</option>
+                            <option value="">-- No Featured Creative --</option>
                             {ARTISTS.map(a => (
                                 <option key={a.id} value={a.id}>{a.name} – {a.location}</option>
                             ))}
                         </select>
                         {cotmId && (
-                            <Button variant="outline" size="sm" onClick={() => setCOTM('')}>Clear</Button>
+                            <button
+                                onClick={() => setCOTM('')}
+                                className="h-11 px-4 rounded-xl border border-edge bg-surface hover:bg-surface-elevated text-xs font-mono uppercase tracking-wider text-mist hover:text-alabaster"
+                            >
+                                Clear Selection
+                            </button>
                         )}
                     </div>
                     {cotmId && (() => {
                         const cotm = ARTISTS.find(a => a.id === cotmId);
                         return cotm ? (
-                            <div className="mt-4 flex items-center gap-3 p-3 rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/20">
-                                <img src={cotm.avatar} className="w-10 h-10 rounded-full object-cover" alt={cotm.name} />
+                            <div className="mt-4 flex items-center gap-4 p-4 rounded-2xl border border-ochre/30 bg-surface">
+                                <img src={cotm.avatar} className="w-12 h-12 rounded-full object-cover border border-edge" alt={cotm.name} />
                                 <div>
-                                    <p className="text-sm font-semibold">{cotm.name}</p>
-                                    <p className="text-xs text-muted-foreground">{cotm.location} · {cotm.categories.join(', ')}</p>
+                                    <p className="font-serif text-base text-alabaster">{cotm.name}</p>
+                                    <p className="text-xs text-mist font-mono mt-0.5">{cotm.location} · {cotm.categories.join(', ')}</p>
                                 </div>
-                                <Crown className="h-4 w-4 text-amber-400 ml-auto" strokeWidth={1.5} />
+                                <Crown className="h-5 w-5 text-ochre ml-auto" strokeWidth={1.5} />
                             </div>
                         ) : null;
                     })()}
                 </div>
 
                 {/* ── BADGE OVERRIDE PANEL ── */}
-                <div className="mt-12 border-t border-border pt-10">
-                    <div className="flex items-center gap-2 mb-6">
-                        <Star className="h-5 w-5 text-violet-400" strokeWidth={1.5} />
+                <div className="mt-14 border-t border-edge pt-12">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="w-9 h-9 rounded-xl bg-surface border border-edge flex items-center justify-center text-sidi-azure">
+                            <Star className="h-5 w-5" strokeWidth={1.5} />
+                        </div>
                         <div>
-                            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sand-500">Badges</p>
-                            <h2 className="font-sans text-xl font-bold">Creative Badge Manager</h2>
+                            <p className="text-xs font-mono uppercase tracking-[0.2em] text-ochre">Guild Tier Management</p>
+                            <h2 className="font-serif text-2xl text-alabaster">Artist Credential Overrides</h2>
                         </div>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {ARTISTS.map(a => {
                             const current = (badgeOverrides[a.id] || a.badgeLevel || 'none') as string;
                             return (
-                                <div key={a.id} className="flex items-center gap-3 p-3 rounded-lg border border-border bg-card">
-                                    <img src={a.avatar} className="w-9 h-9 rounded-full object-cover flex-shrink-0" alt={a.name} />
+                                <div key={a.id} className="flex items-center gap-3 p-4 rounded-2xl border border-edge bg-surface">
+                                    <img src={a.avatar} className="w-10 h-10 rounded-full object-cover border border-edge flex-shrink-0" alt={a.name} />
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-medium truncate">{a.name}</p>
-                                        <p className="text-xs text-muted-foreground truncate">{a.location}</p>
+                                        <p className="font-serif text-sm text-alabaster truncate">{a.name}</p>
+                                        <p className="text-xs text-mist font-mono truncate">{a.location}</p>
                                     </div>
                                     {current !== 'none' && <BadgePill level={current as BadgeLevel} size="sm" />}
                                     <select
                                         value={current}
                                         onChange={e => setBadge(a.id, e.target.value)}
-                                        className="h-8 px-2 rounded border bg-background text-xs focus:outline-none focus:ring-1 focus:ring-primary/30"
+                                        className="h-8 px-2.5 rounded-lg border border-edge bg-canvas text-alabaster text-xs font-mono focus:outline-none focus:border-ochre"
                                     >
                                         <option value="none">No Badge</option>
                                         <option value="verified">Verified</option>
@@ -451,6 +420,6 @@ export function Admin() {
                 </div>
 
             </div>
-        </div >
+        </div>
     );
 }

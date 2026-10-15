@@ -13,87 +13,86 @@ import {
     ArrowRight,
     Play
 } from "lucide-react";
-import { Button } from "../components/ui/button";
 
 export const Links = () => {
     const sections: { title: string; links: { title: string; url: string; description: string; icon: React.ReactNode; color: string; isInternal?: boolean }[] }[] = [
         {
-            title: "Connect with Us",
+            title: "Archival Dispatches & Socials",
             links: [
                 {
-                    title: "Instagram",
+                    title: "Instagram Archive",
                     url: "https://instagram.com/tunisianlens",
-                    description: "Daily visual stories from across Tunisia.",
+                    description: "Daily optical selections from across the 24 governorates.",
                     icon: <Instagram className="w-5 h-5" />,
                     color: "bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7]",
                 },
                 {
-                    title: "LinkedIn",
+                    title: "LinkedIn Creative Guild",
                     url: "https://linkedin.com/company/tunisianlens",
-                    description: "Professional networking for the creative industry.",
+                    description: "Commercial opportunities, commissions, and production networks.",
                     icon: <Linkedin className="w-5 h-5" />,
                     color: "bg-[#0077b5]",
                 },
                 {
-                    title: "Twitter / X",
+                    title: "X / Twitter Dispatch",
                     url: "https://x.com/tunisianlens",
-                    description: "Latest updates and photography news.",
+                    description: "Curatorial commentary, camera optic releases, and photography news.",
                     icon: <Twitter className="w-5 h-5" />,
                     color: "bg-black",
                 },
                 {
-                    title: "TikTok",
+                    title: "TikTok Film Shorts",
                     url: "https://tiktok.com/@tunisianlens",
-                    description: "Behind the scenes and cinematic shorts.",
+                    description: "Behind the lens, lighting tests, and documentary shorts.",
                     icon: <Play className="w-5 h-5 fill-current" />,
-                    color: "bg-[#000000]",
+                    color: "bg-[#111111]",
                 },
             ]
         },
         {
-            title: "Join the Community",
+            title: "Guild Guildhall & Community",
             links: [
                 {
-                    title: "Discord Community",
+                    title: "Curators Discord",
                     url: "#",
-                    description: "Join our vibrant community of visual artists.",
+                    description: "Connect with fellow photographers, share raw frames, and arrange photowalks.",
                     icon: <MessageSquare className="w-5 h-5" />,
                     color: "bg-[#5865F2]",
                 },
                 {
-                    title: "Artist Newsletter",
+                    title: "Monthly Archival Gazette",
                     url: "#",
-                    description: "Get monthly tips, trends, and opportunities.",
+                    description: "Curated monographs, historical essays, and exhibition announcements.",
                     icon: <Mail className="w-5 h-5" />,
-                    color: "bg-sand-500",
+                    color: "bg-ochre text-canvas",
                 },
             ]
         },
         {
-            title: "Quick Access",
+            title: "Direct Platform Access",
             links: [
                 {
-                    title: "Main Platform",
+                    title: "National Gallery & Masonry",
                     url: "/",
-                    description: "Return to the Tunisian Lens homepage.",
+                    description: "Explore the live public exhibition and chromatic index.",
                     icon: <Globe className="w-5 h-5" />,
-                    color: "bg-primary",
+                    color: "bg-surface border border-edge text-ochre",
                     isInternal: true,
                 },
                 {
-                    title: "Explore Gallery",
+                    title: "Curatorial Exploration",
                     url: "/explore",
-                    description: "Browse curated Tunisian photography.",
+                    description: "Filter series by governorate, discipline, and optical specifications.",
                     icon: <Layout className="w-5 h-5" />,
-                    color: "bg-indigo-500",
+                    color: "bg-surface border border-edge text-sidi-azure",
                     isInternal: true,
                 },
                 {
-                    title: "Submit a Project",
+                    title: "Submit a Cultural Series",
                     url: "/submit",
-                    description: "Share your work with the community.",
+                    description: "Publish your original human-captured photography.",
                     icon: <Share2 className="w-5 h-5" />,
-                    color: "bg-emerald-500",
+                    color: "bg-surface border border-edge text-emerald-400",
                     isInternal: true,
                 },
             ]
@@ -101,94 +100,83 @@ export const Links = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-background relative overflow-hidden">
-            {/* Background Decorative Elements */}
+        <div className="min-h-screen bg-canvas text-alabaster relative overflow-hidden py-16 md:py-24">
+            {/* Ambient Background Lights */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-full pointer-events-none">
-                <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-sand-200/20 rounded-full blur-[120px]" />
-                <div className="absolute bottom-[10%] left-[-10%] w-[400px] h-[400px] bg-primary/5 rounded-full blur-[100px]" />
+                <div className="absolute top-[-5%] right-[-5%] w-[500px] h-[500px] bg-ochre/10 rounded-full blur-[140px]" />
+                <div className="absolute bottom-[10%] left-[-10%] w-[400px] h-[400px] bg-sidi-azure/10 rounded-full blur-[130px]" />
             </div>
 
-            <div className="container mx-auto px-4 py-16 relative z-10 max-w-xl">
-                <div className="text-center mb-12">
-                    <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-card border mb-6 shadow-sm">
-                        <Camera className="w-8 h-8 text-sand-500" />
+            <div className="container mx-auto px-6 relative z-10 max-w-xl">
+                <div className="text-center mb-12 space-y-4">
+                    <div className="inline-flex items-center justify-center p-3.5 rounded-2xl bg-surface border border-edge text-ochre shadow-lg mb-2">
+                        <Camera className="w-7 h-7" strokeWidth={1.8} />
                     </div>
-                    <h1 className="text-3xl font-bold mb-3 tracking-tight">Tunisian Lens Hub</h1>
-                    <p className="text-muted-foreground text-sm max-w-xs mx-auto italic">
-                        "Your vision, our lens. Connecting Tunisia's creative pulse to the world."
+                    <span className="text-xs font-mono uppercase tracking-[0.2em] text-ochre block">Ecosystem Directory</span>
+                    <h1 className="text-3xl md:text-4xl font-serif text-alabaster tracking-tight">Tunisian Lens Hub</h1>
+                    <p className="text-mist text-xs md:text-sm max-w-xs mx-auto italic font-light">
+                        "Your vision, our national archive. Connecting Tunisia's creative pulse to the world."
                     </p>
                 </div>
 
                 <div className="space-y-10">
                     {sections.map((section, sIndex) => (
-                        <div key={sIndex} className="space-y-4">
-                            <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground px-2">
+                        <div key={sIndex} className="space-y-3">
+                            <h2 className="text-xs font-mono uppercase tracking-widest text-mist/70 px-2">
                                 {section.title}
                             </h2>
                             <div className="space-y-3">
-                                {section.links.map((link, lIndex) => (
-                                    <div key={lIndex}>
-                                        {link.isInternal ? (
-                                            <Link
-                                                to={link.url}
-                                                className="group flex items-center p-4 bg-card hover:bg-accent/40 border rounded-2xl transition-all duration-300 hover:scale-[1.01] hover:shadow-md"
-                                            >
-                                                <div className={`p-2.5 rounded-xl text-white ${link.color} shadow-sm group-hover:scale-110 transition-transform duration-300`}>
-                                                    {link.icon}
-                                                </div>
-                                                <div className="ml-4 flex-1">
-                                                    <h3 className="font-medium text-sm text-foreground">{link.title}</h3>
-                                                    <p className="text-xs text-muted-foreground line-clamp-1">{link.description}</p>
-                                                </div>
-                                                <ArrowRight className="w-4 h-4 text-muted-foreground/50 group-hover:text-primary group-hover:translate-x-1 transition-all" />
-                                            </Link>
-                                        ) : (
-                                            <a
-                                                href={link.url}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="group flex items-center p-4 bg-card hover:bg-accent/40 border rounded-2xl transition-all duration-300 hover:scale-[1.01] hover:shadow-md"
-                                            >
-                                                <div className={`p-2.5 rounded-xl text-white ${link.color} shadow-sm group-hover:scale-110 transition-transform duration-300`}>
-                                                    {link.icon}
-                                                </div>
-                                                <div className="ml-4 flex-1">
-                                                    <div className="flex items-center">
-                                                        <h3 className="font-medium text-sm text-foreground">{link.title}</h3>
-                                                        <ExternalLink className="w-3 h-3 ml-2 text-muted-foreground/30 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                                    </div>
-                                                    <p className="text-xs text-muted-foreground line-clamp-1">{link.description}</p>
-                                                </div>
-                                                <ArrowRight className="w-4 h-4 text-muted-foreground/50 group-hover:text-primary group-hover:translate-x-1 transition-all" />
-                                            </a>
-                                        )}
-                                    </div>
-                                ))}
+                                {section.links.map((link, lIndex) => {
+                                    const content = (
+                                        <>
+                                            <div className={`p-2.5 rounded-xl ${link.color} flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform duration-300`}>
+                                                {link.icon}
+                                            </div>
+                                            <div className="ml-4 flex-1 min-w-0">
+                                                <h3 className="font-serif text-sm text-alabaster group-hover:text-ochre transition-colors truncate">{link.title}</h3>
+                                                <p className="text-xs text-mist font-light line-clamp-1 mt-0.5">{link.description}</p>
+                                            </div>
+                                            {link.isInternal ? (
+                                                <ArrowRight className="w-4 h-4 text-mist group-hover:text-ochre group-hover:translate-x-1 transition-all ml-2 flex-shrink-0" />
+                                            ) : (
+                                                <ExternalLink className="w-4 h-4 text-mist/60 group-hover:text-ochre transition-colors ml-2 flex-shrink-0" />
+                                            )}
+                                        </>
+                                    );
+
+                                    return (
+                                        <div key={lIndex}>
+                                            {link.isInternal ? (
+                                                <Link
+                                                    to={link.url}
+                                                    className="group flex items-center p-4 bg-surface hover:bg-surface-elevated border border-edge hover:border-edge/80 rounded-2xl transition-all duration-300 shadow-sm"
+                                                >
+                                                    {content}
+                                                </Link>
+                                            ) : (
+                                                <a
+                                                    href={link.url}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="group flex items-center p-4 bg-surface hover:bg-surface-elevated border border-edge hover:border-edge/80 rounded-2xl transition-all duration-300 shadow-sm"
+                                                >
+                                                    {content}
+                                                </a>
+                                            )}
+                                        </div>
+                                    );
+                                })}
                             </div>
                         </div>
                     ))}
                 </div>
 
-                {/* Footer Section in Hub */}
-                <div className="mt-16 pt-8 border-t border-dashed text-center">
-                    <p className="text-[10px] text-muted-foreground uppercase tracking-widest mb-6">
-                        Contact Inquiries
-                    </p>
-                    <div className="flex justify-center gap-3">
-                        <Button variant="outline" size="sm" className="rounded-full px-6 h-9 text-xs">
-                            Email Us
-                        </Button>
-                        <Button variant="ghost" size="sm" className="rounded-full px-6 h-9 text-xs font-semibold">
-                            Help Center
-                        </Button>
-                    </div>
-                    <p className="mt-12 text-[10px] text-muted-foreground/60">
-                        &copy; {new Date().getFullYear()} Tunisian Lens Marketplace. All rights reserved.
+                <div className="mt-14 text-center">
+                    <p className="text-[11px] font-mono text-mist/50">
+                        Tunisian Lens Archives · Built for Cultural Preservation
                     </p>
                 </div>
             </div>
         </div>
     );
 };
-
-export default Links;

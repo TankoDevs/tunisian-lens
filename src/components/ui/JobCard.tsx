@@ -33,8 +33,8 @@ export function JobCard({ job }: JobCardProps) {
     return (
         <div
             className={cn(
-                "group relative bg-card border border-border/60 rounded-3xl overflow-hidden transition-all duration-500 hover:shadow-2xl hover:border-[#C8A97E]/30",
-                job.isUrgent && "border-red-500/20"
+                "group relative bg-surface border border-edge rounded-2xl overflow-hidden transition-all duration-300 hover:border-ochre/40 hover:-translate-y-0.5 hover:shadow-xl",
+                job.isUrgent && "border-red-500/30"
             )}
         >
             <div className="p-6 space-y-5">
@@ -43,11 +43,11 @@ export function JobCard({ job }: JobCardProps) {
                     <div className="flex-1 min-w-0">
                         {/* Category + status */}
                         <div className="flex items-center gap-2 mb-3 flex-wrap">
-                            <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#C8A97E] bg-[#C8A97E]/10 px-2.5 py-1 rounded-full border border-[#C8A97E]/20">
+                            <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-ochre bg-ochre/10 px-2.5 py-1 rounded-md border border-ochre/20">
                                 {job.category}
                             </span>
                             {job.isUrgent && (
-                                <span className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-[0.2em] text-red-500 bg-red-500/10 px-2.5 py-1 rounded-full border border-red-500/20">
+                                <span className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-red-400 bg-red-500/10 px-2.5 py-1 rounded-md border border-red-500/20">
                                     <Zap className="h-3 w-3" strokeWidth={3} fill="currentColor" />
                                     Urgent
                                 </span>
@@ -56,15 +56,15 @@ export function JobCard({ job }: JobCardProps) {
 
                         {/* Title */}
                         <Link to={`/jobs/${job.id}`} className="group/title block">
-                            <h3 className="font-bold text-lg md:text-xl leading-snug line-clamp-2 group-hover/title:text-[#C8A97E] transition-colors duration-300">
+                            <h3 className="font-serif text-lg md:text-xl font-normal leading-snug text-alabaster group-hover/title:text-ochre transition-colors duration-200">
                                 {job.title}
                             </h3>
                         </Link>
                         <div className="flex items-center gap-2 mt-2">
-                            <div className="w-5 h-5 rounded-full bg-muted flex items-center justify-center text-[10px] font-bold text-muted-foreground uppercase">
+                            <div className="w-5 h-5 rounded-full bg-surface.elevated border border-edge flex items-center justify-center text-[10px] font-bold text-alabaster uppercase">
                                 {job.clientName?.[0]}
                             </div>
-                            <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">{job.clientName}</p>
+                            <p className="text-[11px] font-medium text-mist uppercase tracking-wider">{job.clientName}</p>
                         </div>
                     </div>
 
@@ -75,23 +75,23 @@ export function JobCard({ job }: JobCardProps) {
                 </div>
 
                 {/* Description */}
-                <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed font-light">
+                <p className="text-sm text-mist line-clamp-2 leading-relaxed font-light">
                     {job.description}
                 </p>
 
                 {/* Meta row */}
-                <div className="grid grid-cols-2 gap-4 pb-4 border-b border-border/40">
+                <div className="grid grid-cols-2 gap-4 pb-4 border-b border-edge">
                     <div className="space-y-1">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-60">Budget</p>
-                        <span className="flex items-center gap-1 font-bold text-lg text-foreground">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-mist/60">Budget</p>
+                        <span className="flex items-center gap-1 font-mono font-medium text-lg text-alabaster">
                             ${job.budget.toLocaleString()}
-                            <span className="text-muted-foreground font-normal text-xs">{job.currency}</span>
+                            <span className="text-mist font-normal text-xs">{job.currency}</span>
                         </span>
                     </div>
                     <div className="space-y-1 text-right">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-60">Deadline</p>
-                        <span className={cn("inline-flex items-center gap-1 text-sm font-bold",
-                            isNearDeadline ? "text-amber-500" : isExpired ? "text-muted-foreground/30 line-through" : "text-foreground"
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-mist/60">Deadline</p>
+                        <span className={cn("inline-flex items-center gap-1 text-sm font-medium",
+                            isNearDeadline ? "text-ochre" : isExpired ? "text-mist/40 line-through" : "text-alabaster"
                         )}>
                             <Clock className="h-3.5 w-3.5" strokeWidth={2} />
                             {daysLeft}
@@ -102,20 +102,20 @@ export function JobCard({ job }: JobCardProps) {
                 {/* Footer: applicants + Apply button */}
                 <div className="flex items-center justify-between">
                     <div className="flex flex-col gap-0.5">
-                        <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                        <span className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-widest text-mist">
                             <Users className="h-3.5 w-3.5" strokeWidth={2} />
                             {job.applicantCount} {job.applicantCount === 1 ? 'Applicant' : 'Applicants'}
                         </span>
-                        <span className="text-[10px] text-muted-foreground/60">{timeAgo(job.createdAt)}</span>
+                        <span className="text-[10px] font-mono text-mist/60">{timeAgo(job.createdAt)}</span>
                     </div>
 
                     <Link
                         to={`/jobs/${job.id}`}
                         className={cn(
-                            "inline-flex items-center gap-2 text-xs font-bold px-5 py-2.5 rounded-xl transition-all duration-300",
+                            "inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-xl transition-all duration-200",
                             job.status === 'open'
-                                ? "bg-foreground text-background hover:bg-[#C8A97E] hover:text-white shadow-sm hover:shadow-lg"
-                                : "bg-muted text-muted-foreground cursor-not-allowed pointer-events-none"
+                                ? "bg-ochre text-canvas hover:bg-ochre/90 shadow-sm"
+                                : "bg-surface.elevated text-mist/50 cursor-not-allowed pointer-events-none"
                         )}
                     >
                         {job.status === 'open' ? (

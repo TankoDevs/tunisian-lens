@@ -86,7 +86,7 @@ export function ArtistProfile() {
     const uniqueCinematicImgs = [...new Set(allCinematicImgs)];
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen bg-canvas text-alabaster">
             {/* ── Cinematic Viewer ── */}
             <AnimatePresence>
                 {cinematicOpen && uniqueCinematicImgs.length > 0 && (
@@ -108,10 +108,10 @@ export function ArtistProfile() {
                             initial={{ opacity: 0, scale: 0.95, y: -10 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                            className="fixed top-24 right-6 md:right-1/2 md:translate-x-[400px] z-[70] w-56 bg-card border border-border rounded-2xl shadow-2xl p-2 overflow-hidden"
+                            className="fixed top-24 right-6 md:right-1/2 md:translate-x-[400px] z-[70] w-60 bg-surface.elevated border border-edge rounded-2xl shadow-2xl p-2 overflow-hidden divide-y divide-edge/60"
                         >
-                            <div className="p-3 border-b border-border/50 mb-1">
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Share Profile</p>
+                            <div className="p-3 mb-1">
+                                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-ochre">Share Creative Dossier</p>
                             </div>
                             <button
                                 onClick={() => {
@@ -119,30 +119,20 @@ export function ArtistProfile() {
                                     showAlert("Profile link copied to clipboard!", "success");
                                     setShowShareMenu(false);
                                 }}
-                                className="w-full text-left px-3 py-2.5 hover:bg-muted rounded-xl transition-colors flex items-center gap-3 text-sm font-medium"
+                                className="w-full text-left px-3 py-2.5 hover:bg-white/5 rounded-xl transition-colors flex items-center gap-3 text-xs text-alabaster font-medium"
                             >
-                                <div className="p-1.5 bg-primary/10 rounded-lg text-primary"><Zap className="h-4 w-4" /></div>
+                                <div className="p-1.5 bg-ochre/15 rounded-lg text-ochre"><Zap className="h-4 w-4" /></div>
                                 Copy Profile Link
                             </button>
                             <a
-                                href={`https://twitter.com/intent/tweet?text=Check out ${artist.name}'s portfolio on Tunisian Lens!&url=${encodeURIComponent(window.location.href)}`}
+                                href={`https://twitter.com/intent/tweet?text=Check out ${artist.name}'s visual archives on Tunisian Lens!&url=${encodeURIComponent(window.location.href)}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-full text-left px-3 py-2.5 hover:bg-muted rounded-xl transition-colors flex items-center gap-3 text-sm font-medium"
+                                className="w-full text-left px-3 py-2.5 hover:bg-white/5 rounded-xl transition-colors flex items-center gap-3 text-xs text-mist hover:text-alabaster font-medium"
                                 onClick={() => setShowShareMenu(false)}
                             >
-                                <div className="p-1.5 bg-black/5 rounded-lg text-black"><Twitter className="h-4 w-4" /></div>
-                                Share on Twitter
-                            </a>
-                            <a
-                                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="w-full text-left px-3 py-2.5 hover:bg-muted rounded-xl transition-colors flex items-center gap-3 text-sm font-medium"
-                                onClick={() => setShowShareMenu(false)}
-                            >
-                                <div className="p-1.5 bg-[#1877F2]/10 rounded-lg text-[#1877F2]"><span className="font-bold text-xs">f</span></div>
-                                Share on Facebook
+                                <div className="p-1.5 bg-white/5 rounded-lg text-alabaster"><Twitter className="h-4 w-4" /></div>
+                                Share on Twitter / X
                             </a>
                         </motion.div>
                     </>
@@ -150,7 +140,7 @@ export function ArtistProfile() {
             </AnimatePresence>
 
             {/* ── Visual Focus Portfolio ── */}
-            <div className="bg-black/95 py-2 px-2 overflow-hidden">
+            <div className="bg-[#050607] py-2 px-2 overflow-hidden border-b border-edge">
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
                     {allPortfolioImgs.slice(0, 6).map((img: string, i: number) => (
                         <motion.div
@@ -158,21 +148,21 @@ export function ArtistProfile() {
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: i * 0.05 }}
-                            className="relative aspect-[4/5] rounded-xl overflow-hidden group cursor-pointer"
+                            className="relative aspect-[4/5] rounded-xl overflow-hidden group cursor-pointer border border-edge/40"
                             onClick={() => { setCinematicIndex(i); setCinematicOpen(true); }}
                         >
-                            <img src={img} alt={`Portfolio ${i}`} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                            <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <img src={img} alt={`Portfolio ${i}`} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                            <div className="absolute inset-0 bg-canvas/30 opacity-0 group-hover:opacity-100 transition-opacity" />
                         </motion.div>
                     ))}
                     {allPortfolioImgs.length > 6 && (
                         <div
-                            className="relative aspect-[4/5] rounded-xl overflow-hidden group cursor-pointer bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                            className="relative aspect-[4/5] rounded-xl overflow-hidden group cursor-pointer bg-surface border border-edge flex items-center justify-center text-mist hover:text-alabaster transition-colors"
                             onClick={() => { setCinematicIndex(6); setCinematicOpen(true); }}
                         >
                             <div className="text-center">
-                                <p className="font-bold text-xl">+{allPortfolioImgs.length - 6}</p>
-                                <p className="text-[10px] uppercase font-bold tracking-widest">View More</p>
+                                <p className="font-serif text-2xl font-bold text-ochre">+{allPortfolioImgs.length - 6}</p>
+                                <p className="text-[10px] uppercase font-bold tracking-widest text-mist">More Plates</p>
                             </div>
                         </div>
                     )}
@@ -180,7 +170,7 @@ export function ArtistProfile() {
             </div>
 
             {/* ── Professional Header ── */}
-            <div className="border-b border-border bg-card">
+            <div className="border-b border-edge bg-surface">
                 <div className="container mx-auto max-w-6xl px-6 py-12">
                     <div className="flex flex-col md:flex-row items-start gap-10">
                         {/* Left: Identity */}
@@ -190,22 +180,22 @@ export function ArtistProfile() {
                                     src={artist.avatar}
                                     alt={artist.name}
                                     size="lg"
-                                    className="ring-4 ring-offset-4 ring-[#C8A97E] shadow-2xl"
+                                    className="ring-4 ring-offset-4 ring-offset-canvas ring-ochre shadow-2xl"
                                 />
                                 <div className="space-y-2">
                                     <div className="flex items-center gap-3 flex-wrap">
-                                        <h1 className="text-3xl md:text-5xl font-bold tracking-tight">{artist.name}</h1>
+                                        <h1 className="font-serif text-3xl md:text-5xl font-normal text-alabaster tracking-tight">{artist.name}</h1>
                                         {isVerified && <VerificationBadge size={24} />}
                                     </div>
-                                    <div className="flex items-center gap-4 text-muted-foreground">
-                                        <span className="flex items-center gap-1.5 text-sm font-medium">
-                                            <MapPin className="h-4 w-4 text-[#C8A97E]" /> {loc}, {country}
+                                    <div className="flex items-center gap-4 text-mist text-sm">
+                                        <span className="flex items-center gap-1.5 font-medium">
+                                            <MapPin className="h-4 w-4 text-ochre" /> {loc}, {country}
                                         </span>
-                                        <div className="h-4 w-[1px] bg-border" />
+                                        <div className="h-4 w-[1px] bg-edge" />
                                         <div className="flex items-center gap-1">
-                                            <Star className="h-4 w-4 fill-amber-500 text-amber-500" strokeWidth={0} />
-                                            <span className="font-bold text-foreground">{profileRating}</span>
-                                            <span className="text-xs">(12 reviews)</span>
+                                            <Star className="h-4 w-4 fill-ochre text-ochre" strokeWidth={0} />
+                                            <span className="font-semibold text-alabaster">{profileRating}</span>
+                                            <span className="text-xs text-mist">(12 reviews)</span>
                                         </div>
                                     </div>
                                 </div>
@@ -213,34 +203,34 @@ export function ArtistProfile() {
 
                             <div className="flex flex-wrap gap-2">
                                 {(artist.categories || ["Photography"]).map((cat: string) => (
-                                    <span key={cat} className="px-4 py-1.5 rounded-full bg-muted border border-border text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                                    <span key={cat} className="px-3.5 py-1 rounded-full bg-surface.elevated border border-edge text-[10px] font-semibold uppercase tracking-widest text-mist">
                                         {cat}
                                     </span>
                                 ))}
                                 {artist.badgeLevel && <BadgePill level={artist.badgeLevel} size="md" />}
                             </div>
 
-                            <p className="text-muted-foreground leading-relaxed text-lg max-w-2xl">
+                            <p className="text-mist leading-relaxed text-base max-w-2xl font-sans">
                                 {bio}
                             </p>
                         </div>
 
                         <div className="w-full md:w-80 space-y-6">
-                            <div className="bg-muted/30 border border-border rounded-3xl p-6 space-y-6">
+                            <div className="bg-surface.elevated border border-edge rounded-3xl p-6 space-y-6 shadow-2xl">
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-1">
-                                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Jobs Done</p>
-                                        <p className="text-2xl font-bold">{stats?.jobsCompleted || 0}</p>
+                                        <p className="text-[10px] font-semibold uppercase tracking-widest text-mist">Dispatches</p>
+                                        <p className="font-serif text-2xl font-bold text-alabaster">{stats?.jobsCompleted || 0}</p>
                                     </div>
                                     <div className="space-y-1 text-right">
-                                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Success Rate</p>
-                                        <p className="text-2xl font-bold text-sand-500">{stats?.successRate || 100}%</p>
+                                        <p className="text-[10px] font-semibold uppercase tracking-widest text-mist">Success Rate</p>
+                                        <p className="font-serif text-2xl font-bold text-ochre">{stats?.successRate || 100}%</p>
                                     </div>
                                 </div>
-                                <div className="h-[1px] bg-border/50" />
+                                <div className="h-[1px] bg-edge/60" />
                                 <div className="space-y-4">
                                     <Button
-                                        className="w-full h-14 rounded-2xl text-base font-bold gap-3 bg-sand-400 hover:bg-sand-500 text-white shadow-lg shadow-sand-400/20 transition-all border-none"
+                                        className="w-full h-14 rounded-2xl text-sm font-semibold gap-3 bg-ochre hover:bg-ochre-light text-black shadow-lg shadow-ochre/20 transition-all border-none"
                                         onClick={() => {
                                             if (!user) {
                                                 showAlert("Please log in to message creators", "warning");
@@ -257,39 +247,39 @@ export function ArtistProfile() {
                                             showAlert(`Conversation started with ${artist.name}`, "success");
                                         }}
                                     >
-                                        <MessageSquare className="h-5 w-5 fill-white/20" /> Message Creator
+                                        <MessageSquare className="h-5 w-5 fill-black/20" /> Direct Dispatch Inquiry
                                     </Button>
 
                                     <div className="grid grid-cols-2 gap-3">
                                         <Button
                                             variant="outline"
-                                            className="rounded-xl h-12 gap-2 font-semibold border-border hover:bg-muted text-sm"
+                                            className="rounded-xl h-11 gap-2 font-medium border-edge bg-surface text-alabaster hover:border-ochre/40 text-xs"
                                             onClick={() => showAlert("Quote request feature coming soon!", "warning")}
                                         >
                                             Request Quote
                                         </Button>
                                         <Link to={`/hire/${id}`} className="block">
-                                            <Button variant="outline" className="w-full h-12 rounded-xl font-semibold border-border hover:bg-muted text-sm">
-                                                Hire Directly
+                                            <Button variant="outline" className="w-full h-11 rounded-xl font-medium border-edge bg-surface text-alabaster hover:border-ochre/40 text-xs">
+                                                Commission
                                             </Button>
                                         </Link>
                                     </div>
 
-                                    <div className="h-[1px] bg-border/30 my-2" />
+                                    <div className="h-[1px] bg-edge/40 my-2" />
 
                                     <div className="grid grid-cols-2 gap-3">
                                         <Button
                                             variant="ghost"
                                             size="sm"
-                                            className={cn("rounded-xl h-10 gap-2 text-[11px] font-bold uppercase tracking-wider transition-all", isSaved ? "text-amber-500 bg-amber-500/5" : "text-muted-foreground hover:text-foreground")}
+                                            className={cn("rounded-xl h-9 gap-2 text-[10px] font-semibold uppercase tracking-wider transition-all", isSaved ? "text-ochre bg-ochre/10" : "text-mist hover:text-alabaster")}
                                             onClick={() => setIsSaved(!isSaved)}
                                         >
-                                            <Heart className={cn("h-3.5 w-3.5", isSaved && "fill-amber-500")} /> {isSaved ? "Saved" : "Save"}
+                                            <Heart className={cn("h-3.5 w-3.5", isSaved && "fill-ochre")} /> {isSaved ? "Saved" : "Save"}
                                         </Button>
                                         <Button
                                             variant="ghost"
                                             size="sm"
-                                            className="rounded-xl h-10 gap-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground"
+                                            className="rounded-xl h-9 gap-2 text-[10px] font-semibold uppercase tracking-wider text-mist hover:text-alabaster"
                                             onClick={() => setShowShareMenu(true)}
                                         >
                                             <Share className="h-3.5 w-3.5" /> Share
@@ -303,16 +293,16 @@ export function ArtistProfile() {
             </div>
 
             {/* ── Tab Navigation ── */}
-            <div className="border-b border-border sticky top-16 z-20 bg-background/90 backdrop-blur-md">
+            <div className="border-b border-edge sticky top-16 z-20 bg-canvas/90 backdrop-blur-md">
                 <div className="container mx-auto max-w-5xl px-6">
-                    <div className="flex gap-0">
+                    <div className="flex gap-2">
                         {TABS.map(tab => (
                             <button key={tab} onClick={() => setActiveTab(tab)}
-                                className={cn("py-4 px-4 text-sm font-medium border-b-2 transition-all duration-200",
-                                    activeTab === tab ? "border-foreground text-foreground" : "border-transparent text-muted-foreground hover:text-foreground")}>
+                                className={cn("py-4 px-4 text-xs font-semibold uppercase tracking-wider border-b-2 transition-all duration-200",
+                                    activeTab === tab ? "border-ochre text-ochre" : "border-transparent text-mist hover:text-alabaster")}>
                                 {tab}
                                 {tab === "Portfolio" && (allPortfolioImgs.length + artistProjects.length) > 0 && (
-                                    <span className="ml-1.5 text-[10px] bg-muted text-muted-foreground px-1.5 py-0.5 rounded-full">{allPortfolioImgs.length + artistProjects.length}</span>
+                                    <span className="ml-1.5 text-[10px] bg-surface.elevated text-ochre border border-edge px-1.5 py-0.5 rounded-full">{allPortfolioImgs.length + artistProjects.length}</span>
                                 )}
                             </button>
                         ))}
@@ -329,15 +319,15 @@ export function ArtistProfile() {
                         {/* Collections nav */}
                         {collections.length > 0 && (
                             <div>
-                                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sand-500 mb-3">Collections</p>
+                                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ochre mb-3">Curated Series</p>
                                 <div className="flex gap-2 flex-wrap">
                                     <button onClick={() => setActiveCollection(null)}
-                                        className={cn("px-3 py-1.5 text-xs font-medium rounded-full border transition-all", !activeCollection ? "border-foreground bg-foreground text-background" : "border-border text-muted-foreground hover:border-foreground hover:text-foreground")}>
-                                        All Work
+                                        className={cn("px-3.5 py-1.5 text-xs font-semibold rounded-full border transition-all", !activeCollection ? "border-ochre bg-ochre text-black font-semibold" : "border-edge bg-surface text-mist hover:text-alabaster")}>
+                                        All Archives
                                     </button>
                                     {collections.map((col: { id: string; title: string }) => (
                                         <button key={col.id} onClick={() => setActiveCollection(col.id)}
-                                            className={cn("px-3 py-1.5 text-xs font-medium rounded-full border transition-all", activeCollection === col.id ? "border-foreground bg-foreground text-background" : "border-border text-muted-foreground hover:border-foreground hover:text-foreground")}>
+                                            className={cn("px-3.5 py-1.5 text-xs font-semibold rounded-full border transition-all", activeCollection === col.id ? "border-ochre bg-ochre text-black font-semibold" : "border-edge bg-surface text-mist hover:text-alabaster")}>
                                             {col.title}
                                         </button>
                                     ))}
@@ -348,8 +338,8 @@ export function ArtistProfile() {
                         {/* Portfolio grid */}
                         {displayImages.length > 0 && (
                             <div>
-                                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sand-500 mb-5">
-                                    {displayCollection ? displayCollection.title : "Selected Images"}
+                                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ochre mb-5">
+                                    {displayCollection ? displayCollection.title : "Archival Photographic Plates"}
                                 </p>
                                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                                     {displayImages.map((img: string, i: number) => (
@@ -370,10 +360,10 @@ export function ArtistProfile() {
                         {/* Before / After showcase */}
                         {displayBeforeAfter.length > 0 && (
                             <div>
-                                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sand-500 mb-5">Before / After</p>
+                                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ochre mb-5">Color Grading & Film Emulation</p>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                     {displayBeforeAfter.map((pair: { id: string; before: string; after: string; label: string }) => (
-                                        <BeforeAfterSlider key={pair.id} before={pair.before} after={pair.after} label={pair.label} className="aspect-[4/3]" />
+                                        <BeforeAfterSlider key={pair.id} before={pair.before} after={pair.after} label={pair.label} className="aspect-[4/3] rounded-2xl border border-edge" />
                                     ))}
                                 </div>
                             </div>
@@ -382,10 +372,10 @@ export function ArtistProfile() {
                         {/* Style tags */}
                         {styleTags.length > 0 && (
                             <div>
-                                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sand-500 mb-3">Style Tags</p>
+                                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ochre mb-3">Artistic Disciplines</p>
                                 <div className="flex flex-wrap gap-2">
                                     {styleTags.map((tag: string) => (
-                                        <span key={tag} className="text-[11px] font-semibold uppercase tracking-wider px-2.5 py-1 bg-muted border border-border rounded text-muted-foreground">{tag}</span>
+                                        <span key={tag} className="text-[11px] font-semibold uppercase tracking-wider px-3 py-1 bg-surface.elevated border border-edge rounded-lg text-mist">{tag}</span>
                                     ))}
                                 </div>
                             </div>
@@ -394,7 +384,7 @@ export function ArtistProfile() {
                         {/* Projects */}
                         {artistProjects.length > 0 && (
                             <div>
-                                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sand-500 mb-5">Projects</p>
+                                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ochre mb-5">Curated Projects</p>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                     {artistProjects.map(project => (
                                         <ProjectCard key={project.id} {...project}
@@ -454,14 +444,14 @@ export function ArtistProfile() {
                 {activeTab === "About" && (
                     <div className="max-w-2xl space-y-12">
                         <div className="space-y-4">
-                            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sand-500 flex items-center gap-2">
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-ochre flex items-center gap-2">
                                 <Zap className="h-3.5 w-3.5" strokeWidth={1.5} />
                                 Availability Schedule
                             </p>
-                            <div className="bg-muted/10 border border-border/40 rounded-2xl p-6">
+                            <div className="bg-surface border border-edge rounded-2xl p-6 shadow-sm">
                                 <div className="grid grid-cols-7 gap-2">
                                     {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
-                                        <div key={i} className="text-[10px] font-bold text-center text-muted-foreground opacity-50 mb-2">{d}</div>
+                                        <div key={i} className="text-[10px] font-bold text-center text-mist/60 uppercase tracking-widest mb-2">{d}</div>
                                     ))}
                                     {Array.from({ length: 31 }).map((_, i) => {
                                         const isBusy = [5, 6, 12, 13, 20, 26, 27].includes(i + 1);
@@ -469,50 +459,50 @@ export function ArtistProfile() {
                                         return (
                                             <div key={i} className={cn(
                                                 "aspect-square rounded-lg flex items-center justify-center text-[10px] font-semibold transition-all",
-                                                isBusy ? "bg-amber-500/10 text-amber-500 line-through opacity-40" : "bg-emerald-500/10 text-emerald-500",
-                                                isToday && "ring-2 ring-foreground text-foreground bg-foreground/5 shadow-lg"
+                                                isBusy ? "bg-red-500/10 text-red-400 line-through opacity-40" : "bg-emerald-500/10 text-emerald-400",
+                                                isToday && "ring-2 ring-ochre text-alabaster bg-ochre/20 shadow-lg"
                                             )}>
                                                 {i + 1}
                                             </div>
                                         );
                                     })}
                                 </div>
-                                <div className="mt-6 flex items-center justify-center gap-6 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                                <div className="mt-6 flex items-center justify-center gap-6 text-[10px] font-bold uppercase tracking-widest text-mist">
                                     <div className="flex items-center gap-2">
-                                        <div className="w-2.5 h-2.5 rounded bg-emerald-500/20" /> Available
+                                        <div className="w-2.5 h-2.5 rounded bg-emerald-500/30 border border-emerald-500/50" /> Available
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <div className="w-2.5 h-2.5 rounded bg-amber-500/20" /> Booked
+                                        <div className="w-2.5 h-2.5 rounded bg-red-500/30 border border-red-500/50" /> Booked
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <div className="space-y-3">
-                            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sand-500">Bio</p>
-                            <p className="text-muted-foreground leading-relaxed">{bio}</p>
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-ochre">Bio</p>
+                            <p className="text-mist leading-relaxed text-sm">{bio}</p>
                         </div>
 
                         <div className="space-y-3">
-                            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sand-500">Specialities</p>
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-ochre">Specialities</p>
                             <div className="flex flex-wrap gap-2">
                                 {profileCategories.map((cat: string) => (
-                                    <span key={cat} className="text-[11px] font-semibold uppercase tracking-wider px-2.5 py-1 bg-sand-50 text-sand-700 dark:bg-sand-900/20 dark:text-sand-400 rounded">{cat}</span>
+                                    <span key={cat} className="text-[11px] font-semibold uppercase tracking-wider px-3 py-1.5 bg-surface border border-edge text-alabaster/90 rounded-md">{cat}</span>
                                 ))}
                             </div>
                         </div>
 
                         {artist.equipment && artist.equipment.length > 0 && (
-                            <div className="space-y-4 pt-4 border-t border-border/50">
-                                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sand-500 flex items-center gap-2">
+                            <div className="space-y-4 pt-4 border-t border-edge">
+                                <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-ochre flex items-center gap-2">
                                     <Camera className="h-3.5 w-3.5" strokeWidth={1.5} />
                                     Professional Gear
                                 </p>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     {artist.equipment.map((item: string, i: number) => (
-                                        <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-muted/20 border border-border/40">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-sand-400" />
-                                            <span className="text-xs font-medium text-foreground/80">{item}</span>
+                                        <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-surface border border-edge">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-ochre" />
+                                            <span className="text-xs font-mono text-alabaster/80">{item}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -521,33 +511,33 @@ export function ArtistProfile() {
 
                         {languages.length > 0 && (
                             <div className="space-y-3">
-                                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sand-500">Languages</p>
-                                <p className="text-sm text-muted-foreground">{languages.join(", ")}</p>
+                                <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-ochre">Languages</p>
+                                <p className="text-sm text-mist">{languages.join(", ")}</p>
                             </div>
                         )}
 
                         {internationalAvailable && (
-                            <div className="flex items-center gap-3 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/20">
-                                <Globe2 className="h-5 w-5 text-emerald-500 flex-shrink-0" strokeWidth={1.5} />
+                            <div className="flex items-center gap-3.5 p-4 rounded-xl border border-sidi.azure/30 bg-sidi.azure/10">
+                                <Globe2 className="h-5 w-5 text-sidi.azure flex-shrink-0" strokeWidth={1.5} />
                                 <div>
-                                    <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">Available for International Projects</p>
-                                    <p className="text-xs text-emerald-600/70 dark:text-emerald-500/70">This creative is open to projects outside Tunisia.</p>
+                                    <p className="text-sm font-semibold text-alabaster">Available for International Projects</p>
+                                    <p className="text-xs text-mist">This creative is open to commissioned assignments outside Tunisia.</p>
                                 </div>
                             </div>
                         )}
 
                         {isVerified && (
-                            <div className="flex items-center gap-3 p-4 rounded-xl border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/20">
-                                <ShieldCheck className="h-4 w-4 text-green-600 dark:text-green-400 flex-shrink-0" strokeWidth={1.5} />
+                            <div className="flex items-center gap-3.5 p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10">
+                                <ShieldCheck className="h-4 w-4 text-emerald-400 flex-shrink-0" strokeWidth={1.5} />
                                 <div>
-                                    <p className="text-sm font-semibold text-green-700 dark:text-green-400">Verified Creative</p>
-                                    <p className="text-xs text-green-600/70">Reviewed and verified by the Tunisian Lens team.</p>
+                                    <p className="text-sm font-semibold text-alabaster">Verified Creative</p>
+                                    <p className="text-xs text-mist">Identity and portfolio verified by the Tunisian Lens Curatorial Board.</p>
                                 </div>
                             </div>
                         )}
 
                         {isAdmin && (
-                            <Button variant={isVerified ? "outline" : "default"} onClick={toggleVerification} className="gap-2 text-sm">
+                            <Button variant={isVerified ? "outline" : "default"} onClick={toggleVerification} className="gap-2 text-sm border-edge text-alabaster">
                                 <ShieldCheck className="h-4 w-4" strokeWidth={1.5} />
                                 {isVerified ? "Remove Verification" : "Verify This Creative"}
                             </Button>
@@ -566,7 +556,7 @@ export function ArtistProfile() {
                     >
                         <Button
                             size="lg"
-                            className="flex-1 shadow-2xl h-14 text-base font-bold rounded-2xl gap-3 bg-sand-400 text-white border-none"
+                            className="flex-1 shadow-2xl h-14 text-sm font-semibold rounded-2xl gap-3 bg-ochre hover:bg-ochre/90 text-canvas border-none"
                             onClick={() => {
                                 if (!user) {
                                     showAlert("Please log in to message creators", "warning");
@@ -583,15 +573,15 @@ export function ArtistProfile() {
                                 showAlert(`Conversation started with ${artist.name}`, "success");
                             }}
                         >
-                            <MessageSquare className="h-5 w-5 fill-white/20" /> Message
+                            <MessageSquare className="h-5 w-5 fill-canvas/20" /> Message
                         </Button>
                         <Link to={`/hire/${id}`} className="flex-1">
                             <Button
                                 size="lg"
                                 variant="outline"
-                                className="w-full shadow-2xl h-14 text-base font-bold rounded-2xl bg-background/80 backdrop-blur-md"
+                                className="w-full shadow-2xl h-14 text-sm font-semibold rounded-2xl bg-surface/90 border-edge text-alabaster backdrop-blur-md hover:bg-surface.elevated"
                             >
-                                Hire
+                                Commission
                             </Button>
                         </Link>
                     </motion.div>

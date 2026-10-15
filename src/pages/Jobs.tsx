@@ -102,16 +102,16 @@ export function Jobs() {
     }, []);
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen bg-canvas text-alabaster">
             {/* ── Header ── */}
-            <div className="border-b border-border bg-background">
-                <div className="container mx-auto section-padding section-spacing-sm">
+            <div className="border-b border-edge bg-surface/40 backdrop-blur-md">
+                <div className="container mx-auto section-padding py-12 md:py-16">
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                         <div>
-                            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[hsl(var(--accent))] mb-2">Marketplace</p>
-                            <h1 className="font-sans text-3xl md:text-5xl font-bold tracking-tight mb-2">Find Jobs</h1>
-                            <p className="text-muted-foreground max-w-xl text-sm">
-                                Browse photography &amp; videography jobs. Apply with Connects.
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-ochre mb-2">Tunisian Creative Exchange</p>
+                            <h1 className="font-serif text-3xl md:text-5xl font-normal tracking-tight text-alabaster mb-2">Commission &amp; Editorial Assignments</h1>
+                            <p className="text-mist max-w-xl text-sm leading-relaxed">
+                                Curated production calls, documentary commissions, and architectural photography briefs across Tunisia.
                             </p>
                         </div>
                         <div className="flex items-center gap-3 flex-shrink-0">
@@ -120,17 +120,17 @@ export function Jobs() {
                             )}
                             {(user?.role === 'client' || user?.role === 'admin') && (
                                 <Link to="/jobs/post">
-                                    <Button className="gap-2">
+                                    <Button className="gap-2 bg-ochre hover:bg-ochre/90 text-canvas font-semibold border-none">
                                         <PlusCircle className="h-4 w-4" strokeWidth={1.5} />
-                                        Post a Job
+                                        Post an Assignment
                                     </Button>
                                 </Link>
                             )}
                             {!isAuthenticated && (
                                 <Link to="/signup">
-                                    <Button variant="outline" className="gap-2">
+                                    <Button variant="outline" className="gap-2 border-edge text-alabaster hover:bg-surface.elevated">
                                         <PlusCircle className="h-4 w-4" strokeWidth={1.5} />
-                                        Post a Job
+                                        Post an Assignment
                                     </Button>
                                 </Link>
                             )}
@@ -139,21 +139,21 @@ export function Jobs() {
                 </div>
             </div>
 
-            <div className="container mx-auto section-padding py-12">
+            <div className="container mx-auto section-padding py-10 md:py-14">
                 {/* ── Search + Filter Row ── */}
                 <div className="flex flex-col sm:flex-row gap-3 mb-6">
                     {/* Search */}
                     <div className="relative flex-1">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-mist/60" strokeWidth={1.5} />
                         <input
                             type="text"
-                            placeholder="Search jobs, locations…"
+                            placeholder="Search briefs, regions, publications…"
                             value={search}
                             onChange={e => setSearch(e.target.value)}
-                            className="w-full pl-11 pr-4 h-11 rounded-xl border border-border bg-card text-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[hsl(var(--accent))/50] placeholder:text-muted-foreground/60"
+                            className="w-full pl-11 pr-4 h-11 rounded-xl border border-edge bg-surface text-sm text-alabaster transition-all duration-200 focus:outline-none focus:border-ochre/70 placeholder:text-mist/40"
                         />
                         {search && (
-                            <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
+                            <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-mist hover:text-alabaster transition-colors">
                                 <X className="h-4 w-4" />
                             </button>
                         )}
@@ -163,11 +163,11 @@ export function Jobs() {
                     <div className="relative" ref={sortRef}>
                         <Button
                             variant="outline"
-                            className="gap-2 h-11 rounded-xl px-4 flex-shrink-0"
+                            className="gap-2 h-11 rounded-xl px-4 flex-shrink-0 bg-surface border-edge text-alabaster hover:bg-surface.elevated"
                             onClick={() => setShowSortMenu(v => !v)}
                         >
-                            <ArrowUpDown className="h-4 w-4" strokeWidth={1.5} />
-                            <span className="hidden sm:inline">{currentSortLabel}</span>
+                            <ArrowUpDown className="h-4 w-4 text-mist" strokeWidth={1.5} />
+                            <span className="hidden sm:inline text-xs font-medium">{currentSortLabel}</span>
                         </Button>
                         <AnimatePresence>
                             {showSortMenu && (
@@ -176,19 +176,19 @@ export function Jobs() {
                                     animate={{ opacity: 1, scale: 1, y: 0 }}
                                     exit={{ opacity: 0, scale: 0.95, y: -4 }}
                                     transition={{ duration: 0.1 }}
-                                    className="absolute right-0 top-full mt-2 w-48 bg-card border border-border rounded-xl shadow-xl z-50 py-1 overflow-hidden"
+                                    className="absolute right-0 top-full mt-2 w-48 bg-surface.elevated border border-edge rounded-xl shadow-2xl z-50 py-1 overflow-hidden"
                                 >
                                     {SORT_OPTIONS.map(opt => (
                                         <button
                                             key={opt.value}
                                             onClick={() => { setSortBy(opt.value); setShowSortMenu(false); }}
                                             className={cn(
-                                                "w-full text-left px-4 py-2.5 text-sm hover:bg-muted transition-colors flex items-center justify-between",
-                                                sortBy === opt.value ? "font-semibold text-[hsl(var(--accent))]" : "text-muted-foreground"
+                                                "w-full text-left px-4 py-2.5 text-xs hover:bg-surface transition-colors flex items-center justify-between",
+                                                sortBy === opt.value ? "font-semibold text-ochre" : "text-mist"
                                             )}
                                         >
                                             {opt.label}
-                                            {sortBy === opt.value && <div className="h-1.5 w-1.5 rounded-full bg-[hsl(var(--accent))]" />}
+                                            {sortBy === opt.value && <div className="h-1.5 w-1.5 rounded-full bg-ochre" />}
                                         </button>
                                     ))}
                                 </motion.div>
@@ -199,13 +199,13 @@ export function Jobs() {
                     {/* Filter toggle button */}
                     <Button
                         variant="outline"
-                        className={cn("gap-2 h-11 rounded-xl px-5 flex-shrink-0", activeFilterCount > 0 && "border-[hsl(var(--accent))] text-[hsl(var(--accent))]")}
+                        className={cn("gap-2 h-11 rounded-xl px-5 flex-shrink-0 bg-surface border-edge text-alabaster hover:bg-surface.elevated", activeFilterCount > 0 && "border-ochre text-ochre")}
                         onClick={() => setShowFilters(v => !v)}
                     >
                         <SlidersHorizontal className="h-4 w-4" strokeWidth={1.5} />
-                        Filters
+                        <span className="text-xs font-medium">Filters</span>
                         {activeFilterCount > 0 && (
-                            <span className="bg-[hsl(var(--accent))] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold">
+                            <span className="bg-ochre text-canvas rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold">
                                 {activeFilterCount}
                             </span>
                         )}
@@ -222,46 +222,46 @@ export function Jobs() {
                             transition={{ duration: 0.22 }}
                             className="overflow-hidden mb-6"
                         >
-                            <div className="p-5 border border-border rounded-xl bg-card space-y-5">
+                            <div className="p-5 border border-edge rounded-2xl bg-surface space-y-5">
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                                     {/* Location */}
                                     <div className="space-y-2">
-                                        <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Location</label>
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-mist">Governorate / Region</label>
                                         <select
                                             value={location}
                                             onChange={e => setLocation(e.target.value)}
-                                            className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))/50] text-muted-foreground cursor-pointer"
+                                            className="w-full h-10 px-3 rounded-lg border border-edge bg-surface.elevated text-xs text-alabaster focus:outline-none focus:border-ochre cursor-pointer"
                                         >
-                                            <option value="">Any Location</option>
+                                            <option value="">All Regions</option>
                                             {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
                                         </select>
                                     </div>
 
                                     {/* Max Budget */}
                                     <div className="space-y-2">
-                                        <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Max Budget (USD)</label>
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-mist">Max Budget (USD)</label>
                                         <input
                                             type="number"
                                             placeholder="e.g. 1000"
                                             value={maxBudget}
                                             onChange={e => setMaxBudget(e.target.value)}
-                                            className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))/50] placeholder:text-muted-foreground/60"
+                                            className="w-full h-10 px-3 rounded-lg border border-edge bg-surface.elevated text-xs text-alabaster focus:outline-none focus:border-ochre placeholder:text-mist/40"
                                         />
                                     </div>
 
                                     {/* Deadline */}
                                     <div className="space-y-2">
-                                        <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Deadline</label>
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-mist">Deadline Horizon</label>
                                         <div className="flex flex-wrap gap-1.5">
                                             {DEADLINE_OPTIONS.map(opt => (
                                                 <button
                                                     key={opt.value}
                                                     onClick={() => setDeadlineDays(opt.value)}
                                                     className={cn(
-                                                        "text-xs px-2.5 py-1 rounded-lg border transition-all duration-200",
+                                                        "text-[11px] px-3 py-1.5 rounded-lg border transition-all duration-200",
                                                         deadlineDays === opt.value
-                                                            ? "bg-foreground text-background border-foreground"
-                                                            : "border-border hover:bg-muted"
+                                                            ? "bg-ochre text-canvas border-ochre font-semibold"
+                                                            : "bg-surface.elevated border-edge text-mist hover:text-alabaster"
                                                     )}
                                                 >
                                                     {opt.label}
@@ -272,34 +272,34 @@ export function Jobs() {
 
                                     {/* Max Connects + Open only */}
                                     <div className="space-y-2">
-                                        <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Max Connects</label>
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-mist">Max Connects Required</label>
                                         <input
                                             type="number"
                                             placeholder="e.g. 4"
                                             value={maxConnects}
                                             onChange={e => setMaxConnects(e.target.value)}
-                                            className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-1 focus:ring-[hsl(var(--accent))/50] placeholder:text-muted-foreground/60"
+                                            className="w-full h-10 px-3 rounded-lg border border-edge bg-surface.elevated text-xs text-alabaster focus:outline-none focus:border-ochre placeholder:text-mist/40"
                                         />
-                                        <label className="flex items-center gap-2 text-sm cursor-pointer select-none mt-2">
+                                        <label className="flex items-center gap-2 text-xs cursor-pointer select-none mt-2 text-mist">
                                             <input
                                                 type="checkbox"
                                                 checked={showOpen}
                                                 onChange={e => setShowOpen(e.target.checked)}
-                                                className="w-4 h-4 rounded accent-[hsl(var(--accent))]"
+                                                className="w-4 h-4 rounded accent-ochre"
                                             />
-                                            <span className="text-xs font-medium">Open jobs only</span>
+                                            <span className="text-xs">Active briefs only</span>
                                         </label>
                                     </div>
                                 </div>
 
                                 {activeFilterCount > 0 && (
-                                    <div className="pt-3 border-t border-border">
+                                    <div className="pt-3 border-t border-edge">
                                         <button
                                             onClick={clearFilters}
-                                            className="flex items-center gap-1.5 text-xs text-[hsl(var(--accent))] hover:opacity-80 transition-opacity font-medium"
+                                            className="flex items-center gap-1.5 text-xs text-ochre hover:opacity-80 transition-opacity font-medium"
                                         >
                                             <X className="h-3.5 w-3.5" />
-                                            Clear all filters
+                                            Reset filters
                                         </button>
                                     </div>
                                 )}
@@ -315,10 +315,10 @@ export function Jobs() {
                             key={cat}
                             onClick={() => setSelectedCategory(cat)}
                             className={cn(
-                                "flex-shrink-0 px-4 py-2 rounded-full text-xs font-medium transition-all duration-200 border",
+                                "flex-shrink-0 px-4 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all duration-200 border",
                                 selectedCategory === cat
-                                    ? 'bg-foreground text-background border-foreground'
-                                    : 'bg-card border-border text-muted-foreground hover:text-foreground hover:bg-muted'
+                                    ? 'bg-ochre text-canvas border-ochre shadow-sm'
+                                    : 'bg-surface border-edge text-mist hover:text-alabaster hover:border-ochre/40'
                             )}
                         >
                             {cat}
@@ -328,11 +328,11 @@ export function Jobs() {
 
                 {/* ── Results count ── */}
                 <div className="flex items-center justify-between mb-6">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider">
-                        <span className="font-semibold text-foreground text-sm">{sortedJobs.length}</span>
-                        {' '}job{sortedJobs.length !== 1 ? 's' : ''} found
+                    <p className="text-xs text-mist uppercase tracking-widest">
+                        <span className="font-mono font-medium text-alabaster text-sm">{sortedJobs.length}</span>
+                        {' '}brief{sortedJobs.length !== 1 ? 's' : ''} available
                         {sortedJobs.filter(j => j.isUrgent).length > 0 && (
-                            <span className="ml-3 text-red-500 font-semibold">
+                            <span className="ml-3 text-red-400 font-semibold">
                                 · {sortedJobs.filter(j => j.isUrgent).length} urgent
                             </span>
                         )}
@@ -344,20 +344,20 @@ export function Jobs() {
                     <motion.div
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="mb-8 p-4 bg-muted/30 border border-border rounded-xl flex flex-col sm:flex-row items-center justify-between gap-4"
+                        className="mb-8 p-4 bg-surface border border-edge rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4"
                     >
                         <div className="flex items-start gap-3">
-                            <Lock className="h-5 w-5 text-muted-foreground mt-0.5" strokeWidth={1.5} />
+                            <Lock className="h-5 w-5 text-ochre mt-0.5 flex-shrink-0" strokeWidth={1.5} />
                             <div>
-                                <p className="text-sm font-semibold">Viewing as Guest / Non-Resident</p>
-                                <p className="text-xs text-muted-foreground mt-1">
-                                    You can browse the job board, but <strong>applying to jobs</strong> is restricted to verified Tunisian residents.
+                                <p className="text-sm font-semibold text-alabaster">Viewing as Guest / International Observer</p>
+                                <p className="text-xs text-mist mt-1">
+                                    You can browse the assignment board freely. Submitting production proposals is reserved for verified photographers and production crews.
                                 </p>
                             </div>
                         </div>
                         {!isAuthenticated && (
                             <Link to="/signup">
-                                <Button variant="outline" size="sm">Create Account</Button>
+                                <Button variant="outline" size="sm" className="border-edge text-alabaster hover:bg-surface.elevated">Register Creator Profile</Button>
                             </Link>
                         )}
                     </motion.div>
@@ -366,30 +366,30 @@ export function Jobs() {
                 {/* ── Job Grid ── */}
                 {isLoading ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                        {Array.from({ length: 9 }).map((_, i) => (
-                            <div key={i} className="border border-border rounded-xl p-5 bg-card space-y-4">
+                        {Array.from({ length: 6 }).map((_, i) => (
+                            <div key={i} className="border border-edge rounded-2xl p-6 bg-surface space-y-4">
                                 <div className="flex justify-between gap-4">
-                                    <Skeleton className="h-4 w-20 rounded-full" />
-                                    <Skeleton className="h-6 w-12 rounded-full" />
+                                    <Skeleton className="h-4 w-20 rounded-md" />
+                                    <Skeleton className="h-6 w-12 rounded-md" />
                                 </div>
                                 <Skeleton className="h-5 w-3/4" />
                                 <Skeleton className="h-4 w-full" />
                                 <Skeleton className="h-4 w-4/5" />
-                                <div className="pt-3 border-t border-border flex justify-between items-center">
+                                <div className="pt-3 border-t border-edge flex justify-between items-center">
                                     <Skeleton className="h-5 w-20" />
-                                    <Skeleton className="h-8 w-20 rounded-lg" />
+                                    <Skeleton className="h-8 w-20 rounded-xl" />
                                 </div>
                             </div>
                         ))}
                     </div>
                 ) : sortedJobs.length === 0 ? (
-                    <div className="text-center py-32 text-muted-foreground">
-                        <Briefcase className="h-10 w-10 mx-auto mb-4 opacity-20" strokeWidth={1.2} />
-                        <p className="text-lg font-semibold mb-1">No jobs match your filters</p>
-                        <p className="text-sm">Try adjusting the category or search term</p>
+                    <div className="text-center py-32 text-mist">
+                        <Briefcase className="h-10 w-10 mx-auto mb-4 opacity-30 text-ochre" strokeWidth={1.2} />
+                        <p className="font-serif text-lg font-normal text-alabaster mb-1">No assignments match your criteria</p>
+                        <p className="text-sm text-mist">Try adjusting the discipline or location filter</p>
                         {activeFilterCount > 0 && (
-                            <button onClick={clearFilters} className="mt-4 text-xs text-[hsl(var(--accent))] underline underline-offset-2">
-                                Clear all filters
+                            <button onClick={clearFilters} className="mt-4 text-xs text-ochre underline underline-offset-4">
+                                Reset active filters
                             </button>
                         )}
                     </div>

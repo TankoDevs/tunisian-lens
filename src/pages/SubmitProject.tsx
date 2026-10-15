@@ -1,12 +1,9 @@
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
 import { Upload, X, Lock, Unlock, ShieldAlert, CheckCircle2, AlertCircle, Download, Sparkles, Camera, MapPin, Compass } from "lucide-react";
 import { useState, useEffect } from "react";
 import { CATEGORIES } from "../data/mockData";
 import { cn } from "../lib/utils";
 import { useProjects } from "../context/ProjectContext";
 import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import { useAlert } from "../context/AlertContext";
 import { Captcha } from "../components/ui/Captcha";
@@ -73,15 +70,13 @@ export function SubmitProject() {
     const togglePrivate = (checked: boolean) => {
         setIsPrivate(checked);
         if (checked) {
-            setIsDownloadable(true); // Private work is automatically downloadable
+            setIsDownloadable(true);
             if (!generatedCode) {
-                // Generate a random 6-char code
-                const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // No I, 1, O, 0 for clarity
+                const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
                 let result = '';
                 for (let i = 0; i < 6; i++) {
                     result += chars.charAt(Math.floor(Math.random() * chars.length));
                 }
-                // Add hyphen for readability: ABC-DEF
                 const formatted = result.slice(0, 3) + '-' + result.slice(3);
                 setGeneratedCode(formatted);
             }
@@ -95,10 +90,9 @@ export function SubmitProject() {
         setSafetyResult(null);
         setLowConfidence(false);
 
-        // Simulation interval for UI beauty while API works
         const interval = setInterval(() => {
             setScanProgress(prev => {
-                if (prev >= 90) return 90; // Hold at 90 until API returns
+                if (prev >= 90) return 90;
                 return prev + 2;
             });
         }, 100);
@@ -126,7 +120,6 @@ export function SubmitProject() {
                 setScanResult('safe');
                 setSafetyResult('safe');
 
-                // Still keep the low confidence hint for generic names for extra transparency
                 const genericPatterns = ['untitled', 'image', 'photo', 'download', 'img_', 'dsc', 'asset', 'screenshot'];
                 if (genericPatterns.some(p => file.name.toLowerCase().includes(p))) {
                     setLowConfidence(true);
@@ -178,7 +171,6 @@ export function SubmitProject() {
             const meta = await detectImageMetadata(file);
             setDetectedExif(meta);
             if (meta.camera || meta.lens) {
-                // Verified real optical hardware capture
                 setScanResult('safe');
                 setSafetyResult('safe');
             }
@@ -188,7 +180,6 @@ export function SubmitProject() {
             setIsExtractingExif(false);
         }
 
-        // Trigger AI & Safety Scan
         runPixelAnalysis(file);
     };
 
@@ -240,7 +231,6 @@ export function SubmitProject() {
         try {
             let imageUrl = selectedImage!;
 
-            // Secure Supabase Storage & Cloudflare Pages Function Detection Pipeline
             if (imageFile) {
                 try {
                     const uploadResult = await uploadCulturalPhoto({
@@ -256,7 +246,6 @@ export function SubmitProject() {
                     imageUrl = uploadResult.imageUrl;
                 } catch (uploadError: any) {
                     console.warn("Storage upload notice:", uploadError);
-                    // Cloudinary or preview fallback
                     try {
                         const fallbackUrl = await uploadImage(imageFile);
                         imageUrl = fallbackUrl;
@@ -292,25 +281,31 @@ export function SubmitProject() {
     };
 
     return (
-        <div className="container mx-auto px-4 py-12 max-w-2xl bg-background min-h-screen relative">
-            <div className="space-y-6">
-                <div className="space-y-2">
-                    <h1 className="text-3xl font-sans font-bold">Upload Project</h1>
-                    <p className="text-muted-foreground">Share your visual story with the community.</p>
+        <div className="min-h-screen bg-canvas text-alabaster py-12 md:py-20">
+            <div className="container mx-auto px-6 max-w-3xl space-y-8">
+                {/* Header */}
+                <div className="space-y-3">
+                    <span className="text-xs font-mono uppercase tracking-[0.2em] text-ochre">Archival Studio</span>
+                    <h1 className="text-3xl md:text-5xl font-serif text-alabaster tracking-tight">Upload Cultural Series</h1>
+                    <p className="text-sm md:text-base text-mist font-light">
+                        Contribute human-captured photography or cinematography to the national Tunisian archive.
+                    </p>
                 </div>
 
                 <form className="space-y-8" onSubmit={handleSubmit} noValidate>
 
                     {/* Image Upload Area */}
-                    <div className="space-y-4">
-                        <label className="text-sm font-medium">Project Image</label>
+                    <div className="space-y-3">
+                        <label className="text-xs font-mono uppercase tracking-wider text-mist">
+                            Master Image Asset <span className="text-ochre">*</span>
+                        </label>
                         <div
                             className={cn(
-                                "group relative flex flex-col items-center justify-center w-full min-h-[300px] border-2 border-dashed rounded-xl cursor-pointer transition-all duration-300 ease-in-out overflow-hidden touch-none",
+                                "group relative flex flex-col items-center justify-center w-full min-h-[320px] border-2 border-dashed rounded-2xl cursor-pointer transition-all duration-300 ease-in-out overflow-hidden",
                                 dragActive
-                                    ? "border-primary bg-primary/5 scale-[0.99]"
-                                    : "border-muted-foreground/20 hover:border-primary/50 hover:bg-muted/30",
-                                selectedImage && "border-none p-0"
+                                    ? "border-ochre bg-ochre/5"
+                                    : "border-edge bg-surface hover:border-ochre/50 hover:bg-surface-elevated",
+                                selectedImage && "border-none p-0 bg-transparent"
                             )}
                             onDragEnter={handleDrag}
                             onDragLeave={handleDrag}
@@ -318,115 +313,103 @@ export function SubmitProject() {
                             onDrop={handleDrop}
                         >
                             {selectedImage ? (
-                                <div className="relative w-full h-full min-h-[300px] overflow-hidden rounded-xl">
+                                <div className="relative w-full h-full min-h-[360px] overflow-hidden rounded-2xl border border-edge bg-canvas">
                                     <img src={selectedImage} alt="Preview" className="absolute inset-0 w-full h-full object-cover" />
 
                                     {/* AI & SAFETY SCANNING OVERLAY */}
                                     {isScanning && (
-                                        <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-10 backdrop-blur-sm">
+                                        <div className="absolute inset-0 bg-canvas/80 flex flex-col items-center justify-center z-10 backdrop-blur-md">
                                             <div className="w-64 space-y-4">
-                                                <div className="flex items-center justify-between text-white text-sm font-medium">
-                                                    <span>Safety & AI Scan...</span>
+                                                <div className="flex items-center justify-between text-alabaster text-xs font-mono uppercase tracking-wider">
+                                                    <span>Optical & AI Scan...</span>
                                                     <span>{scanProgress}%</span>
                                                 </div>
-                                                <div className="h-1 w-full bg-white/20 rounded-full overflow-hidden">
+                                                <div className="h-1.5 w-full bg-edge rounded-full overflow-hidden">
                                                     <div
-                                                        className="h-full bg-primary transition-all duration-100 ease-linear"
-                                                        style={{ width: `${scanProgress}% ` }}
+                                                        className="h-full bg-ochre transition-all duration-100 ease-linear"
+                                                        style={{ width: `${scanProgress}%` }}
                                                     />
                                                 </div>
-                                                <p className="text-xs text-white/70 text-center animate-pulse">
-                                                    Checking for content safety violations...
+                                                <p className="text-[11px] text-mist text-center animate-pulse font-mono">
+                                                    Verifying human capture & content integrity...
                                                 </p>
                                             </div>
-                                            {/* Scanning Line Animation */}
-                                            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/20 to-transparent w-full h-[50%] animate-scan" />
                                         </div>
                                     )}
 
                                     {/* SAFETY VIOLATION WARNING */}
                                     {safetyResult === 'unsafe' && (
-                                        <div className="absolute inset-0 bg-red-950/90 flex flex-col items-center justify-center z-30 backdrop-blur-md p-6 text-center animate-in fade-in zoom-in duration-300">
-                                            <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mb-4 border border-red-500/30">
-                                                <AlertCircle className="w-8 h-8 text-red-500" strokeWidth={2} />
+                                        <div className="absolute inset-0 bg-rose-950/90 flex flex-col items-center justify-center z-30 backdrop-blur-md p-6 text-center animate-in fade-in zoom-in duration-300">
+                                            <div className="w-16 h-16 bg-rose-500/20 rounded-full flex items-center justify-center mb-4 border border-rose-500/30">
+                                                <AlertCircle className="w-8 h-8 text-rose-500" strokeWidth={2} />
                                             </div>
-                                            <h3 className="text-xl font-bold text-white mb-2">Inappropriate Content</h3>
-                                            <p className="text-red-100 text-sm mb-6 max-w-sm">
-                                                This image has been flagged for violating our community safety standards (18+, offensive, or harmful content).
-                                                <br /><br />
-                                                <strong>We maintain a safe and respectful environment for all.</strong>
+                                            <h3 className="text-xl font-serif text-white mb-2">Inappropriate Content</h3>
+                                            <p className="text-rose-200 text-xs mb-6 max-w-sm font-light">
+                                                This frame violated our community safety standards. Tunisian Lens maintains an authentic, respectful national archive.
                                             </p>
-                                            <Button
-                                                variant="destructive"
+                                            <button
+                                                type="button"
+                                                className="px-4 py-2 rounded-full bg-rose-600 text-white text-xs font-mono uppercase tracking-wider"
                                                 onClick={(e) => { e.stopPropagation(); setSelectedImage(null); setSafetyResult(null); }}
                                             >
-                                                Remove & Upload Safe Image
-                                            </Button>
+                                                Remove Asset
+                                            </button>
                                         </div>
                                     )}
 
                                     {/* AI DETECTED WARNING */}
                                     {scanResult === 'ai-detected' && safetyResult !== 'unsafe' && (
-                                        <div className="absolute inset-0 bg-red-950/80 flex flex-col items-center justify-center z-20 backdrop-blur-md p-6 text-center animate-in fade-in zoom-in duration-300">
-                                            <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mb-4">
-                                                <ShieldAlert className="w-8 h-8 text-red-500" strokeWidth={2} />
+                                        <div className="absolute inset-0 bg-rose-950/80 flex flex-col items-center justify-center z-20 backdrop-blur-md p-6 text-center animate-in fade-in zoom-in duration-300">
+                                            <div className="w-16 h-16 bg-rose-500/20 rounded-full flex items-center justify-center mb-4">
+                                                <ShieldAlert className="w-8 h-8 text-rose-500" strokeWidth={2} />
                                             </div>
-                                            <h3 className="text-xl font-bold text-white mb-2">AI Content Detected</h3>
-                                            <p className="text-red-100 text-sm mb-6 max-w-sm">
-                                                Our systems have detected distinctive patterns associated with generative AI.
-                                                <br /><br />
-                                                <strong>Tunisian Lens is a platform for human artists only.</strong>
+                                            <h3 className="text-xl font-serif text-white mb-2">Synthetic Pattern Detected</h3>
+                                            <p className="text-rose-200 text-xs mb-6 max-w-sm font-light">
+                                                Our verification engine identified algorithmic diffusion characteristics. Tunisian Lens is exclusively reserved for human artists.
                                             </p>
-                                            <Button
-                                                variant="destructive"
+                                            <button
+                                                type="button"
+                                                className="px-4 py-2 rounded-full bg-rose-600 text-white text-xs font-mono uppercase tracking-wider"
                                                 onClick={(e) => { e.stopPropagation(); setSelectedImage(null); setScanResult(null); }}
                                             >
-                                                Remove & Upload Original
-                                            </Button>
+                                                Remove AI File
+                                            </button>
                                         </div>
                                     )}
 
                                     {/* VERIFIED BADGE */}
                                     {scanResult === 'safe' && safetyResult === 'safe' && !isScanning && (
-                                        <div className="absolute bottom-4 left-4 bg-green-500/90 text-white text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm z-10 animate-in fade-in slide-in-from-bottom-2">
-                                            <CheckCircle2 className="w-3.5 h-3.5" strokeWidth={2} />
-                                            Metadata Verified: Safe & Human
+                                        <div className="absolute bottom-4 left-4 bg-canvas/90 border border-emerald-500/40 text-emerald-400 text-xs font-mono px-3.5 py-1.5 rounded-full flex items-center gap-2 shadow-lg backdrop-blur-md z-10">
+                                            <CheckCircle2 className="w-4 h-4 text-emerald-400" strokeWidth={2} />
+                                            <span>Certified Human Capture</span>
                                         </div>
                                     )}
 
                                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                                        <p className="text-white font-medium">Click or Drag to Replace</p>
+                                        <p className="text-alabaster font-mono text-xs uppercase tracking-wider">Click or Drag to Replace</p>
                                     </div>
-                                    <Button
+                                    <button
                                         type="button"
-                                        variant="destructive"
-                                        size="icon"
-                                        className="absolute top-4 right-4 h-9 w-9 rounded-full shadow-lg hover:scale-105 transition-transform z-30"
+                                        className="absolute top-4 right-4 h-9 w-9 rounded-full bg-canvas/80 border border-edge hover:bg-canvas text-alabaster transition-all z-30 flex items-center justify-center"
                                         onClick={(e) => { e.stopPropagation(); setSelectedImage(null); setScanResult(null); setSafetyResult(null); setLowConfidence(false); }}
                                     >
-                                        <X className="h-5 w-5" strokeWidth={2} />
-                                    </Button>
+                                        <X className="h-4 w-4" strokeWidth={2} />
+                                    </button>
                                 </div>
                             ) : (
-                                <label htmlFor="image-upload" className="flex flex-col items-center justify-center w-full h-full py-12 px-4 cursor-pointer">
+                                <label htmlFor="image-upload" className="flex flex-col items-center justify-center w-full h-full py-16 px-6 cursor-pointer">
                                     <div className={cn(
-                                        "flex items-center justify-center w-20 h-20 mb-6 rounded-full bg-muted transition-all duration-300 group-hover:scale-110",
-                                        dragActive && "bg-primary/20 scale-110"
+                                        "flex items-center justify-center w-16 h-16 mb-5 rounded-2xl bg-canvas border border-edge text-ochre transition-all duration-300 group-hover:scale-105",
+                                        dragActive && "border-ochre bg-ochre/10 scale-105"
                                     )}>
-                                        <Upload className={cn(
-                                            "w-10 h-10 text-muted-foreground transition-colors",
-                                            dragActive ? "text-primary" : "group-hover:text-foreground"
-                                        )} strokeWidth={2} />
+                                        <Upload className="w-7 h-7" strokeWidth={1.8} />
                                     </div>
                                     <div className="text-center space-y-2">
-                                        <p className="text-lg font-medium">
-                                            <span className="text-primary">Click to upload</span> or drag and drop
+                                        <p className="text-base font-serif text-alabaster">
+                                            <span className="text-ochre">Click to select frame</span> or drag high-res asset
                                         </p>
-                                        <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-                                            High-quality JPG, PNG, or GIF recommended.
-                                        </p>
-                                        <p className="text-xs text-muted-foreground/70 pt-2">
-                                            No explicit size limit, but larger files take longer to process.
+                                        <p className="text-xs text-mist font-light max-w-sm mx-auto">
+                                            Accepts raw or high-res WebP, JPEG, PNG, TIFF. Camera EXIF headers preserved automatically.
                                         </p>
                                     </div>
                                     <input id="image-upload" type="file" className="hidden" onChange={handleChange} accept="image/*" />
@@ -435,84 +418,75 @@ export function SubmitProject() {
                         </div>
 
                         {/* Metadata Confidence Warning (Generic Filename) */}
-                        <AnimatePresence>
-                            {lowConfidence && selectedImage && !isScanning && scanResult === 'safe' && (
-                                <motion.div
-                                    initial={{ opacity: 0, height: 0 }}
-                                    animate={{ opacity: 1, height: 'auto' }}
-                                    exit={{ opacity: 0, height: 0 }}
-                                    className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 flex gap-3 items-start"
-                                >
-                                    <ShieldAlert className="h-5 w-5 text-amber-600 mt-0.5" strokeWidth={2} />
-                                    <div className="space-y-1">
-                                        <p className="text-sm font-semibold text-amber-700">Metadata Confidence: Low</p>
-                                        <p className="text-xs text-amber-600/80 leading-relaxed">
-                                            This file has a generic name or missing metadata. Automated scans are less effective on generic files.
-                                            <br />
-                                            <strong>Please ensure you are uploading original, human-created artwork.</strong>
-                                        </p>
-                                    </div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
+                        {lowConfidence && selectedImage && !isScanning && scanResult === 'safe' && (
+                            <div className="bg-ochre/10 border border-ochre/30 rounded-2xl p-4 flex gap-3 items-start">
+                                <ShieldAlert className="h-5 w-5 text-ochre mt-0.5 flex-shrink-0" strokeWidth={1.8} />
+                                <div className="space-y-1 text-xs">
+                                    <p className="font-serif text-alabaster font-normal">Metadata Notice: Generic Filename</p>
+                                    <p className="text-mist font-light leading-relaxed">
+                                        This asset was uploaded with a generic filename. Optical scans prioritize original camera naming conventions to verify human provenance.
+                                    </p>
+                                </div>
+                            </div>
+                        )}
 
-                        {/* ── DETECTED CAMERA EXIF & OPTICS ── */}
+                        {/* EXIF OPTICS READOUT */}
                         {selectedImage && (
-                            <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+                            <div className="bg-surface border border-edge rounded-2xl p-5 space-y-4">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
-                                        <Camera className="w-4 h-4 text-sky-500" />
-                                        <h4 className="text-xs font-semibold uppercase tracking-wider">Detected Camera & Optics</h4>
+                                        <Camera className="w-4 h-4 text-ochre" />
+                                        <h4 className="text-xs font-mono uppercase tracking-wider text-alabaster">Camera Optics & EXIF Readout</h4>
                                     </div>
                                     {isExtractingExif ? (
-                                        <span className="text-[11px] text-muted-foreground animate-pulse">Extracting metadata…</span>
+                                        <span className="text-xs font-mono text-mist animate-pulse">Extracting optical metadata…</span>
                                     ) : detectedExif?.camera ? (
-                                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center gap-1">
-                                            <CheckCircle2 size={11} /> Optical Capture Verified
+                                        <span className="text-[10px] font-mono uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/25 flex items-center gap-1.5">
+                                            <CheckCircle2 size={12} /> Optical Capture Verified
                                         </span>
                                     ) : (
-                                        <span className="text-[10px] text-muted-foreground">Standard image</span>
+                                        <span className="text-[10px] font-mono text-mist">Standard asset headers</span>
                                     )}
                                 </div>
 
                                 {detectedExif && (detectedExif.camera || detectedExif.lens || detectedExif.aperture || detectedExif.shutterSpeed) ? (
-                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
-                                        <div className="p-2 rounded-lg bg-muted/40 border border-border/50">
-                                            <span className="text-muted-foreground block text-[9px] uppercase font-bold tracking-wider">Camera Body</span>
-                                            <span className="font-medium truncate block">{detectedExif.camera || '—'}</span>
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs font-mono">
+                                        <div className="p-3 rounded-xl bg-canvas border border-edge">
+                                            <span className="text-mist/60 block text-[9px] uppercase tracking-wider">Camera Body</span>
+                                            <span className="font-medium text-alabaster truncate block">{detectedExif.camera || '—'}</span>
                                         </div>
-                                        <div className="p-2 rounded-lg bg-muted/40 border border-border/50">
-                                            <span className="text-muted-foreground block text-[9px] uppercase font-bold tracking-wider">Lens</span>
-                                            <span className="font-medium truncate block">{detectedExif.lens || '—'}</span>
+                                        <div className="p-3 rounded-xl bg-canvas border border-edge">
+                                            <span className="text-mist/60 block text-[9px] uppercase tracking-wider">Optics / Lens</span>
+                                            <span className="font-medium text-alabaster truncate block">{detectedExif.lens || '—'}</span>
                                         </div>
-                                        <div className="p-2 rounded-lg bg-muted/40 border border-border/50">
-                                            <span className="text-muted-foreground block text-[9px] uppercase font-bold tracking-wider">Aperture</span>
-                                            <span className="font-medium">{detectedExif.aperture || '—'}</span>
+                                        <div className="p-3 rounded-xl bg-canvas border border-edge">
+                                            <span className="text-mist/60 block text-[9px] uppercase tracking-wider">Aperture</span>
+                                            <span className="font-medium text-ochre">{detectedExif.aperture || '—'}</span>
                                         </div>
-                                        <div className="p-2 rounded-lg bg-muted/40 border border-border/50">
-                                            <span className="text-muted-foreground block text-[9px] uppercase font-bold tracking-wider">Shutter</span>
-                                            <span className="font-medium">{detectedExif.shutterSpeed || '—'}</span>
+                                        <div className="p-3 rounded-xl bg-canvas border border-edge">
+                                            <span className="text-mist/60 block text-[9px] uppercase tracking-wider">Shutter Speed</span>
+                                            <span className="font-medium text-alabaster">{detectedExif.shutterSpeed || '—'}</span>
                                         </div>
-                                        <div className="p-2 rounded-lg bg-muted/40 border border-border/50">
-                                            <span className="text-muted-foreground block text-[9px] uppercase font-bold tracking-wider">Focal Length</span>
-                                            <span className="font-medium">{detectedExif.focalLength || '—'}</span>
+                                        <div className="p-3 rounded-xl bg-canvas border border-edge">
+                                            <span className="text-mist/60 block text-[9px] uppercase tracking-wider">Focal Length</span>
+                                            <span className="font-medium text-alabaster">{detectedExif.focalLength || '—'}</span>
                                         </div>
-                                        <div className="p-2 rounded-lg bg-muted/40 border border-border/50">
-                                            <span className="text-muted-foreground block text-[9px] uppercase font-bold tracking-wider">ISO</span>
-                                            <span className="font-medium">{detectedExif.iso || '—'}</span>
+                                        <div className="p-3 rounded-xl bg-canvas border border-edge">
+                                            <span className="text-mist/60 block text-[9px] uppercase tracking-wider">ISO Sensitivity</span>
+                                            <span className="font-medium text-alabaster">{detectedExif.iso || '—'}</span>
                                         </div>
                                         {detectedExif.latitude && detectedExif.longitude && (
-                                            <div className="col-span-2 sm:col-span-3 p-2 rounded-lg bg-muted/40 border border-border/50 flex items-center gap-2">
-                                                <Compass className="w-3.5 h-3.5 text-amber-500" />
-                                                <span className="text-xs text-muted-foreground">
-                                                    GPS Coordinates: <strong className="text-foreground">{detectedExif.latitude.toFixed(4)}° N, {detectedExif.longitude.toFixed(4)}° E</strong>
+                                            <div className="col-span-2 sm:col-span-3 p-3 rounded-xl bg-canvas border border-edge flex items-center gap-2">
+                                                <Compass className="w-4 h-4 text-ochre" />
+                                                <span className="text-xs text-mist">
+                                                    Geo Coordinates: <strong className="text-alabaster">{detectedExif.latitude.toFixed(4)}° N, {detectedExif.longitude.toFixed(4)}° E</strong>
                                                 </span>
                                             </div>
                                         )}
                                     </div>
                                 ) : (
-                                    <p className="text-[11px] text-muted-foreground font-light">
-                                        No camera metadata found in image headers. The platform accepts all high-res photography, but camera-tagged shots receive higher visibility.
+                                    <p className="text-xs text-mist font-light">
+                                        No hardware camera metadata detected in headers. You can still publish, but frames with verified optics receive curatorial spotlight priority.
                                     </p>
                                 )}
                             </div>
@@ -522,24 +496,23 @@ export function SubmitProject() {
                     {/* Certification Checkbox */}
                     <div
                         className={cn(
-                            "p-4 rounded-xl border transition-all cursor-pointer flex gap-3",
+                            "p-5 rounded-2xl border transition-all cursor-pointer flex gap-4 items-start",
                             isCertified
-                                ? "bg-primary/5 border-primary/20"
-                                : "bg-card border-border hover:border-muted-foreground/25"
+                                ? "bg-ochre/10 border-ochre/40"
+                                : "bg-surface border-edge hover:border-edge/80"
                         )}
                         onClick={() => setIsCertified(!isCertified)}
                     >
                         <div className={cn(
-                            "w-5 h-5 rounded border mt-0.5 flex items-center justify-center transition-colors",
-                            isCertified ? "bg-primary border-primary" : "border-muted-foreground/30"
+                            "w-5 h-5 rounded-lg border mt-0.5 flex items-center justify-center transition-colors flex-shrink-0",
+                            isCertified ? "bg-ochre border-ochre text-canvas" : "border-edge bg-canvas"
                         )}>
-                            {isCertified && <CheckCircle2 className="h-4 w-4 text-white" strokeWidth={2} />}
+                            {isCertified && <CheckCircle2 className="h-3.5 w-3.5" strokeWidth={2.5} />}
                         </div>
                         <div className="space-y-1">
-                            <p className="text-sm font-medium">Human Artist Certification</p>
-                            <p className="text-xs text-muted-foreground leading-relaxed">
-                                I certify that this work is my own original creation and was not generated by AI or automated tools.
-                                I understand that uploading AI-generated content violates our terms.
+                            <p className="text-sm font-serif text-alabaster">Human Origin & Copyright Attestation</p>
+                            <p className="text-xs text-mist font-light leading-relaxed">
+                                I solemnly certify that this photograph/cinematography was captured with physical optical equipment and has not been synthetically generated. I hold sovereign copyright to this work.
                             </p>
                         </div>
                     </div>
@@ -549,153 +522,146 @@ export function SubmitProject() {
                         {/* Private Toggle */}
                         <div
                             className={cn(
-                                "relative overflow-hidden rounded-xl border transition-all duration-300",
+                                "rounded-2xl border p-5 transition-all cursor-pointer",
                                 isPrivate
-                                    ? "bg-primary/5 border-primary/20 shadow-sm"
-                                    : "bg-card border-border hover:border-muted-foreground/25"
+                                    ? "bg-surface border-ochre/40 shadow-sm"
+                                    : "bg-surface border-edge hover:border-edge/80"
                             )}
+                            onClick={() => togglePrivate(!isPrivate)}
                         >
-                            <div className="flex items-center justify-between p-4 cursor-pointer" onClick={() => togglePrivate(!isPrivate)}>
+                            <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
                                     <div className={cn(
-                                        "p-2 rounded-full transition-colors",
-                                        isPrivate ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
+                                        "w-9 h-9 rounded-xl flex items-center justify-center transition-colors",
+                                        isPrivate ? "bg-ochre/15 text-ochre" : "bg-canvas text-mist"
                                     )}>
-                                        {isPrivate ? <Lock className="h-5 w-5" strokeWidth={2} /> : <Unlock className="h-5 w-5" strokeWidth={2} />}
+                                        {isPrivate ? <Lock className="h-4 w-4" strokeWidth={2} /> : <Unlock className="h-4 w-4" strokeWidth={2} />}
                                     </div>
                                     <div>
-                                        <h3 className="font-medium text-sm">Private Work</h3>
-                                        <p className="text-xs text-muted-foreground">
-                                            Hidden from gallery.
-                                        </p>
+                                        <h3 className="font-serif text-sm text-alabaster">Private Commission</h3>
+                                        <p className="text-xs text-mist font-light">Hidden from public gallery.</p>
                                     </div>
                                 </div>
 
                                 <div className={cn(
-                                    "w-10 h-5 bg-muted rounded-full relative transition-colors duration-200",
-                                    isPrivate && "bg-primary"
+                                    "w-10 h-5 bg-canvas rounded-full relative transition-colors duration-200 border border-edge",
+                                    isPrivate && "bg-ochre border-ochre"
                                 )}>
                                     <div className={cn(
-                                        "absolute top-0.5 left-0.5 bg-white w-4 h-4 rounded-full shadow-sm transition-transform duration-200",
-                                        isPrivate && "translate-x-5"
+                                        "absolute top-0.5 left-0.5 bg-alabaster w-4 h-4 rounded-full shadow-sm transition-transform duration-200",
+                                        isPrivate && "translate-x-5 bg-canvas"
                                     )} />
                                 </div>
                             </div>
 
-                            {/* Expandable Code Section */}
-                            <div className={cn(
-                                "grid transition-all duration-300 ease-in-out",
-                                isPrivate ? "grid-rows-[1fr] opacity-100 pb-3" : "grid-rows-[0fr] opacity-0"
-                            )}>
-                                <div className="overflow-hidden px-4">
-                                    <div className="bg-background border rounded-lg p-2 flex flex-col items-center justify-center text-center relative overflow-hidden">
-                                        <span className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase mb-1">
-                                            Access Code
-                                        </span>
-                                        <div className="text-lg font-mono font-bold tracking-widest text-primary select-all">
-                                            {generatedCode}
-                                        </div>
+                            {isPrivate && (
+                                <div className="mt-4 pt-4 border-t border-edge/60 text-center">
+                                    <span className="text-[10px] font-mono uppercase tracking-wider text-mist block mb-1">
+                                        Client Access Passcode
+                                    </span>
+                                    <div className="text-lg font-mono font-bold tracking-widest text-ochre select-all">
+                                        {generatedCode}
                                     </div>
                                 </div>
-                            </div>
+                            )}
                         </div>
 
                         {/* Downloadable Toggle */}
                         <div
                             className={cn(
-                                "relative overflow-hidden rounded-xl border transition-all duration-300",
+                                "rounded-2xl border p-5 transition-all cursor-pointer",
                                 isDownloadable
-                                    ? "bg-primary/5 border-primary/20 shadow-sm"
-                                    : "bg-card border-border hover:border-muted-foreground/25",
-                                isPrivate && "opacity-80 grayscale-[0.2]"
+                                    ? "bg-surface border-ochre/40 shadow-sm"
+                                    : "bg-surface border-edge hover:border-edge/80"
                             )}
+                            onClick={() => !isPrivate && setIsDownloadable(!isDownloadable)}
                         >
-                            <div
-                                className={cn(
-                                    "flex items-center justify-between p-4",
-                                    !isPrivate ? "cursor-pointer" : "cursor-not-allowed"
-                                )}
-                                onClick={() => !isPrivate && setIsDownloadable(!isDownloadable)}
-                            >
+                            <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
                                     <div className={cn(
-                                        "p-2 rounded-full transition-colors",
-                                        isDownloadable ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
+                                        "w-9 h-9 rounded-xl flex items-center justify-center transition-colors",
+                                        isDownloadable ? "bg-ochre/15 text-ochre" : "bg-canvas text-mist"
                                     )}>
-                                        <Download className="h-5 w-5" strokeWidth={2} />
+                                        <Download className="h-4 w-4" strokeWidth={2} />
                                     </div>
                                     <div>
-                                        <h3 className="font-medium text-sm">Downloadable</h3>
-                                        <p className="text-xs text-muted-foreground">
-                                            {isPrivate ? "Automatic for private work." : (isDownloadable ? "Users can download." : "Download restricted.")}
+                                        <h3 className="font-serif text-sm text-alabaster">Direct Downloads</h3>
+                                        <p className="text-xs text-mist font-light">
+                                            {isPrivate ? "Automatic for private clients." : isDownloadable ? "High-res public access." : "Restricted view only."}
                                         </p>
                                     </div>
                                 </div>
 
                                 <div className={cn(
-                                    "w-10 h-5 bg-muted rounded-full relative transition-colors duration-200",
-                                    isDownloadable && "bg-primary"
+                                    "w-10 h-5 bg-canvas rounded-full relative transition-colors duration-200 border border-edge",
+                                    isDownloadable && "bg-ochre border-ochre"
                                 )}>
                                     <div className={cn(
-                                        "absolute top-0.5 left-0.5 bg-white w-4 h-4 rounded-full shadow-sm transition-transform duration-200",
-                                        isDownloadable && "translate-x-5"
+                                        "absolute top-0.5 left-0.5 bg-alabaster w-4 h-4 rounded-full shadow-sm transition-transform duration-200",
+                                        isDownloadable && "translate-x-5 bg-canvas"
                                     )} />
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Details */}
-                    <div className="grid gap-6">
+                    {/* Metadata & Curatorial Inputs */}
+                    <div className="space-y-5 bg-surface border border-edge p-6 rounded-2xl">
                         <div className="space-y-2">
-                            <label htmlFor="title" className="text-sm font-medium">Project Title <span className="text-red-500">*</span></label>
-                            <Input
+                            <label htmlFor="title" className="text-xs font-mono uppercase tracking-wider text-mist">
+                                Series / Frame Title <span className="text-ochre">*</span>
+                            </label>
+                            <input
                                 id="title"
-                                placeholder="e.g. Sunset in Sidi Bou Said"
+                                placeholder="e.g. Dawn over the Roman Amphitheatre, El Jem"
                                 value={title}
                                 onChange={(e) => setTitle(e.target.value)}
+                                className="w-full h-11 px-4 rounded-xl border border-edge bg-canvas text-alabaster text-sm placeholder:text-mist/40 focus:outline-none focus:border-ochre transition-all"
                             />
                         </div>
 
                         {/* Region & Location Fields */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <label className="text-sm font-medium flex items-center gap-1.5">
-                                    <Compass size={14} className="text-amber-500" /> Tunisian Region <span className="text-red-500">*</span>
+                                <label className="text-xs font-mono uppercase tracking-wider text-mist flex items-center gap-1.5">
+                                    <Compass size={14} className="text-ochre" /> Tunisian Cultural Region <span className="text-ochre">*</span>
                                 </label>
                                 <select
-                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                    className="w-full h-11 px-3 rounded-xl border border-edge bg-canvas text-alabaster text-sm focus:outline-none focus:border-ochre transition-all font-sans"
                                     value={region}
                                     onChange={(e) => setRegion(e.target.value as TunisianRegion)}
                                 >
                                     <option value="Tunis & Suburbs">Tunis & Suburbs (Carthage, Sidi Bou Said, Medina)</option>
-                                    <option value="Sahel">Sahel (Sousse, Monastir, Mahdia, El Jem, Djerba)</option>
-                                    <option value="South & Sahara">South & Sahara (Tozeur, Matmata, Tataouine, Douz)</option>
+                                    <option value="Sahel">Sahel (Sousse, Monastir, Mahdia, El Jem)</option>
+                                    <option value="South & Sahara">South & Sahara (Tozeur, Tataouine, Matmata, Douz)</option>
                                     <option value="North">North (Bizerte, Tabarka, Cap Bon, Ain Draham)</option>
                                 </select>
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-sm font-medium flex items-center gap-1.5">
-                                    <MapPin size={14} className="text-sky-500" /> Specific Location Name
+                                <label className="text-xs font-mono uppercase tracking-wider text-mist flex items-center gap-1.5">
+                                    <MapPin size={14} className="text-sidi-azure" /> Governorate / Specific Site
                                 </label>
-                                <Input
+                                <input
                                     placeholder="e.g. Sidi Bou Said, Tunis"
                                     value={locationName}
                                     onChange={(e) => setLocationName(e.target.value)}
+                                    className="w-full h-11 px-4 rounded-xl border border-edge bg-canvas text-alabaster text-sm placeholder:text-mist/40 focus:outline-none focus:border-ochre transition-all"
                                 />
                             </div>
                         </div>
 
                         <div className="space-y-2">
-                            <label htmlFor="category" className="text-sm font-medium">Category <span className="text-red-500">*</span></label>
+                            <label htmlFor="category" className="text-xs font-mono uppercase tracking-wider text-mist">
+                                Curatorial Discipline <span className="text-ochre">*</span>
+                            </label>
                             <select
                                 id="category"
-                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                className="w-full h-11 px-3 rounded-xl border border-edge bg-canvas text-alabaster text-sm focus:outline-none focus:border-ochre transition-all"
                                 value={category}
                                 onChange={(e) => setCategory(e.target.value)}
                             >
-                                <option value="" disabled>Select a category</option>
+                                <option value="" disabled>Select a Category</option>
                                 {CATEGORIES.map(cat => (
                                     <option key={cat} value={cat}>{cat}</option>
                                 ))}
@@ -703,49 +669,51 @@ export function SubmitProject() {
                         </div>
 
                         <div className="space-y-2">
-                            <label htmlFor="description" className="text-sm font-medium">Description</label>
+                            <label htmlFor="description" className="text-xs font-mono uppercase tracking-wider text-mist">
+                                Curatorial Story & Lighting Notes
+                            </label>
                             <textarea
                                 id="description"
-                                className="flex min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-y"
-                                placeholder="Tell us about the location, the lighting, the moment..."
+                                rows={4}
+                                className="w-full p-4 rounded-xl border border-edge bg-canvas text-alabaster text-sm placeholder:text-mist/40 focus:outline-none focus:border-ochre transition-all resize-y font-light leading-relaxed"
+                                placeholder="Narrate the cultural context, the hour of capture, atmospheric light, or historical significance..."
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
                             />
                         </div>
 
-                        <div className="space-y-4">
-                            <label htmlFor="tags" className="text-sm font-medium">Tags (space separated, auto-hashtag)</label>
-                            <Input
+                        <div className="space-y-3">
+                            <label htmlFor="tags" className="text-xs font-mono uppercase tracking-wider text-mist">
+                                Archival Tags (Space separated)
+                            </label>
+                            <input
                                 id="tags"
-                                placeholder="#summer #sea"
+                                placeholder="#sahara #architecture #monochrome"
                                 value={tags}
                                 onChange={(e) => {
                                     const val = e.target.value;
-                                    // Allow user to delete
                                     if (val.length < tags.length) {
                                         setTags(val);
                                         return;
                                     }
-
-                                    // If space or comma, format previous word
                                     if (val.endsWith(' ') || val.endsWith(',')) {
                                         const cleanVal = val.replace(/,/g, ' ').replace(/\s+/g, ' ');
                                         const words = cleanVal.trim().split(' ');
                                         const formatted = words.map(w => w.startsWith('#') ? w : '#' + w).join(' ');
-                                        // Ensure space at end for next word
                                         setTags(formatted + ' ');
                                     } else {
                                         setTags(val);
                                     }
                                 }}
+                                className="w-full h-11 px-4 rounded-xl border border-edge bg-canvas text-alabaster text-sm placeholder:text-mist/40 focus:outline-none focus:border-ochre transition-all font-mono"
                             />
 
                             {/* Smart Suggestions */}
                             {category && SUGGESTED_TAGS[category] && (
-                                <div className="space-y-2 animate-in fade-in slide-in-from-top-1 duration-300">
-                                    <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                                        <Sparkles className="h-3 w-3" />
-                                        Suggested for {category}
+                                <div className="space-y-2 pt-1">
+                                    <p className="text-[10px] font-mono uppercase tracking-wider text-mist flex items-center gap-1.5">
+                                        <Sparkles className="h-3 w-3 text-ochre" />
+                                        Suggested for {category}:
                                     </p>
                                     <div className="flex flex-wrap gap-1.5">
                                         {SUGGESTED_TAGS[category].map(tag => {
@@ -761,10 +729,10 @@ export function SubmitProject() {
                                                     }}
                                                     disabled={isSelected}
                                                     className={cn(
-                                                        "text-[10px] px-2.5 py-1 rounded-full border transition-all duration-200",
+                                                        "text-[10px] font-mono px-2.5 py-1 rounded-full border transition-all duration-200",
                                                         isSelected
-                                                            ? "bg-muted text-muted-foreground/50 border-transparent cursor-default"
-                                                            : "bg-background hover:border-primary/50 hover:bg-primary/5 border-border text-muted-foreground hover:text-foreground"
+                                                            ? "bg-canvas text-mist/40 border-edge cursor-default"
+                                                            : "bg-canvas border-edge text-mist hover:text-ochre hover:border-ochre/40"
                                                     )}
                                                 >
                                                     {hashTag}
@@ -777,15 +745,25 @@ export function SubmitProject() {
                         </div>
                     </div>
 
-                    <div className="pt-4 pb-2">
+                    <div className="pt-2">
                         <Captcha onVerify={setIsVerified} />
                     </div>
 
-                    <div className="flex justify-end gap-4">
-                        <Button variant="ghost" type="button" onClick={() => navigate(-1)}>Cancel</Button>
-                        <Button type="submit" size="lg" disabled={isSubmitting}>
-                            {isSubmitting ? (uploadStatusMsg || "Publishing...") : "Publish Project"}
-                        </Button>
+                    <div className="flex items-center justify-end gap-4 pt-4 border-t border-edge">
+                        <button
+                            type="button"
+                            onClick={() => navigate(-1)}
+                            className="px-6 py-3 rounded-full border border-edge bg-surface hover:bg-surface-elevated text-xs font-mono uppercase tracking-wider text-mist hover:text-alabaster transition-colors"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className="px-8 py-3 rounded-full bg-ochre hover:bg-ochre-light disabled:opacity-50 text-canvas font-medium text-xs font-mono uppercase tracking-widest transition-all shadow-md"
+                        >
+                            {isSubmitting ? (uploadStatusMsg || "Archiving Series...") : "Publish to Archive"}
+                        </button>
                     </div>
 
                 </form>
