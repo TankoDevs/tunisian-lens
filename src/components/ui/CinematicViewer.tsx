@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ChevronLeft, ChevronRight, Maximize2, Pause, Play } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, Maximize2, Pause, Play, Shield } from "lucide-react";
+import { useAntiScreenshot } from "../../context/AntiScreenshotContext";
 
 interface CinematicViewerProps {
     images: string[];
@@ -16,6 +17,12 @@ export function CinematicViewer({ images, initialIndex = 0, title, onClose }: Ci
     const [progress, setProgress] = useState(0);
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const DURATION = 5000; // ms per slide
+    const { setIsViewingProtected, isShieldActive, triggerShield } = useAntiScreenshot();
+
+    useEffect(() => {
+        setIsViewingProtected(true);
+        return () => setIsViewingProtected(false);
+    }, [setIsViewingProtected]);
 
     const prev = useCallback(() => {
         setDirection(-1);
@@ -100,22 +107,46 @@ export function CinematicViewer({ images, initialIndex = 0, title, onClose }: Ci
             </div>
 
             {/* ── Main image ── */}
-            <AnimatePresence custom={direction} mode="wait">
-                <motion.img
-                    key={current}
-                    custom={direction}
-                    variants={variants}
-                    initial="enter"
-                    animate="center"
-                    exit="exit"
-                    transition={{ duration: 0.65, ease: [0.25, 0.46, 0.45, 0.94] }}
-                    src={images[current]}
-                    alt={`Portfolio ${current + 1}`}
-                    className="absolute inset-0 w-full h-full object-contain"
-                    onClick={(e) => e.stopPropagation()}
-                    loading="lazy"
-                />
-            </AnimatePresence>
+            <div 
+                data-protected-image="true" 
+                className="absolute inset-0 select-none protected-image-container"
+                onContextMenu={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    triggerShield("Right-click saving is disabled in Cinematic View");
+                }}
+            >
+                <AnimatePresence custom={direction} mode="wait">
+                    <motion.img
+                        key={current}
+                        custom={direction}
+                        variants={variants}
+                        initial="enter"
+                        animate="center"
+                        exit="exit"
+                        transition={{ duration: 0.65, ease: [0.25, 0.46, 0.45, 0.94] }}
+                        src={images[current]}
+                        alt={`Portfolio ${current + 1}`}
+                        draggable={false}
+                        className={`absolute inset-0 w-full h-full object-contain pointer-events-none select-none transition-all duration-300 ${
+                            isShieldActive ? 'blur-2xl brightness-50' : ''
+                        }`}
+                        onClick={(e) => e.stopPropagation()}
+                        loading="lazy"
+                    />
+                </AnimatePresence>
+
+                {/* Subtle repeating watermark pattern overlay */}
+                <div className="absolute inset-0 watermark-pattern pointer-events-none opacity-50 z-10" />
+
+                {/* Provenance Watermark Badge */}
+                <div className="absolute bottom-24 right-8 z-20 pointer-events-none flex items-center gap-1.5 px-2.5 py-1 rounded bg-black/60 backdrop-blur-md border border-white/10 text-alabaster shadow-md">
+                    <Shield size={11} className="text-ochre shrink-0" />
+                    <span className="text-[10px] font-mono tracking-wider uppercase text-mist/90">
+                        © TUNISIAN LENS • ARCHIVE PLATE {current + 1}
+                    </span>
+                </div>
+            </div>
 
             {/* ── Gradient overlays ── */}
             <div className="absolute inset-0 pointer-events-none">

@@ -363,4 +363,48 @@
 
 .ease-spring {
   transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-}
+}
+
+/* ── Anti-Screenshot & Archival Image Protection ── */
+.protected-image-container {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.protected-image-container img {
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Subtle repeating diagonal micro-pattern watermark across photo matrix */
+.watermark-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='120' viewBox='0 0 220 120'%3E%3Ctext x='15' y='65' fill='rgba(255,255,255,0.06)' font-size='10' font-family='system-ui, sans-serif' font-weight='600' letter-spacing='2px' transform='rotate(-24 15 65)'%3ETUNISIAN LENS ARCHIVE%3C/text%3E%3C/svg%3E");
+  background-repeat: repeat;
+}
+
+/* Print Protection: Disables printing/rasterizing of all imagery */
+@media print {
+  img, picture, video, canvas, [data-protected-image] {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  body::before {
+    content: "TUNISIAN LENS HERITAGE ARCHIVE — PRINTING RESTRICTED. Photographic plates are protected under international copyright law.";
+    display: block;
+    margin: 4rem auto;
+    max-width: 600px;
+    padding: 2rem;
+    font-size: 14pt;
+    font-weight: 600;
+    color: #000;
+    text-align: center;
+    border: 2px dashed #000;
+    font-family: serif;
+  }
+}
+

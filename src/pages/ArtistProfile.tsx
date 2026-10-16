@@ -15,6 +15,7 @@ import { BeforeAfterSlider } from "../components/ui/BeforeAfterSlider";
 import { cn } from "../lib/utils";
 import { isArtistVerified, setArtistVerification } from "../lib/verification";
 import { motion, AnimatePresence } from "framer-motion";
+import { ProtectedImage } from "../components/ui/ProtectedImage";
 
 const TABS = ["Portfolio", "Reviews", "About"] as const;
 type Tab = (typeof TABS)[number];
@@ -151,8 +152,15 @@ export function ArtistProfile() {
                             className="relative aspect-[4/5] rounded-xl overflow-hidden group cursor-pointer border border-edge/40"
                             onClick={() => { setCinematicIndex(i); setCinematicOpen(true); }}
                         >
-                            <img src={img} alt={`Portfolio ${i}`} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                            <div className="absolute inset-0 bg-canvas/30 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <ProtectedImage
+                                src={img}
+                                alt={`Portfolio ${i}`}
+                                aspectRatio="aspect-[4/5]"
+                                watermarkAuthor={artist.name}
+                                watermarkTitle={`Plate ${i + 1}`}
+                                imgClassName="group-hover:scale-105"
+                            />
+                            <div className="absolute inset-0 bg-canvas/30 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                         </motion.div>
                     ))}
                     {allPortfolioImgs.length > 6 && (
@@ -345,10 +353,16 @@ export function ArtistProfile() {
                                     {displayImages.map((img: string, i: number) => (
                                         <div key={i} className="relative aspect-[4/3] rounded-xl overflow-hidden group cursor-pointer"
                                             onClick={() => { setCinematicIndex(i); setCinematicOpen(true); }}>
-                                            <img src={img} alt={`Portfolio ${i + 1}`} loading="lazy"
-                                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
-                                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <ProtectedImage
+                                                src={img}
+                                                alt={`Portfolio ${i + 1}`}
+                                                aspectRatio="aspect-[4/3]"
+                                                watermarkAuthor={artist.name}
+                                                watermarkTitle={`Plate ${i + 1}`}
+                                                imgClassName="group-hover:scale-105"
+                                            />
+                                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 pointer-events-none" />
+                                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20">
                                                 <Clapperboard className="h-6 w-6 text-white drop-shadow" strokeWidth={1.5} />
                                             </div>
                                         </div>

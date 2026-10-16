@@ -1,16 +1,27 @@
+import { useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { ARTISTS } from "../data/mockData"; // Keep ARTISTS
 import { Button } from "../components/ui/button";
 import { ArrowLeft, Heart, Share2, Info, Lock, Download, Trash2 } from "lucide-react";
 import { ProjectCard } from "../components/ui/ProjectCard";
 import { useProjects } from "../context/ProjectContext";
+import { ProtectedImage } from "../components/ui/ProtectedImage";
+import { useAntiScreenshot } from "../context/AntiScreenshotContext";
 
 export function ProjectDetails() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { getProject, projects, deleteProject } = useProjects();
+    const { setIsViewingProtected } = useAntiScreenshot();
 
     const project = getProject(id!); // Use hook to get project
+
+    useEffect(() => {
+        if (project) {
+            setIsViewingProtected(true);
+            return () => setIsViewingProtected(false);
+        }
+    }, [project, setIsViewingProtected]);
     // Fallback if not found (for demo)
     if (!project) return <div className="p-12 text-center">Project not found</div>;
 
@@ -48,10 +59,14 @@ export function ProjectDetails() {
             {/* Hero Image Stage */}
             <div className="w-full bg-[#050607] border-b border-edge py-6">
                 <div className="container mx-auto px-4 md:px-8">
-                    <img
+                    <ProtectedImage
                         src={project.image || "https://picsum.photos/seed/fallback/1200/800"}
                         alt={project.title}
-                        className="w-full max-h-[80vh] object-contain mx-auto rounded-lg shadow-2xl"
+                        aspectRatio="h-full w-full max-h-[80vh]"
+                        watermarkAuthor={artist.name}
+                        watermarkTitle={project.title}
+                        className="flex items-center justify-center max-h-[80vh] rounded-xl shadow-2xl mx-auto"
+                        imgClassName="object-contain max-h-[80vh] mx-auto rounded-lg"
                         onError={(e) => {
                             const target = e.target as HTMLImageElement;
                             if (!target.src.includes('placeholder')) {

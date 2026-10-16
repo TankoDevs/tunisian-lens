@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { MapPin, Maximize2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { PhotoItem } from '../types/photo';
+import { ProtectedImage } from './ui/ProtectedImage';
 
 interface GalleryGridProps {
   photos: PhotoItem[];
@@ -9,8 +10,6 @@ interface GalleryGridProps {
 }
 
 function GalleryCard({ photo, onPhotoClick }: { photo: PhotoItem; onPhotoClick: (photo: PhotoItem) => void }) {
-  const [isLoaded, setIsLoaded] = useState(false);
-
   return (
     <motion.div
       layout
@@ -30,22 +29,16 @@ function GalleryCard({ photo, onPhotoClick }: { photo: PhotoItem; onPhotoClick: 
       }}
       aria-label={`View ${photo.title} by ${photo.author.name}`}
     >
-      {/* Aspect-ratio container preventing Cumulative Layout Shift (CLS) */}
-      <div className={`w-full overflow-hidden ${photo.aspectRatio} bg-surface relative`}>
-        {!isLoaded && (
-          <div className="absolute inset-0 shimmer-placeholder" />
-        )}
-        <img
-          src={photo.thumbnailUrl}
-          alt={photo.title}
-          loading="lazy"
-          width="480"
-          onLoad={() => setIsLoaded(true)}
-          className={`w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-105 ${
-            isLoaded ? 'opacity-100 filter-none' : 'opacity-0 scale-[1.03] blur-sm'
-          }`}
-        />
-      </div>
+      {/* Protected Archival Photo with Dynamic Watermarking */}
+      <ProtectedImage
+        src={photo.thumbnailUrl}
+        alt={photo.title}
+        aspectRatio={photo.aspectRatio}
+        watermarkAuthor={photo.author.name}
+        watermarkTitle={photo.title}
+        watermarkLocation={photo.locationName}
+        imgClassName="group-hover:scale-105"
+      />
 
       {/* Hover Vignette Overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex flex-col justify-end p-5 pointer-events-none">

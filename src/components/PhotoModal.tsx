@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { X, MapPin, Camera, User, Share2, Check, ExternalLink, Loader2 } from 'lucide-react';
+import { X, MapPin, Camera, User, Share2, Check, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { PhotoItem } from '../types/photo';
+import { useAntiScreenshot } from '../context/AntiScreenshotContext';
+import { ProtectedImage } from './ui/ProtectedImage';
 
 interface PhotoModalProps {
   photo: PhotoItem | null;
@@ -10,11 +12,14 @@ interface PhotoModalProps {
 
 export const PhotoModal: React.FC<PhotoModalProps> = ({ photo, onClose }) => {
   const [copied, setCopied] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
+  const { setIsViewingProtected } = useAntiScreenshot();
 
   useEffect(() => {
-    setImageLoaded(false);
-  }, [photo?.id]);
+    if (photo) {
+      setIsViewingProtected(true);
+      return () => setIsViewingProtected(false);
+    }
+  }, [photo, setIsViewingProtected]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -75,19 +80,15 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({ photo, onClose }) => {
 
         {/* Media Frame (65% width on desktop) */}
         <div className="lg:w-2/3 bg-black flex items-center justify-center p-4 min-h-[300px] max-h-[50vh] lg:max-h-[88vh] relative overflow-hidden">
-          {!imageLoaded && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 z-10 gap-3">
-              <Loader2 className="w-8 h-8 text-ochre animate-spin" />
-              <span className="text-[11px] uppercase tracking-wider text-mist font-mono">Developing Archival Plate...</span>
-            </div>
-          )}
-          <img
+          <ProtectedImage
             src={photo.fullImageUrl}
             alt={photo.title}
-            onLoad={() => setImageLoaded(true)}
-            className={`max-h-[82vh] w-auto max-w-full object-contain rounded-lg shadow-2xl transition-all duration-700 ease-out ${
-              imageLoaded ? 'opacity-100 scale-100 filter-none' : 'opacity-0 scale-[1.02] blur-sm'
-            }`}
+            aspectRatio="h-full w-full max-h-[82vh]"
+            watermarkAuthor={photo.author.name}
+            watermarkTitle={photo.title}
+            watermarkLocation={photo.locationName}
+            className="flex items-center justify-center max-h-[82vh] rounded-lg shadow-2xl"
+            imgClassName="object-contain max-h-[82vh] rounded-lg"
           />
         </div>
 

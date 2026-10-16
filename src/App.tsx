@@ -24,6 +24,7 @@ import { Messages } from "./pages/Messages";
 import { BuyConnects } from "./pages/BuyConnects";
 import { MarketplaceProvider } from "./context/MarketplaceContext";
 import { ChatProvider } from "./context/ChatContext";
+import { AntiScreenshotProvider } from "./context/AntiScreenshotContext";
 import { GearMarket } from "./pages/GearMarket";
 import { SellGear } from "./pages/SellGear";
 import { GearListingDetail } from "./pages/GearListingDetail";
@@ -54,44 +55,46 @@ function App() {
   }, [isLoading]);
 
   return (
-    <MarketplaceProvider>
-      <ScrollToTop />
-      <ChatProvider>
-        <AnimatePresence mode="wait">
-          {isLoading && <LoadingScreen key="loader" />}
-        </AnimatePresence>
+    <AntiScreenshotProvider>
+      <MarketplaceProvider>
+        <ScrollToTop />
+        <ChatProvider>
+          <AnimatePresence mode="wait">
+            {isLoading && <LoadingScreen key="loader" />}
+          </AnimatePresence>
 
-        <Routes>
-          <Route element={<MainLayout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/explore" element={<Explore />} />
-            <Route path="/artist/:id" element={<ArtistProfile />} />
-            <Route path="/project/:id" element={<ProjectDetails />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/submit" element={<SubmitProject />} />
-            <Route path="/client-access" element={<ClientAccess />} />
-            <Route path="/links" element={<Links />} />
-            <Route path="/creatives" element={<Photographers />} />
-            <Route path="/photographers" element={<Navigate to="/creatives" replace />} />
-            <Route path="/hire/:id" element={<Hire />} />
-            <Route path="/jobs" element={<Jobs />} />
-            <Route path="/jobs/post" element={<PostJob />} />
-            <Route path="/jobs/:id" element={<JobDetail />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/messages" element={<Messages />} />
-            <Route path="/messages/:conversationId" element={<Messages />} />
-            <Route path="/buy-connects" element={<BuyConnects />} />
-            <Route path="/gear" element={<GearMarket />} />
-            <Route path="/gear/sell" element={<SellGear />} />
-            <Route path="/gear/:id" element={<GearListingDetail />} />
-            <Route path="/photo/:slug" element={<PhotoDetail />} />
-          </Route>
-        </Routes>
-      </ChatProvider>
-    </MarketplaceProvider>
+          <Routes>
+            <Route element={<MainLayout />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/explore" element={<Explore />} />
+              <Route path="/artist/:id" element={<ArtistProfile />} />
+              <Route path="/project/:id" element={<ProjectDetails />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/submit" element={<SubmitProject />} />
+              <Route path="/client-access" element={<ClientAccess />} />
+              <Route path="/links" element={<Links />} />
+              <Route path="/creatives" element={<Photographers />} />
+              <Route path="/photographers" element={<Navigate to="/creatives" replace />} />
+              <Route path="/hire/:id" element={<Hire />} />
+              <Route path="/jobs" element={<Jobs />} />
+              <Route path="/jobs/post" element={<PostJob />} />
+              <Route path="/jobs/:id" element={<JobDetail />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route path="/messages" element={<Messages />} />
+              <Route path="/messages/:conversationId" element={<Messages />} />
+              <Route path="/buy-connects" element={<BuyConnects />} />
+              <Route path="/gear" element={<GearMarket />} />
+              <Route path="/gear/sell" element={<SellGear />} />
+              <Route path="/gear/:id" element={<GearListingDetail />} />
+              <Route path="/photo/:slug" element={<PhotoDetail />} />
+            </Route>
+          </Routes>
+        </ChatProvider>
+      </MarketplaceProvider>
+    </AntiScreenshotProvider>
   );
 }
 
