@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { X, MapPin, Camera, User, Share2, Check, ExternalLink } from 'lucide-react';
+import { X, MapPin, Camera, User, Share2, Check, ExternalLink, Loader2 } from 'lucide-react';
+import { motion } from 'framer-motion';
 import type { PhotoItem } from '../types/photo';
 
 interface PhotoModalProps {
@@ -9,6 +10,11 @@ interface PhotoModalProps {
 
 export const PhotoModal: React.FC<PhotoModalProps> = ({ photo, onClose }) => {
   const [copied, setCopied] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+
+  useEffect(() => {
+    setImageLoaded(false);
+  }, [photo?.id]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -43,28 +49,45 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({ photo, onClose }) => {
   };
 
   return (
-    <div 
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4 md:p-8 animate-in fade-in duration-200"
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.22, ease: "easeOut" }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4 md:p-8"
       onClick={onClose}
     >
-      <div 
-        className="relative flex flex-col lg:flex-row w-full max-w-6xl max-h-[92vh] bg-surface border border-edge rounded-3xl overflow-hidden shadow-2xl"
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.94, y: 16 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.96, y: 12 }}
+        transition={{ type: "spring", damping: 28, stiffness: 340 }}
+        className="relative flex flex-col lg:flex-row w-full max-w-6xl max-h-[92vh] bg-surface border border-edge rounded-3xl overflow-hidden shadow-2xl smooth-gpu"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 p-2 rounded-full bg-canvas/80 text-mist hover:text-alabaster transition backdrop-blur-md hover:bg-canvas border border-edge/60"
+          className="absolute top-4 right-4 z-10 p-2.5 rounded-full bg-canvas/80 text-mist hover:text-alabaster transition backdrop-blur-md hover:bg-canvas border border-edge/60 shadow-md"
           aria-label="Close modal"
         >
           <X size={18} />
         </button>
 
         {/* Media Frame (65% width on desktop) */}
-        <div className="lg:w-2/3 bg-black flex items-center justify-center p-4 min-h-[300px] max-h-[50vh] lg:max-h-[88vh]">
+        <div className="lg:w-2/3 bg-black flex items-center justify-center p-4 min-h-[300px] max-h-[50vh] lg:max-h-[88vh] relative overflow-hidden">
+          {!imageLoaded && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 z-10 gap-3">
+              <Loader2 className="w-8 h-8 text-ochre animate-spin" />
+              <span className="text-[11px] uppercase tracking-wider text-mist font-mono">Developing Archival Plate...</span>
+            </div>
+          )}
           <img
             src={photo.fullImageUrl}
             alt={photo.title}
-            className="max-h-[82vh] w-auto max-w-full object-contain rounded-lg shadow-2xl"
+            onLoad={() => setImageLoaded(true)}
+            className={`max-h-[82vh] w-auto max-w-full object-contain rounded-lg shadow-2xl transition-all duration-700 ease-out ${
+              imageLoaded ? 'opacity-100 scale-100 filter-none' : 'opacity-0 scale-[1.02] blur-sm'
+            }`}
           />
         </div>
 
@@ -144,7 +167,7 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({ photo, onClose }) => {
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };

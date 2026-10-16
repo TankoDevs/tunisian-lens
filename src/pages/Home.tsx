@@ -3,7 +3,7 @@ import { ArrowRight, Camera, Video, CheckCircle, Shield, Star, Zap, Crown, Heart
 import { Link } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { ARTISTS, MOCK_JOBS } from "../data/mockData";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { isArtistVerified } from "../lib/verification";
 import { useCurrency } from "../lib/useCurrency";
 import { ProfileAvatar } from "../components/ui/ProfileAvatar";
@@ -168,21 +168,31 @@ export function Home() {
                             A curated visual archive capturing Tunisia’s living civilization—from the blue doors of Sidi Bou Said to the golden Roman arches of El Jem and the silent expanse of the Sahara.
                         </p>
 
-                        {/* Region Filter Tabs */}
-                        <div className="flex flex-wrap items-center justify-center gap-2 pt-6">
-                            {(['All', 'Tunis & Suburbs', 'Sahel', 'South & Sahara', 'North'] as const).map((reg) => (
-                                <button
-                                    key={reg}
-                                    onClick={() => setSelectedRegion(reg)}
-                                    className={`text-xs font-medium px-4 py-2 rounded-lg transition-all duration-200 border ${
-                                        selectedRegion === reg
-                                            ? 'bg-ochre text-canvas border-ochre shadow-lg shadow-ochre/20 scale-105 font-semibold'
-                                            : 'bg-surface text-mist border-edge hover:text-alabaster hover:border-edge/80'
-                                    }`}
-                                >
-                                    {reg}
-                                </button>
-                            ))}
+                        {/* Region Filter Tabs with Sliding Spring Pill */}
+                        <div className="flex justify-center pt-6">
+                            <div className="inline-flex flex-wrap items-center justify-center gap-1.5 p-1.5 rounded-2xl bg-surface border border-edge shadow-inner">
+                                {(['All', 'Tunis & Suburbs', 'Sahel', 'South & Sahara', 'North'] as const).map((reg) => {
+                                    const isActive = selectedRegion === reg;
+                                    return (
+                                        <button
+                                            key={reg}
+                                            onClick={() => setSelectedRegion(reg)}
+                                            className={`relative text-xs px-4 py-2 rounded-xl transition-colors duration-200 z-10 font-medium ${
+                                                isActive ? 'text-canvas font-semibold' : 'text-mist hover:text-alabaster'
+                                            }`}
+                                        >
+                                            {isActive && (
+                                                <motion.div
+                                                    layoutId="activeFilterPill"
+                                                    className="absolute inset-0 bg-ochre rounded-xl shadow-md shadow-ochre/25 -z-10"
+                                                    transition={{ type: "spring", stiffness: 420, damping: 32 }}
+                                                />
+                                            )}
+                                            {reg}
+                                        </button>
+                                    );
+                                })}
+                            </div>
                         </div>
                     </FadeUp>
 
@@ -192,13 +202,15 @@ export function Home() {
                         onPhotoClick={(photo) => setActivePhoto(photo)}
                     />
 
-                    {/* Photo Deep-View Modal */}
-                    {activePhoto && (
-                        <PhotoModal
-                            photo={activePhoto}
-                            onClose={() => setActivePhoto(null)}
-                        />
-                    )}
+                    {/* Photo Deep-View Modal with Spring Exit/Enter */}
+                    <AnimatePresence>
+                        {activePhoto && (
+                            <PhotoModal
+                                photo={activePhoto}
+                                onClose={() => setActivePhoto(null)}
+                            />
+                        )}
+                    </AnimatePresence>
                 </div>
             </section>
             {/* ──────── CHROMATIC INDEX & LIGHT STUDY ──────── */}

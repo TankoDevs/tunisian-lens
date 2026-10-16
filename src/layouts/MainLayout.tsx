@@ -1,4 +1,4 @@
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, Link, useLocation } from "react-router-dom";
 import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/Footer";
 import { GlobalAlert } from "../components/ui/GlobalAlert";
@@ -7,17 +7,30 @@ import { ChatWidget } from "../components/ui/ChatWidget";
 import { MessageSquare, Plus } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useChat } from "../context/ChatContext";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 export function MainLayout() {
     const { isAuthenticated } = useAuth();
     const { unreadCount } = useChat();
+    const location = useLocation();
+
     return (
         <div className="min-h-screen flex flex-col font-sans text-alabaster bg-canvas selection:bg-ochre/25 selection:text-alabaster">
             <GlobalAlert />
             <Navbar />
-            <main className="flex-1">
-                <Outlet />
+            <main className="flex-1 flex flex-col">
+                <AnimatePresence mode="wait" initial={false}>
+                    <motion.div
+                        key={location.pathname}
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -8 }}
+                        transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                        className="flex-1 flex flex-col"
+                    >
+                        <Outlet />
+                    </motion.div>
+                </AnimatePresence>
             </main>
             <Footer />
             <ScrollButton />

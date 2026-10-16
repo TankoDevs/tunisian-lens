@@ -31,14 +31,27 @@ import { PhotoDetail } from "./pages/PhotoDetail";
 import { ScrollToTop } from "./components/ui/ScrollToTop";
 
 function App() {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(() => {
+    try {
+      return !sessionStorage.getItem('tl_visited');
+    } catch {
+      return true;
+    }
+  });
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 800);
-    return () => clearTimeout(timer);
-  }, []);
+    if (isLoading) {
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+        try {
+          sessionStorage.setItem('tl_visited', 'true');
+        } catch {
+          // ignore
+        }
+      }, 450);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading]);
 
   return (
     <MarketplaceProvider>

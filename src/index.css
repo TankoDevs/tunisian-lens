@@ -135,17 +135,26 @@
     color: #F1F2F5;
   }
 
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     font-weight: 400;
     font-feature-settings: "rlig" 1, "calt" 1;
     transition: background-color 0.4s ease, color 0.3s ease;
+    overflow-x: hidden;
   }
 
   /* Smooth image rendering */
   img {
     image-rendering: auto;
+    backface-visibility: hidden;
   }
 
   /* Scrollbar styling */
@@ -323,3 +332,35 @@
     transform: translateX(200%);
   }
 }
+
+@keyframes shimmerPulse {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer-placeholder {
+  background: linear-gradient(
+    90deg,
+    #15171C 0%,
+    #1E2127 50%,
+    #15171C 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmerPulse 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* Fluid hardware-accelerated transitions */
+.smooth-gpu {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+  will-change: transform, opacity;
+}
+
+.ease-spring {
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}

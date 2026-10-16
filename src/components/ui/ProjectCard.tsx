@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Heart, Trash2 } from "lucide-react";
 import { cn } from "../../lib/utils";
@@ -21,6 +22,7 @@ interface ProjectCardProps {
 }
 
 export function ProjectCard({ id, image, title, artist, category, likes, className, onDelete }: ProjectCardProps) {
+    const [isLoaded, setIsLoaded] = useState(false);
     const isOwner = artist.id === 'current_user';
 
     const handleDelete = (e: React.MouseEvent) => {
@@ -33,14 +35,21 @@ export function ProjectCard({ id, image, title, artist, category, likes, classNa
 
     return (
         <div className={cn("group relative break-inside-avoid", className)}>
-            <div className="relative overflow-hidden rounded-2xl bg-surface border border-edge transition-all duration-300 hover:border-ochre/40 hover:-translate-y-1 hover:shadow-xl">
+            <div className="relative overflow-hidden rounded-2xl bg-surface border border-edge transition-all duration-300 hover:border-ochre/40 hover:-translate-y-1 hover:shadow-xl smooth-gpu">
                 <Link to={`/project/${id}`} className="block">
-                    <div className="relative aspect-[4/3] overflow-hidden bg-canvas">
+                    <div className="relative aspect-[4/3] overflow-hidden bg-surface">
+                        {!isLoaded && (
+                            <div className="absolute inset-0 shimmer-placeholder" />
+                        )}
                         <img
                             src={image || "https://picsum.photos/seed/fallback/800/600"}
                             alt={title}
-                            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                            className={cn(
+                                "h-full w-full object-cover transition-all duration-700 ease-out group-hover:scale-105",
+                                isLoaded ? "opacity-100 filter-none" : "opacity-0 scale-[1.03] blur-sm"
+                            )}
                             loading="lazy"
+                            onLoad={() => setIsLoaded(true)}
                             onError={(e) => {
                                 const target = e.target as HTMLImageElement;
                                 if (!target.src.includes('placeholder')) {

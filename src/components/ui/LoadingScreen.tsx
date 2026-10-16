@@ -9,7 +9,7 @@ export function LoadingScreen({ onFinished }: LoadingScreenProps) {
         <motion.div
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 1, ease: "easeInOut" }}
+            transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
             onAnimationComplete={(definition) => {
                 if (definition === "exit" && onFinished) {
                     onFinished();

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, MapPin, Camera, User, Share2, Check, Sparkles } from 'lucide-react';
+import { ArrowLeft, MapPin, Camera, User, Share2, Check, Sparkles, Loader2 } from 'lucide-react';
+import { AnimatePresence } from 'framer-motion';
 import { getPhotoBySlug, CULTURAL_PHOTOS } from '../data/photos';
 import type { PhotoItem } from '../types/photo';
 import { GalleryGrid } from '../components/GalleryGrid';
@@ -11,6 +12,7 @@ export const PhotoDetail: React.FC = () => {
   const navigate = useNavigate();
   const [modalPhoto, setModalPhoto] = useState<PhotoItem | null>(null);
   const [copied, setCopied] = useState(false);
+  const [mainImageLoaded, setMainImageLoaded] = useState(false);
 
   const photo = slug ? getPhotoBySlug(slug) : undefined;
 
@@ -77,14 +79,23 @@ export const PhotoDetail: React.FC = () => {
         </div>
 
         {/* Hero Deep-View Card */}
-        <div className="relative flex flex-col lg:flex-row w-full bg-surface border border-edge rounded-3xl overflow-hidden shadow-2xl mb-16">
+        <div className="relative flex flex-col lg:flex-row w-full bg-surface border border-edge rounded-3xl overflow-hidden shadow-2xl mb-16 smooth-gpu">
           {/* Main Visual */}
-          <div className="lg:w-2/3 bg-black flex items-center justify-center p-4 md:p-8">
+          <div className="lg:w-2/3 bg-black flex items-center justify-center p-4 md:p-8 relative min-h-[350px]">
+            {!mainImageLoaded && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 z-10 gap-3">
+                <Loader2 className="w-8 h-8 text-ochre animate-spin" />
+                <span className="text-[11px] uppercase tracking-wider text-mist font-mono">Developing Archival Plate...</span>
+              </div>
+            )}
             <div className={`w-full max-h-[82vh] overflow-hidden rounded-xl`}>
               <img
                 src={photo.fullImageUrl}
                 alt={photo.title}
-                className="w-full h-full object-contain max-h-[80vh] mx-auto rounded-lg shadow-2xl"
+                onLoad={() => setMainImageLoaded(true)}
+                className={`w-full h-full object-contain max-h-[80vh] mx-auto rounded-lg shadow-2xl transition-all duration-700 ease-out ${
+                  mainImageLoaded ? 'opacity-100 scale-100 filter-none' : 'opacity-0 scale-[1.02] blur-sm'
+                }`}
               />
             </div>
           </div>
@@ -194,9 +205,11 @@ export const PhotoDetail: React.FC = () => {
         )}
       </div>
 
-      {modalPhoto && (
-        <PhotoModal photo={modalPhoto} onClose={() => setModalPhoto(null)} />
-      )}
+      <AnimatePresence>
+        {modalPhoto && (
+          <PhotoModal photo={modalPhoto} onClose={() => setModalPhoto(null)} />
+        )}
+      </AnimatePresence>
     </div>
   );
 };
