@@ -1,6 +1,12 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { supabase, isConfigured } from '../lib/supabaseClient';
 import { PHOTO_CATEGORIES, VIDEO_CATEGORIES } from '../data/mockData';
+import {
+    validatePassword,
+    checkLoginAttempts,
+    recordFailedAttempt,
+    resetLoginAttempts,
+} from '../lib/passwordSecurity';
 
 interface User {
     id: string;
@@ -235,18 +241,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, []);
 
     const login = async (email: string, password: string) => {
+        // 1. Check brute-force lockout status
+        const lockout = checkLoginAttempts(email);
+        if (lockout.isLocked) {
+            throw new Error(`Account temporarily locked due to consecutive failed attempts. Please retry in ${lockout.remainingLockoutSeconds}s.`);
+        }
+
         if (isConfigured) {
             const { error } = await supabase.auth.signInWithPassword({
                 email,
                 password,
             });
-            if (error) throw error;
+            if (error) {
+                const failRecord = recordFailedAttempt(email);
+                if (failRecord.isLocked) {
+                    throw new Error("Maximum login attempts exceeded. Account is locked for 60 seconds.");
+                }
+                throw error;
+            }
+            resetLoginAttempts(email);
         } else {
             // Mock login
             const mockUsers = JSON.parse(localStorage.getItem(MOCK_USERS_KEY) || '[]');
             const foundUser = mockUsers.find((u: { email: string; password: string }) => u.email === email && u.password === password);
 
             if (foundUser) {
+                resetLoginAttempts(email);
                 const userData: User = {
                     id: foundUser.id,
                     email: foundUser.email,
@@ -259,12 +279,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 setUser(userData);
                 localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(userData));
             } else {
-                throw new Error("Invalid email or password");
+                const failRecord = recordFailedAttempt(email);
+                if (failRecord.isLocked) {
+                    throw new Error("Maximum login attempts exceeded. Account is locked for 60 seconds.");
+                }
+                throw new Error(`Invalid email or password. (${5 - failRecord.attempts} attempts remaining)`);
             }
         }
     };
 
     const signup = async (email: string, password: string, name: string, role: 'creative' | 'visitor' | 'admin' | 'client' = 'creative', metadata?: Record<string, unknown>) => {
+        // Enforce hardened archival password security standards
+        const passwordEval = validatePassword(password, { email, name });
+        if (!passwordEval.isValid) {
+            throw new Error(passwordEval.errors[0] || "Password does not meet required security complexity.");
+        }
+
         if (isConfigured) {
             const { error } = await supabase.auth.signUp({
                 email,
@@ -282,7 +312,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             // Mock signup
             const mockUsers = JSON.parse(localStorage.getItem(MOCK_USERS_KEY) || '[]');
             if (mockUsers.some((u: { email: string }) => u.email === email)) {
-                throw new Error("User already exists");
+                throw new Error("An account with this email address already exists.");
             }
 
             const newUser = {

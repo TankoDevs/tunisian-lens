@@ -1,29 +1,66 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Camera, ArrowRight, ShieldCheck } from "lucide-react";
+import { Camera, ArrowRight, ShieldCheck, Eye, EyeOff, AlertTriangle } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useAlert } from "../context/AlertContext";
 import { Captcha } from "../components/ui/Captcha";
 import { PHOTO_CATEGORIES } from "../data/mockData";
+import { checkLoginAttempts } from "../lib/passwordSecurity";
 
 export function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const [isVerified, setIsVerified] = useState(false);
+    const [lockoutSeconds, setLockoutSeconds] = useState(0);
+
     const { login } = useAuth();
     const { showAlert } = useAlert();
     const navigate = useNavigate();
 
+    // Check lockout on email change or timer
+    useEffect(() => {
+        if (!email.trim()) {
+            setLockoutSeconds(0);
+            return;
+        }
+        const status = checkLoginAttempts(email);
+        setLockoutSeconds(status.remainingLockoutSeconds);
+    }, [email]);
+
+    // Countdown timer for lockout
+    useEffect(() => {
+        if (lockoutSeconds <= 0) return;
+        const timer = setInterval(() => {
+            setLockoutSeconds(prev => {
+                if (prev <= 1) {
+                    clearInterval(timer);
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+        return () => clearInterval(timer);
+    }, [lockoutSeconds]);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!email) { showAlert("Please enter your email to continue", "error"); return; }
+        if (!email.trim()) { showAlert("Please enter your email to continue", "error"); return; }
         if (!password) { showAlert("Password is required", "error"); return; }
+        if (lockoutSeconds > 0) {
+            showAlert(`Account temporarily locked. Please wait ${lockoutSeconds} seconds.`, "error");
+            return;
+        }
         if (!isVerified) { showAlert("Please complete the human verification slider", "warning"); return; }
+
         try {
-            await login(email, password);
+            await login(email.trim(), password);
+            showAlert("Welcome back to the Tunisian Lens Archive!", "success");
             navigate("/");
-        } catch {
-            showAlert("Login failed. Please check your credentials.", "error");
+        } catch (err: any) {
+            const status = checkLoginAttempts(email);
+            setLockoutSeconds(status.remainingLockoutSeconds);
+            showAlert(err?.message || "Login failed. Please verify your credentials.", "error");
         }
     };
 
@@ -42,6 +79,19 @@ export function Login() {
                         <h1 className="text-3xl md:text-4xl font-serif text-alabaster tracking-tight">Welcome Back</h1>
                         <p className="text-sm text-mist font-light">Enter your credentials to access your creative studio</p>
                     </div>
+
+                    {/* Lockout Warning Banner */}
+                    {lockoutSeconds > 0 && (
+                        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-start gap-3">
+                            <AlertTriangle className="w-5 h-5 text-rose-400 mt-0.5 flex-shrink-0" />
+                            <div className="text-xs space-y-1 font-mono">
+                                <p className="font-semibold text-rose-400 uppercase tracking-wider">Account Security Lockout</p>
+                                <p className="text-mist">
+                                    Too many consecutive failed attempts. Cooling off for <strong className="text-alabaster">{lockoutSeconds}s</strong> to prevent brute-force attacks.
+                                </p>
+                            </div>
+                        </div>
+                    )}
 
                     <form className="space-y-5" onSubmit={handleSubmit} noValidate>
                         <div className="space-y-2">
@@ -64,14 +114,23 @@ export function Login() {
                                     Password
                                 </label>
                             </div>
-                            <input
-                                id="password"
-                                type="password"
-                                placeholder="••••••••"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="w-full h-11 px-4 rounded-xl border border-edge bg-surface text-alabaster text-sm placeholder:text-mist/40 focus:outline-none focus:border-ochre transition-all"
-                            />
+                            <div className="relative">
+                                <input
+                                    id="password"
+                                    type={showPassword ? "text" : "password"}
+                                    placeholder="••••••••"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="w-full h-11 pl-4 pr-11 rounded-xl border border-edge bg-surface text-alabaster text-sm placeholder:text-mist/40 focus:outline-none focus:border-ochre transition-all font-mono"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-mist hover:text-alabaster transition-colors"
+                                >
+                                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                </button>
+                            </div>
                         </div>
 
                         <div className="pt-2">
@@ -80,10 +139,10 @@ export function Login() {
 
                         <button
                             type="submit"
-                            disabled={!isVerified}
-                            className="w-full h-12 rounded-full bg-ochre hover:bg-ochre-light disabled:opacity-50 text-canvas font-medium text-xs font-mono uppercase tracking-widest transition-all shadow-md flex items-center justify-center gap-2"
+                            disabled={!isVerified || lockoutSeconds > 0}
+                            className="w-full h-12 rounded-full bg-ochre hover:bg-ochre-light disabled:opacity-50 disabled:cursor-not-allowed text-canvas font-medium text-xs font-mono uppercase tracking-widest transition-all shadow-md flex items-center justify-center gap-2"
                         >
-                            <span>Access Portfolio</span>
+                            <span>{lockoutSeconds > 0 ? `Locked (${lockoutSeconds}s)` : "Access Portfolio"}</span>
                             <ArrowRight className="w-4 h-4" />
                         </button>
                     </form>

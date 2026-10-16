@@ -139,3 +139,40 @@ create policy "Users can delete their own uploads"
     bucket_id = 'photos'
     and auth.uid() = owner
   );
+
+
+-- ============================================================
+-- 4. HARDENED PASSWORD SECURITY POLICY & HOOKS
+-- ============================================================
+-- Recommended Supabase Auth Settings (Dashboard -> Authentication -> Password Policy):
+-- Minimum Length: 10
+-- Require Uppercase: Enabled
+-- Require Lowercase: Enabled
+-- Require Numbers: Enabled
+-- Require Symbols: Enabled
+-- Pwned Passwords Check: Enabled (HIBP verification)
+
+-- Optional PL/pgSQL helper to check password complexity for backend edge functions
+create or replace function public.check_password_complexity(pwd text)
+returns boolean as $$
+begin
+  -- Minimum 10 chars, uppercase, lowercase, digit, and symbol
+  if length(pwd) < 10 then
+    return false;
+  end if;
+  if pwd !~ '[A-Z]' then
+    return false;
+  end if;
+  if pwd !~ '[a-z]' then
+    return false;
+  end if;
+  if pwd !~ '[0-9]' then
+    return false;
+  end if;
+  if pwd !~ '[!@#$%^&*()_+\-=\[\]{};'':"\\|,.<>\/?~`]' then
+    return false;
+  end if;
+  return true;
+end;
+$$ language plpgsql security definer;
+
