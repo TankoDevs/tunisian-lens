@@ -23,7 +23,12 @@
       "shutterSpeed": "1/400s",
       "iso": 100
     },
-    "capturedAt": "2024-05-18"
+    "capturedAt": "2024-05-18",
+    "isRawVerified": true,
+    "rawDownloadUrl": "https://pub-r2.tunisian-lens.pages.dev/raws/door-sidi-bou-said.ARW",
+    "likesCount": 142,
+    "repostsCount": 29,
+    "downloadsCount": 84
   },
   {
     "id": "tn-photo-02",
@@ -49,7 +54,12 @@
       "shutterSpeed": "1/250s",
       "iso": 100
     },
-    "capturedAt": "2024-06-02"
+    "capturedAt": "2024-06-02",
+    "isRawVerified": true,
+    "rawDownloadUrl": "https://pub-r2.tunisian-lens.pages.dev/raws/colosseum-el-jem.CR3",
+    "likesCount": 238,
+    "repostsCount": 47,
+    "downloadsCount": 135
   },
   {
     "id": "tn-photo-03",
@@ -75,7 +85,12 @@
       "shutterSpeed": "1/125s",
       "iso": 100
     },
-    "capturedAt": "2024-04-10"
+    "capturedAt": "2024-04-10",
+    "isRawVerified": true,
+    "rawDownloadUrl": "https://pub-r2.tunisian-lens.pages.dev/raws/dawn-chott-el-djerid.RAF",
+    "likesCount": 312,
+    "repostsCount": 65,
+    "downloadsCount": 204
   },
   {
     "id": "tn-photo-04",
@@ -101,7 +116,12 @@
       "shutterSpeed": "1/160s",
       "iso": 400
     },
-    "capturedAt": "2024-05-22"
+    "capturedAt": "2024-05-22",
+    "isRawVerified": true,
+    "rawDownloadUrl": "https://pub-r2.tunisian-lens.pages.dev/raws/medina-brass-craftsman.DNG",
+    "likesCount": 185,
+    "repostsCount": 38,
+    "downloadsCount": 92
   },
   {
     "id": "tn-photo-05",
@@ -127,7 +147,11 @@
       "shutterSpeed": "1/320s",
       "iso": 64
     },
-    "capturedAt": "2024-03-14"
+    "capturedAt": "2024-03-14",
+    "isRawVerified": false,
+    "likesCount": 94,
+    "repostsCount": 16,
+    "downloadsCount": 45
   },
   {
     "id": "tn-photo-06",
@@ -153,7 +177,12 @@
       "shutterSpeed": "1/500s",
       "iso": 100
     },
-    "capturedAt": "2024-07-04"
+    "capturedAt": "2024-07-04",
+    "isRawVerified": true,
+    "rawDownloadUrl": "https://pub-r2.tunisian-lens.pages.dev/raws/djerbahood-erriadh.ARW",
+    "likesCount": 176,
+    "repostsCount": 34,
+    "downloadsCount": 89
   },
   {
     "id": "tn-photo-07",
@@ -179,7 +208,12 @@
       "shutterSpeed": "1/200s",
       "iso": 100
     },
-    "capturedAt": "2024-08-11"
+    "capturedAt": "2024-08-11",
+    "isRawVerified": true,
+    "rawDownloadUrl": "https://pub-r2.tunisian-lens.pages.dev/raws/needles-of-tabarka.ARW",
+    "likesCount": 210,
+    "repostsCount": 41,
+    "downloadsCount": 110
   },
   {
     "id": "tn-photo-08",
@@ -205,7 +239,11 @@
       "shutterSpeed": "1/125s",
       "iso": 200
     },
-    "capturedAt": "2024-04-19"
+    "capturedAt": "2024-04-19",
+    "isRawVerified": false,
+    "likesCount": 128,
+    "repostsCount": 22,
+    "downloadsCount": 61
   },
   {
     "id": "tn-photo-09",
@@ -231,7 +269,12 @@
       "shutterSpeed": "1/400s",
       "iso": 64
     },
-    "capturedAt": "2024-05-30"
+    "capturedAt": "2024-05-30",
+    "isRawVerified": true,
+    "rawDownloadUrl": "https://pub-r2.tunisian-lens.pages.dev/raws/great-mosque-kairouan.NEF",
+    "likesCount": 275,
+    "repostsCount": 52,
+    "downloadsCount": 147
   },
   {
     "id": "tn-photo-10",
@@ -257,7 +300,11 @@
       "shutterSpeed": "1/500s",
       "iso": 100
     },
-    "capturedAt": "2024-06-15"
+    "capturedAt": "2024-06-15",
+    "isRawVerified": false,
+    "likesCount": 153,
+    "repostsCount": 27,
+    "downloadsCount": 73
   },
   {
     "id": "tn-photo-11",
@@ -283,7 +330,12 @@
       "shutterSpeed": "1/320s",
       "iso": 100
     },
-    "capturedAt": "2024-03-20"
+    "capturedAt": "2024-03-20",
+    "isRawVerified": true,
+    "rawDownloadUrl": "https://pub-r2.tunisian-lens.pages.dev/raws/chenini-hilltop-ksar.ARW",
+    "likesCount": 198,
+    "repostsCount": 39,
+    "downloadsCount": 102
   },
   {
     "id": "tn-photo-12",
@@ -309,6 +361,10 @@
       "shutterSpeed": "1/60s",
       "iso": 800
     },
-    "capturedAt": "2024-08-03"
+    "capturedAt": "2024-08-03",
+    "isRawVerified": false,
+    "likesCount": 164,
+    "repostsCount": 31,
+    "downloadsCount": 78
   }
 ]

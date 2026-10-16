@@ -8,12 +8,16 @@ import { GalleryGrid } from '../components/GalleryGrid';
 import { PhotoModal } from '../components/PhotoModal';
 import { ProtectedImage } from '../components/ui/ProtectedImage';
 import { useAntiScreenshot } from '../context/AntiScreenshotContext';
+import { SocialActionBar } from '../components/SocialActionBar';
+import { WallpaperModal } from '../components/WallpaperModal';
+import { RawBadgeAndDownload } from '../components/RawBadgeAndDownload';
 
 export const PhotoDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const [modalPhoto, setModalPhoto] = useState<PhotoItem | null>(null);
   const [copied, setCopied] = useState(false);
+  const [wallpaperModalOpen, setWallpaperModalOpen] = useState(false);
   const { setIsViewingProtected } = useAntiScreenshot();
 
   const photo = slug ? getPhotoBySlug(slug) : undefined;
@@ -128,7 +132,16 @@ export const PhotoDetail: React.FC = () => {
                 </span>
               </div>
 
-              <div className="my-6 border-t border-edge" />
+              {/* Social Engagement Suite */}
+              <SocialActionBar
+                photoId={photo.id}
+                initialLikes={photo.likesCount || 0}
+                initialReposts={photo.repostsCount || 0}
+                title={photo.title}
+                onOpenWallpaper={() => setWallpaperModalOpen(true)}
+              />
+
+              <div className="my-5 border-t border-edge" />
 
               <h2 className="text-[11px] uppercase tracking-wider text-ochre font-semibold mb-2">
                 Curatorial Note & Story
@@ -165,6 +178,13 @@ export const PhotoDetail: React.FC = () => {
                   </div>
                 </div>
               )}
+
+              {/* Verified RAW Capture Badge & Cloudflare R2 Download */}
+              <RawBadgeAndDownload
+                isRaw={Boolean(photo.isRawVerified)}
+                rawDownloadUrl={photo.rawDownloadUrl}
+                className="mt-5"
+              />
             </div>
 
             {/* Tags */}
@@ -213,6 +233,14 @@ export const PhotoDetail: React.FC = () => {
           <PhotoModal photo={modalPhoto} onClose={() => setModalPhoto(null)} />
         )}
       </AnimatePresence>
+
+      {/* Dynamic Wallpaper Modal */}
+      <WallpaperModal
+        isOpen={wallpaperModalOpen}
+        onClose={() => setWallpaperModalOpen(false)}
+        imageUrl={photo.fullImageUrl}
+        title={photo.title}
+      />
     </div>
   );
 };

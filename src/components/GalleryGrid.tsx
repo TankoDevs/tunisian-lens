@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, Maximize2 } from 'lucide-react';
+import { MapPin, Maximize2, ShieldCheck, Heart, Repeat2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { PhotoItem } from '../types/photo';
 import { ProtectedImage } from './ui/ProtectedImage';
@@ -40,6 +40,14 @@ function GalleryCard({ photo, onPhotoClick }: { photo: PhotoItem; onPhotoClick: 
         imgClassName="group-hover:scale-105"
       />
 
+      {/* Verified RAW Badge Chip */}
+      {photo.isRawVerified && (
+        <div className="absolute top-3 left-3 z-20 flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-md border border-ochre/40 text-[9px] font-mono font-bold tracking-wider text-ochre shadow-xl pointer-events-none">
+          <ShieldCheck size={11} className="text-ochre" />
+          <span>RAW VERIFIED</span>
+        </div>
+      )}
+
       {/* Hover Vignette Overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex flex-col justify-end p-5 pointer-events-none">
         <div className="flex items-end justify-between">
@@ -51,6 +59,18 @@ function GalleryCard({ photo, onPhotoClick }: { photo: PhotoItem; onPhotoClick: 
             <div className="flex items-center gap-1.5 text-xs text-sidi mt-1">
               <MapPin size={12} />
               <span>{photo.locationName}</span>
+            </div>
+
+            {/* Social Counts Preview */}
+            <div className="flex items-center gap-3 mt-2 text-[10px] text-mist/90 font-mono">
+              <span className="flex items-center gap-1">
+                <Heart size={11} className="text-rose-400 fill-rose-400/40" />
+                {photo.likesCount || 0}
+              </span>
+              <span className="flex items-center gap-1">
+                <Repeat2 size={11} className="text-emerald-400" />
+                {photo.repostsCount || 0}
+              </span>
             </div>
           </div>
 

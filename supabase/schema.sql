@@ -176,3 +176,84 @@ begin
 end;
 $$ language plpgsql security definer;
 
+
+-- ============================================================
+-- 5. SOCIAL ENGAGEMENT, RAW PHOTOS & WALLPAPER METRICS
+-- ============================================================
+
+-- 1. Extend photos table for social metrics and RAW support
+alter table public.photos
+  add column if not exists raw_download_url text,
+  add column if not exists is_raw_verified boolean default false,
+  add column if not exists likes_count int default 0,
+  add column if not exists reposts_count int default 0,
+  add column if not exists downloads_count int default 0;
+
+-- 2. Likes Table (Enforces 1 like per user per photo)
+create table if not exists public.photo_likes (
+  user_id uuid references public.profiles(id) on delete cascade,
+  photo_id uuid references public.photos(id) on delete cascade,
+  created_at timestamptz default now(),
+  primary key (user_id, photo_id)
+);
+
+alter table public.photo_likes enable row level security;
+drop policy if exists "Anyone can read likes" on public.photo_likes;
+create policy "Anyone can read likes" on public.photo_likes for select using (true);
+drop policy if exists "Authenticated users can like" on public.photo_likes;
+create policy "Authenticated users can like" on public.photo_likes for insert with check (auth.uid() = user_id);
+drop policy if exists "Users can unlike" on public.photo_likes;
+create policy "Users can unlike" on public.photo_likes for delete using (auth.uid() = user_id);
+
+-- 3. Reposts Table (Tracks user reposts to their profile)
+create table if not exists public.photo_reposts (
+  user_id uuid references public.profiles(id) on delete cascade,
+  photo_id uuid references public.photos(id) on delete cascade,
+  created_at timestamptz default now(),
+  primary key (user_id, photo_id)
+);
+
+alter table public.photo_reposts enable row level security;
+drop policy if exists "Anyone can read reposts" on public.photo_reposts;
+create policy "Anyone can read reposts" on public.photo_reposts for select using (true);
+drop policy if exists "Authenticated users can repost" on public.photo_reposts;
+create policy "Authenticated users can repost" on public.photo_reposts for insert with check (auth.uid() = user_id);
+drop policy if exists "Users can remove repost" on public.photo_reposts;
+create policy "Users can remove repost" on public.photo_reposts for delete using (auth.uid() = user_id);
+
+-- 4. Database Functions to safely increment/decrement counters
+create or replace function toggle_like(p_photo_id uuid, p_user_id uuid)
+returns boolean as $$
+declare
+  v_liked boolean;
+begin
+  if exists (select 1 from public.photo_likes where photo_id = p_photo_id and user_id = p_user_id) then
+    delete from public.photo_likes where photo_id = p_photo_id and user_id = p_user_id;
+    update public.photos set likes_count = greatest(0, likes_count - 1) where id = p_photo_id;
+    return false;
+  else
+    insert into public.photo_likes (photo_id, user_id) values (p_photo_id, p_user_id);
+    update public.photos set likes_count = likes_count + 1 where id = p_photo_id;
+    return true;
+  end if;
+end;
+$$ language plpgsql security definer;
+
+create or replace function toggle_repost(p_photo_id uuid, p_user_id uuid)
+returns boolean as $$
+declare
+  v_reposted boolean;
+begin
+  if exists (select 1 from public.photo_reposts where photo_id = p_photo_id and user_id = p_user_id) then
+    delete from public.photo_reposts where photo_id = p_photo_id and user_id = p_user_id;
+    update public.photos set reposts_count = greatest(0, reposts_count - 1) where id = p_photo_id;
+    return false;
+  else
+    insert into public.photo_reposts (photo_id, user_id) values (p_photo_id, p_user_id);
+    update public.photos set reposts_count = reposts_count + 1 where id = p_photo_id;
+    return true;
+  end if;
+end;
+$$ language plpgsql security definer;
+
+

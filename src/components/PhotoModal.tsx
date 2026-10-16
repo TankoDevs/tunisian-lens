@@ -4,6 +4,9 @@ import { motion } from 'framer-motion';
 import type { PhotoItem } from '../types/photo';
 import { useAntiScreenshot } from '../context/AntiScreenshotContext';
 import { ProtectedImage } from './ui/ProtectedImage';
+import { SocialActionBar } from './SocialActionBar';
+import { WallpaperModal } from './WallpaperModal';
+import { RawBadgeAndDownload } from './RawBadgeAndDownload';
 
 interface PhotoModalProps {
   photo: PhotoItem | null;
@@ -12,6 +15,7 @@ interface PhotoModalProps {
 
 export const PhotoModal: React.FC<PhotoModalProps> = ({ photo, onClose }) => {
   const [copied, setCopied] = useState(false);
+  const [wallpaperModalOpen, setWallpaperModalOpen] = useState(false);
   const { setIsViewingProtected } = useAntiScreenshot();
 
   useEffect(() => {
@@ -114,7 +118,14 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({ photo, onClose }) => {
               <span>By {photo.author.name} (<span className="text-sidi">{photo.author.handle}</span>)</span>
             </div>
 
-            <div className="my-5 border-t border-edge" />
+            {/* Social Engagement Suite (Like, Repost, Share, Wallpaper) */}
+            <SocialActionBar
+              photoId={photo.id}
+              initialLikes={photo.likesCount || 0}
+              initialReposts={photo.repostsCount || 0}
+              title={photo.title}
+              onOpenWallpaper={() => setWallpaperModalOpen(true)}
+            />
 
             <h4 className="text-[11px] uppercase tracking-wider text-ochre font-semibold mb-2">Curatorial Note</h4>
             <p className="text-xs text-mist/90 font-light leading-relaxed">
@@ -137,6 +148,13 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({ photo, onClose }) => {
                 </div>
               </div>
             )}
+
+            {/* Verified RAW Capture Badge & Cloudflare R2 Download */}
+            <RawBadgeAndDownload
+              isRaw={Boolean(photo.isRawVerified)}
+              rawDownloadUrl={photo.rawDownloadUrl}
+              className="mt-4"
+            />
           </div>
 
           {/* Footer: Tags & Share Button */}
@@ -169,6 +187,14 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({ photo, onClose }) => {
           </div>
         </div>
       </motion.div>
+
+      {/* Dynamic Wallpaper Modal (HTML5 Canvas Multi-Format Crop Engine) */}
+      <WallpaperModal
+        isOpen={wallpaperModalOpen}
+        onClose={() => setWallpaperModalOpen(false)}
+        imageUrl={photo.fullImageUrl}
+        title={photo.title}
+      />
     </motion.div>
   );
 };

@@ -28,4 +28,10 @@ export interface PhotoItem {
   tags: string[];
   exif?: PhotoExif;
   capturedAt?: string;
+  isRawVerified?: boolean;
+  rawDownloadUrl?: string;
+  likesCount?: number;
+  repostsCount?: number;
+  downloadsCount?: number;
 }
+
