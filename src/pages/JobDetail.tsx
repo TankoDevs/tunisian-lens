@@ -10,8 +10,8 @@ import { Button } from "../components/ui/button";
 import { ARTISTS } from "../data/mockData";
 import { useCurrency } from "../lib/useCurrency";
 
-function daysUntil(deadline: string): string {
-    const diff = new Date(deadline).getTime() - Date.now();
+function daysUntil(deadline: string, now: number): string {
+    const diff = new Date(deadline).getTime() - now;
     const days = Math.ceil(diff / 86400000);
     if (days < 0) return 'Expired';
     if (days === 0) return 'Due today';
@@ -69,6 +69,7 @@ function saveFreeQuestion(key: string, question: string) {
 
 export function JobDetail() {
     const { id } = useParams<{ id: string }>();
+    const [now] = useState(() => Date.now());
     const { jobs, applyToJob, getJobApplications, getConnects, hasApplied, closeJob } = useMarketplace();
     const { user, isAuthenticated } = useAuth();
     const { formatPrice, symbol } = useCurrency();
@@ -85,6 +86,7 @@ export function JobDetail() {
     const [showQuestionForm, setShowQuestionForm] = useState(false);
     const [questionText, setQuestionText] = useState('');
     const [questionSubmitted, setQuestionSubmitted] = useState(!!existingQuestion);
+    const { hasAccess } = useTunisianAccess();
 
     const job = jobs.find(j => j.id === id);
     if (!job) return (
@@ -98,7 +100,6 @@ export function JobDetail() {
     const already = isAuthenticated && user ? hasApplied(job.id) : false;
     const applications = getJobApplications(job.id);
     const isOwner = user?.id === job.clientId;
-    const { hasAccess } = useTunisianAccess();
 
     // Nearby creatives (Haversine from job location)
     const jobCoords = getJobCityCoords(job.location);
@@ -190,7 +191,7 @@ export function JobDetail() {
                             <p className="text-[10px] font-bold uppercase tracking-widest text-mist/60">Filing Deadline</p>
                             <p className="text-xs font-medium text-alabaster flex items-center gap-1.5">
                                 <Clock className="h-4 w-4 text-mist" strokeWidth={1.5} />
-                                {daysUntil(job.deadline)}
+                                {daysUntil(job.deadline, now)}
                             </p>
                         </div>
                         <div className="space-y-1">
@@ -380,14 +381,14 @@ export function JobDetail() {
                         ) : user?.role === 'client' ? (
                             /* Client viewing */
                             <p className="text-xs text-mist text-center py-4">Client accounts commission briefs and cannot submit proposals.</p>
-                        ) : user?.role === 'creative' && user?.createdAt && (Date.now() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24) < 7 ? (
+                        ) : user?.role === 'creative' && user?.createdAt && (now - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24) < 7 ? (
                             /* Account too new */
                             <div className="flex items-start gap-3 p-4 bg-sidi.azure/10 border border-sidi.azure/30 rounded-xl">
                                 <Clock className="h-5 w-5 text-sidi.azure flex-shrink-0 mt-0.5" strokeWidth={2} />
                                 <div>
                                     <p className="text-sm font-semibold text-alabaster">Account Maturation Period</p>
                                     <p className="text-xs text-mist mt-0.5">
-                                        New creative accounts must mature for 7 days before bidding on production calls. Available in <strong>{Math.ceil(7 - (Date.now() - new Date(user.createdAt!).getTime()) / (1000 * 60 * 60 * 24))} days</strong>.
+                                        New creative accounts must mature for 7 days before bidding on production calls. Available in <strong>{Math.ceil(7 - (now - new Date(user.createdAt!).getTime()) / (1000 * 60 * 60 * 24))} days</strong>.
                                     </p>
                                 </div>
                             </div>

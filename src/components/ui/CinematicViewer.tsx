@@ -60,7 +60,6 @@ export function CinematicViewer({ images, initialIndex = 0, title, onClose }: Ci
             if (intervalRef.current) clearInterval(intervalRef.current);
             return;
         }
-        setProgress(0);
         const tickMs = 50;
         intervalRef.current = setInterval(() => {
             setProgress(p => {

@@ -21,9 +21,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
             setTheme(e.matches ? 'dark' : 'light');
         };
 
-        // Set initial state correctly
-        setTheme(mediaQuery.matches ? 'dark' : 'light');
-
         // Modern browsers
         mediaQuery.addEventListener('change', handleChange);
 

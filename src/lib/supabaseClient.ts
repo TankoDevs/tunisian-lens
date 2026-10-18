@@ -20,5 +20,4 @@ if (isConfigured) {
     }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-export const supabase = _supabase!
+export const supabase = _supabase as SupabaseClient;

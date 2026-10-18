@@ -106,8 +106,9 @@ export function Signup() {
             const fromState = (location.state as { from?: { pathname?: string } | string })?.from;
             const targetPath = typeof fromState === 'string' ? fromState : fromState?.pathname || "/dashboard";
             navigate(targetPath, { replace: true });
-        } catch (err: any) {
-            showAlert(err?.message || "Failed to create account. Please try again.", "error");
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : "Failed to create account. Please try again.";
+            showAlert(message, "error");
         } finally {
             setIsSubmitting(false);
         }

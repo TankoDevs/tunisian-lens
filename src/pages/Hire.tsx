@@ -12,6 +12,7 @@ import { useCurrency } from "../lib/useCurrency";
 
 export function Hire() {
     const { id } = useParams<{ id: string }>();
+    const { formatPrice, symbol } = useCurrency();
     const artist = ARTISTS.find(a => a.id === id);
     const [formData, setFormData] = useState({ name: "", email: "", budget: "", date: "", message: "" });
     const [submitted, setSubmitted] = useState(false);
@@ -31,7 +32,6 @@ export function Hire() {
     }
 
     const isVerified = isArtistVerified(artist.id);
-    const { formatPrice, symbol } = useCurrency();
     const mockRating = (4.5 + parseInt(artist.id.replace(/\D/g, '') || "1") * 0.07).toFixed(1);
     const mockReviews = 20 + parseInt(artist.id.replace(/\D/g, '') || "1") * 13;
 

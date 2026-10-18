@@ -11,6 +11,7 @@ import { useCurrency } from "../lib/useCurrency";
 export function GearListingDetail() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const [now] = useState(() => Date.now());
     const [activeImage, setActiveImage] = useState(0);
     const [showContact, setShowContact] = useState(false);
     const { formatPrice } = useCurrency();
@@ -31,7 +32,7 @@ export function GearListingDetail() {
     }
 
     const related = MOCK_GEAR_LISTINGS.filter(g => g.id !== listing.id && g.category === listing.category).slice(0, 3);
-    const daysSince = Math.floor((Date.now() - new Date(listing.createdAt).getTime()) / 86400000);
+    const daysSince = Math.floor((now - new Date(listing.createdAt).getTime()) / 86400000);
 
     return (
         <div className="min-h-screen bg-canvas text-alabaster">

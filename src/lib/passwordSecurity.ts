@@ -52,7 +52,7 @@ export function validatePassword(
     hasUppercase: /[A-Z]/.test(pwd),
     hasLowercase: /[a-z]/.test(pwd),
     hasNumber: /[0-9]/.test(pwd),
-    hasSpecialChar: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`§±]/.test(pwd),
+    hasSpecialChar: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?~`§±]/.test(pwd),
     noCommonPattern: true,
     noPersonalInfo: true,
   };

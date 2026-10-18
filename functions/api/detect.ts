@@ -1,7 +1,13 @@
 // functions/api/detect.ts
-export async function onRequestPost({ request, env }: { request: Request; env: any }) {
+interface CloudflareEnv {
+  AI?: {
+    run: (model: string, options: Record<string, unknown>) => Promise<{ response?: string }>;
+  };
+}
+
+export async function onRequestPost({ request, env }: { request: Request; env: CloudflareEnv }) {
   try {
-    const { imageUrl, title } = (await request.json()) as { imageUrl?: string; title?: string };
+    const { imageUrl } = (await request.json()) as { imageUrl?: string };
 
     if (!imageUrl) {
       return new Response(JSON.stringify({ error: 'No image provided' }), {
@@ -45,8 +51,9 @@ export async function onRequestPost({ request, env }: { request: Request; env: a
         },
       }
     );
-  } catch (error: any) {
-    return new Response(JSON.stringify({ error: error?.message || 'Detection failed' }), {
+  } catch (error: unknown) {
+    const errorMsg = error instanceof Error ? error.message : 'Detection failed';
+    return new Response(JSON.stringify({ error: errorMsg }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });

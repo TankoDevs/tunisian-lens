@@ -244,7 +244,7 @@ export function SubmitProject() {
                     }, (msg) => setUploadStatusMsg(msg));
 
                     imageUrl = uploadResult.imageUrl;
-                } catch (uploadError: any) {
+                } catch (uploadError: unknown) {
                     console.warn("Storage upload notice:", uploadError);
                     try {
                         const fallbackUrl = await uploadImage(imageFile);

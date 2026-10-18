@@ -117,12 +117,15 @@ export function Photographers() {
     const [selectedStyleTags, setSelectedStyleTags] = useState<string[]>([]);
     const [discoveryTab, setDiscoveryTab] = useState("all");
 
-    useEffect(() => {
-        const cat = searchParams.get("category");
-        const type = searchParams.get("type");
-        if (cat) setSelectedCategory(cat);
-        if (type) setSelectedType(type);
-    }, [searchParams]);
+    const [prevSearchParams, setPrevSearchParams] = useState<string>(searchParams.toString());
+    const paramCat = searchParams.get("category");
+    const paramType = searchParams.get("type");
+
+    if (searchParams.toString() !== prevSearchParams) {
+        setPrevSearchParams(searchParams.toString());
+        if (paramCat) setSelectedCategory(paramCat);
+        if (paramType) setSelectedType(paramType);
+    }
 
     // Simulate network delay for skeletons
     useEffect(() => {
@@ -266,7 +269,14 @@ export function Photographers() {
     const currentSortLabel = SORT_OPTIONS.find(s => s.value === sortBy)?.label ?? "Relevance";
 
     // Reset page on filter/sort change
-    useEffect(() => { setPage(1); }, [searchQuery, selectedCountry, selectedCategory, selectedType, verifiedOnly, minPrice, maxPrice, sortBy]);
+    const [prevFilterKey, setPrevFilterKey] = useState<string>('');
+    const currentFilterKey = `${searchQuery}-${selectedCountry}-${selectedCategory}-${selectedType}-${verifiedOnly}-${minPrice}-${maxPrice}-${sortBy}`;
+    if (currentFilterKey !== prevFilterKey) {
+        setPrevFilterKey(currentFilterKey);
+        if (prevFilterKey !== '') {
+            setPage(1);
+        }
+    }
 
     return (
         <div className="min-h-screen bg-canvas text-alabaster">

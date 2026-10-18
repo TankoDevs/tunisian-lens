@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Search, Filter, Camera, CheckCircle2 } from "lucide-react";
 import { CATEGORIES, COUNTRIES, ARTISTS, VIDEO_CATEGORIES } from "../data/mockData";
 import { ProjectCard } from "../components/ui/ProjectCard";
@@ -13,21 +13,22 @@ import { Link, useSearchParams } from "react-router-dom";
 export function Explore() {
     const { publicProjects, deleteProject, isLoading } = useProjects();
     const [searchParams] = useSearchParams();
-    const [selectedCategory, setSelectedCategory] = useState<string | null>(searchParams.get("category"));
+    const catParam = searchParams.get("category");
+    const typeParam = searchParams.get("type");
+    const targetCategory = catParam || (typeParam === "video" ? VIDEO_CATEGORIES[0] : null);
+
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(targetCategory);
+    const [prevParams, setPrevParams] = useState<string>(searchParams.toString());
+
+    if (searchParams.toString() !== prevParams) {
+        setPrevParams(searchParams.toString());
+        setSelectedCategory(targetCategory);
+    }
+
     const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [verifiedOnly, setVerifiedOnly] = useState(false);
     const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
-
-    useEffect(() => {
-        const cat = searchParams.get("category");
-        const type = searchParams.get("type");
-        if (cat) {
-            setSelectedCategory(cat);
-        } else if (type === "video") {
-            setSelectedCategory(VIDEO_CATEGORIES[0]);
-        }
-    }, [searchParams]);
 
     const filteredProjects = publicProjects.filter((project) => {
         const matchesCategory = selectedCategory ? project.category === selectedCategory : true;

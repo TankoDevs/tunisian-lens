@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
     Zap, Briefcase, ChevronRight, CheckCircle2, XCircle, AlertCircle,
     PlusCircle, ShieldCheck, Clock, Globe, Tag, Image, Download,
@@ -82,15 +82,15 @@ export function Dashboard() {
     const [requestSent, setRequestSent] = useState(false);
 
     // International toggle & style tags (creative only)
-    const [intlAvailable, setIntlAvailable] = useState<boolean>(false);
-    const [styleTags, setStyleTags] = useState<string[]>([]);
+    const [intlAvailable, setIntlAvailable] = useState<boolean>(() => user ? getStoredIntl(user.id) : false);
+    const [styleTags, setStyleTags] = useState<string[]>(() => user ? getStoredStyleTags(user.id) : []);
+    const [prevUserId, setPrevUserId] = useState<string | null>(user?.id || null);
 
-    useEffect(() => {
-        if (user?.id) {
-            setIntlAvailable(getStoredIntl(user.id));
-            setStyleTags(getStoredStyleTags(user.id));
-        }
-    }, [user?.id]);
+    if (user?.id && user.id !== prevUserId) {
+        setPrevUserId(user.id);
+        setIntlAvailable(getStoredIntl(user.id));
+        setStyleTags(getStoredStyleTags(user.id));
+    }
 
     const handleIntlToggle = () => {
         if (!user) return;

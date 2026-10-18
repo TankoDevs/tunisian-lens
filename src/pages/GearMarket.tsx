@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Search, PlusCircle, ShoppingBag, SlidersHorizontal, X, ShieldCheck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -20,7 +20,26 @@ const conditionBadgeClass: Record<GearCondition, string> = {
 export function GearMarket() {
     const [searchParams] = useSearchParams();
     const [search, setSearch] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState<GearCategory | 'All'>('All');
+    const raw = searchParams.get("category") || searchParams.get("cat");
+    const targetCategory: GearCategory | 'All' = useMemo(() => {
+        if (!raw) return 'All';
+        const normalized = raw.toLowerCase().trim();
+        const found = GEAR_CATEGORIES.find(c => 
+            c.toLowerCase() === normalized || 
+            c.toLowerCase().startsWith(normalized) || 
+            normalized.startsWith(c.toLowerCase())
+        );
+        return found || 'All';
+    }, [raw]);
+
+    const [selectedCategory, setSelectedCategory] = useState<GearCategory | 'All'>(targetCategory);
+    const [prevRaw, setPrevRaw] = useState<string | null>(raw);
+
+    if (raw !== prevRaw) {
+        setPrevRaw(raw);
+        setSelectedCategory(targetCategory);
+    }
+
     const [selectedConditions, setSelectedConditions] = useState<GearCondition[]>([]);
     const [selectedBrand, setSelectedBrand] = useState('');
     const [minPrice, setMinPrice] = useState('');
@@ -28,21 +47,6 @@ export function GearMarket() {
     const [location, setLocation] = useState('');
     const [showFilters, setShowFilters] = useState(false);
     const [isLoading] = useState(false);
-
-    useEffect(() => {
-        const raw = searchParams.get("category") || searchParams.get("cat");
-        if (raw) {
-            const normalized = raw.toLowerCase().trim();
-            const found = GEAR_CATEGORIES.find(c => 
-                c.toLowerCase() === normalized || 
-                c.toLowerCase().startsWith(normalized) || 
-                normalized.startsWith(c.toLowerCase())
-            );
-            if (found) {
-                setSelectedCategory(found);
-            }
-        }
-    }, [searchParams]);
 
     const toggleCondition = (c: GearCondition) => {
         setSelectedConditions(prev =>

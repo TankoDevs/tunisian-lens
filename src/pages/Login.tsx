@@ -19,15 +19,15 @@ export function Login() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Check lockout on email change or timer
-    useEffect(() => {
-        if (!email.trim()) {
+    const handleEmailChange = (val: string) => {
+        setEmail(val);
+        if (!val.trim()) {
             setLockoutSeconds(0);
-            return;
+        } else {
+            const status = checkLoginAttempts(val);
+            setLockoutSeconds(status.remainingLockoutSeconds);
         }
-        const status = checkLoginAttempts(email);
-        setLockoutSeconds(status.remainingLockoutSeconds);
-    }, [email]);
+    };
 
     // Countdown timer for lockout
     useEffect(() => {
@@ -60,10 +60,11 @@ export function Login() {
             const fromState = (location.state as { from?: { pathname?: string } | string })?.from;
             const targetPath = typeof fromState === 'string' ? fromState : fromState?.pathname || "/dashboard";
             navigate(targetPath, { replace: true });
-        } catch (err: any) {
+        } catch (err: unknown) {
             const status = checkLoginAttempts(email);
             setLockoutSeconds(status.remainingLockoutSeconds);
-            showAlert(err?.message || "Login failed. Please verify your credentials.", "error");
+            const message = err instanceof Error ? err.message : "Login failed. Please verify your credentials.";
+            showAlert(message, "error");
         }
     };
 
@@ -106,7 +107,7 @@ export function Login() {
                                 type="email"
                                 placeholder="photographer@tunisianlens.com"
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                onChange={(e) => handleEmailChange(e.target.value)}
                                 className="w-full h-11 px-4 rounded-xl border border-edge bg-surface text-alabaster text-sm placeholder:text-mist/40 focus:outline-none focus:border-ochre transition-all"
                             />
                         </div>
@@ -209,7 +210,7 @@ export function Login() {
                                             <button
                                                 key={`photo-${cat}`}
                                                 type="button"
-                                                onClick={() => { setEmail(demoEmail); setPassword('demo123'); setIsVerified(true); }}
+                                                onClick={() => { handleEmailChange(demoEmail); setPassword('demo123'); setIsVerified(true); }}
                                                 className="text-[10px] font-mono px-2.5 py-1 rounded-full border border-edge bg-surface hover:border-ochre hover:text-ochre transition-colors"
                                             >
                                                 {cat}
@@ -224,14 +225,14 @@ export function Login() {
                                 <div className="flex gap-2">
                                     <button
                                         type="button"
-                                        onClick={() => { setEmail('client@tunisianlens.com'); setPassword('client123'); setIsVerified(true); }}
+                                        onClick={() => { handleEmailChange('client@tunisianlens.com'); setPassword('client123'); setIsVerified(true); }}
                                         className="text-[10px] font-mono px-3 py-1 rounded-full border border-edge bg-surface text-sidi-azure hover:border-sidi-azure transition-colors"
                                     >
                                         Client Role
                                     </button>
                                     <button
                                         type="button"
-                                        onClick={() => { setEmail('admin@tunisianlens.com'); setPassword('admin123'); setIsVerified(true); }}
+                                        onClick={() => { handleEmailChange('admin@tunisianlens.com'); setPassword('admin123'); setIsVerified(true); }}
                                         className="text-[10px] font-mono px-3 py-1 rounded-full border border-ochre/40 bg-ochre/10 text-ochre hover:bg-ochre/20 transition-colors"
                                     >
                                         Admin Curator

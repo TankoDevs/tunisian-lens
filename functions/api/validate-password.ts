@@ -25,7 +25,7 @@ export async function onRequestPost({ request }: { request: Request }) {
       hasUppercase: /[A-Z]/.test(password),
       hasLowercase: /[a-z]/.test(password),
       hasNumber: /[0-9]/.test(password),
-      hasSpecialChar: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`§±]/.test(password),
+      hasSpecialChar: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?~`§±]/.test(password),
       noCommonPattern: true,
       noPersonalInfo: true,
     };
@@ -88,8 +88,9 @@ export async function onRequestPost({ request }: { request: Request }) {
         },
       }
     );
-  } catch (error: any) {
-    return new Response(JSON.stringify({ error: error?.message || 'Password evaluation failed' }), {
+  } catch (error: unknown) {
+    const errorMsg = error instanceof Error ? error.message : 'Password evaluation failed';
+    return new Response(JSON.stringify({ error: errorMsg }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' },
     });

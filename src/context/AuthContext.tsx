@@ -112,6 +112,7 @@ const CURRENT_USER_KEY = 'tunisian_lens_current_user';
     }
 })();
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function normalizeRole(rawRole?: string): 'creative' | 'visitor' | 'admin' | 'client' {
     if (!rawRole) return 'creative';
     const r = rawRole.toLowerCase().trim();
@@ -266,6 +267,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setIsLoading(false);
             console.log("🛠️ Auth running in Mock Mode (No Supabase detected)");
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const login = async (email: string, password: string) => {

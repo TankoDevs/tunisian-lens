@@ -35,6 +35,7 @@ export function ArtistProfile() {
     const [isSaved, setIsSaved] = useState(false);
     const [activeCollection, setActiveCollection] = useState<string | null>(null);
     const [showShareMenu, setShowShareMenu] = useState(false);
+    const [isVerified, setIsVerified] = useState<boolean>(() => id ? isArtistVerified(id) : false);
     const { user } = useAuth();
     const { showAlert } = useAlert();
     const { createConversation } = useChat();
@@ -55,8 +56,6 @@ export function ArtistProfile() {
         );
     }
 
-    const verifiedFromStorage = id ? isArtistVerified(id) : false;
-    const [isVerified, setIsVerified] = useState<boolean>(verifiedFromStorage);
     const { rating: profileRating } = getArtistRating(id || "", artist.name);
 
     const toggleVerification = () => {

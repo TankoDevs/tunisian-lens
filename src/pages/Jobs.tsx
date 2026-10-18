@@ -39,6 +39,7 @@ export function Jobs() {
     const [showFilters, setShowFilters] = useState(false);
     const [sortBy, setSortBy] = useState("urgent"); // Keep urgent first as default but make it switchable
     const [showSortMenu, setShowSortMenu] = useState(false);
+    const [now] = useState(() => Date.now());
     const sortRef = useRef<HTMLDivElement>(null);
 
     const connects = isAuthenticated && user ? getConnects(user.id) : 0;
@@ -53,21 +54,23 @@ export function Jobs() {
         setDeadlineDays(''); setShowOpen(true);
     };
 
-    const filtered = jobs.filter(job => {
-        if (showOpen && job.status !== 'open') return false;
-        if (selectedCategory !== 'All' && job.category !== selectedCategory) return false;
-        if (maxBudget && job.budget > parseInt(maxBudget)) return false;
-        if (location && job.location && !job.location.toLowerCase().includes(location.toLowerCase())) return false;
-        if (maxConnects && job.connectsRequired > parseInt(maxConnects)) return false;
-        if (deadlineDays) {
-            const daysUntil = (new Date(job.deadline).getTime() - Date.now()) / 86400000;
-            if (daysUntil > parseInt(deadlineDays)) return false;
-        }
-        if (search && !job.title.toLowerCase().includes(search.toLowerCase()) &&
-            !job.description.toLowerCase().includes(search.toLowerCase()) &&
-            (!job.location || !job.location.toLowerCase().includes(search.toLowerCase()))) return false;
-        return true;
-    });
+    const filtered = useMemo(() => {
+        return jobs.filter(job => {
+            if (showOpen && job.status !== 'open') return false;
+            if (selectedCategory !== 'All' && job.category !== selectedCategory) return false;
+            if (maxBudget && job.budget > parseInt(maxBudget)) return false;
+            if (location && job.location && !job.location.toLowerCase().includes(location.toLowerCase())) return false;
+            if (maxConnects && job.connectsRequired > parseInt(maxConnects)) return false;
+            if (deadlineDays) {
+                const daysUntil = (new Date(job.deadline).getTime() - now) / 86400000;
+                if (daysUntil > parseInt(deadlineDays)) return false;
+            }
+            if (search && !job.title.toLowerCase().includes(search.toLowerCase()) &&
+                !job.description.toLowerCase().includes(search.toLowerCase()) &&
+                (!job.location || !job.location.toLowerCase().includes(search.toLowerCase()))) return false;
+            return true;
+        });
+    }, [jobs, showOpen, selectedCategory, maxBudget, location, maxConnects, deadlineDays, search, now]);
 
     const showTunisiaRestrictionBanner = !hasAccess && filtered.length > 0;
 
