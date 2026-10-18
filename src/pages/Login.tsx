@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Camera, ArrowRight, ShieldCheck, Eye, EyeOff, AlertTriangle } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useAlert } from "../context/AlertContext";
@@ -17,6 +17,7 @@ export function Login() {
     const { login } = useAuth();
     const { showAlert } = useAlert();
     const navigate = useNavigate();
+    const location = useLocation();
 
     // Check lockout on email change or timer
     useEffect(() => {
@@ -55,8 +56,10 @@ export function Login() {
 
         try {
             await login(email.trim(), password);
-            showAlert("Welcome back to the Tunisian Lens Archive!", "success");
-            navigate("/");
+            showAlert("Welcome back to your workspace!", "success");
+            const fromState = (location.state as { from?: { pathname?: string } | string })?.from;
+            const targetPath = typeof fromState === 'string' ? fromState : fromState?.pathname || "/dashboard";
+            navigate(targetPath, { replace: true });
         } catch (err: any) {
             const status = checkLoginAttempts(email);
             setLockoutSeconds(status.remainingLockoutSeconds);

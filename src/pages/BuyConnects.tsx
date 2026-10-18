@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Zap, ShoppingCart, CheckCircle, ArrowRight, Shield } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { useAuth } from "../context/AuthContext";
+import { useMarketplace } from "../context/MarketplaceContext";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "../lib/utils";
@@ -42,19 +43,24 @@ const PACKAGES = [
 ];
 
 export function BuyConnects() {
-    const { isAuthenticated } = useAuth();
+    const { user, isAuthenticated } = useAuth();
+    const { addConnects } = useMarketplace();
     const [purchasing, setPurchasing] = useState<string | null>(null);
     const [purchased, setPurchased] = useState<string | null>(null);
 
-    const handleBuy = (pkgId: string) => {
-        if (!isAuthenticated) return;
+    const handleBuy = async (pkgId: string) => {
+        if (!isAuthenticated || !user) return;
         setPurchasing(pkgId);
+        const pkg = PACKAGES.find(p => p.id === pkgId);
         // Simulate payment processing
-        setTimeout(() => {
+        setTimeout(async () => {
+            if (pkg) {
+                await addConnects(user.id, pkg.connects);
+            }
             setPurchasing(null);
             setPurchased(pkgId);
             setTimeout(() => setPurchased(null), 4000);
-        }, 1800);
+        }, 1200);
     };
 
     return (

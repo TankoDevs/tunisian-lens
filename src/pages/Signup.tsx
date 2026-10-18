@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Camera, ArrowRight, Eye, EyeOff, Check, X, Sparkles, Key, Lock } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useAlert } from "../context/AlertContext";
@@ -32,6 +32,7 @@ export function Signup() {
     const { signup } = useAuth();
     const { showAlert } = useAlert();
     const navigate = useNavigate();
+    const location = useLocation();
 
     // Live password security evaluation
     const passwordEval = useMemo(() => {
@@ -102,7 +103,9 @@ export function Signup() {
                 { country, ...(role === 'creative' ? { city, creativeType } : {}) }
             );
             showAlert("Account created successfully with hardened security credentials!", "success");
-            navigate("/");
+            const fromState = (location.state as { from?: { pathname?: string } | string })?.from;
+            const targetPath = typeof fromState === 'string' ? fromState : fromState?.pathname || "/dashboard";
+            navigate(targetPath, { replace: true });
         } catch (err: any) {
             showAlert(err?.message || "Failed to create account. Please try again.", "error");
         } finally {
