@@ -3,12 +3,13 @@ import { useState } from "react";
 import {
     Zap, Briefcase, ChevronRight, CheckCircle2, XCircle, AlertCircle,
     PlusCircle, ShieldCheck, Clock, Globe, Tag, Image, Download,
-    Layers, Sparkles, SlidersHorizontal, Lock, ArrowUpRight
+    Layers, Sparkles, SlidersHorizontal, Lock, ArrowUpRight, Edit3
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMarketplace } from "../context/MarketplaceContext";
 import { useAuth } from "../context/AuthContext";
 import { Button } from "../components/ui/button";
+import { EditProfileModal } from "../components/ui/EditProfileModal";
 import {
     isArtistVerified,
     getVerificationRequests,
@@ -80,6 +81,7 @@ export function Dashboard() {
     const [showRequestForm, setShowRequestForm] = useState(false);
     const [requestMsg, setRequestMsg] = useState('');
     const [requestSent, setRequestSent] = useState(false);
+    const [showEditProfile, setShowEditProfile] = useState(false);
 
     // International toggle & style tags (creative only)
     const [intlAvailable, setIntlAvailable] = useState<boolean>(() => user ? getStoredIntl(user.id) : false);
@@ -194,33 +196,62 @@ export function Dashboard() {
                     className="border border-edge rounded-3xl p-6 md:p-8 bg-surface relative overflow-hidden shadow-sm"
                 >
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
-                        <div className="space-y-2">
-                            <div className="flex items-center gap-2.5 flex-wrap">
-                                <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-ochre">Member Workspace</span>
-                                <span className="text-[10px] uppercase tracking-wider font-semibold px-2.5 py-0.5 rounded-full bg-ochre/10 border border-ochre/30 text-ochre">
-                                    {roleBadgeText}
-                                </span>
-                                {isVerified && (
-                                    <span className="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center gap-1">
-                                        <CheckCircle2 className="w-3 h-3" /> Folio Certified
+                        <div className="flex items-start sm:items-center gap-4 sm:gap-6">
+                            <div
+                                onClick={() => setShowEditProfile(true)}
+                                className="relative group flex-shrink-0 cursor-pointer"
+                                title="Click to edit profile photo"
+                            >
+                                <img
+                                    src={user.avatar || "https://randomuser.me/api/portraits/lego/1.jpg"}
+                                    alt={user.name}
+                                    className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border-2 border-edge group-hover:border-ochre transition-all shadow-md"
+                                />
+                                <div className="absolute inset-0 bg-black/50 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-ochre">
+                                    <Edit3 className="w-5 h-5" />
+                                </div>
+                            </div>
+                            <div className="space-y-1.5">
+                                <div className="flex items-center gap-2.5 flex-wrap">
+                                    <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-ochre">Member Workspace</span>
+                                    <span className="text-[10px] uppercase tracking-wider font-semibold px-2.5 py-0.5 rounded-full bg-ochre/10 border border-ochre/30 text-ochre">
+                                        {roleBadgeText}
                                     </span>
+                                    {isVerified && (
+                                        <span className="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center gap-1">
+                                            <CheckCircle2 className="w-3 h-3" /> Folio Certified
+                                        </span>
+                                    )}
+                                </div>
+                                <h1 className="font-serif text-2xl sm:text-3xl text-alabaster tracking-tight font-normal">
+                                    Welcome back, {user.name}
+                                </h1>
+                                <p className="text-xs text-mist font-light">
+                                    {user.title || (isCreative ? 'Photographer & Visual Creator' : 'Commission Partner')} · {user.location || user.country || 'Tunisia'} · Active Session
+                                </p>
+                                {user.bio && (
+                                    <p className="text-xs text-mist/80 line-clamp-1 italic max-w-xl font-light">
+                                        "{user.bio}"
+                                    </p>
                                 )}
                             </div>
-                            <h1 className="font-serif text-3xl md:text-4xl text-alabaster tracking-tight font-normal">
-                                Welcome back, {user.name}
-                            </h1>
-                            <p className="text-xs text-mist font-light">
-                                {user.email} · {user.country || 'Tunisia'} · Active Session
-                            </p>
                         </div>
 
                         {/* Quick Action Buttons */}
                         <div className="flex items-center gap-2.5 flex-wrap">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setShowEditProfile(true)}
+                                className="gap-2 text-xs border-edge text-alabaster hover:border-ochre hover:bg-surface-elevated rounded-xl h-10"
+                            >
+                                <Edit3 className="h-4 w-4 text-ochre" /> Edit Photo &amp; Bio
+                            </Button>
                             {isCreative && (
                                 <>
                                     <Link to={`/artist/${user.id}`}>
                                         <Button variant="outline" size="sm" className="gap-2 text-xs border-edge text-alabaster hover:bg-surface-elevated rounded-xl h-10">
-                                            <ArrowUpRight className="h-4 w-4" /> View Public Folio
+                                            <ArrowUpRight className="h-4 w-4" /> View Folio
                                         </Button>
                                     </Link>
                                     <Link to="/jobs">
@@ -879,6 +910,37 @@ export function Dashboard() {
                                 </p>
                             </div>
 
+                            {/* Public Profile Card */}
+                            <div className="p-6 rounded-2xl bg-surface-elevated border border-edge flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
+                                <div className="flex items-center gap-4">
+                                    <img
+                                        src={user.avatar || "https://randomuser.me/api/portraits/lego/1.jpg"}
+                                        alt={user.name}
+                                        className="w-16 h-16 rounded-2xl object-cover border border-edge ring-2 ring-ochre/20"
+                                    />
+                                    <div className="space-y-1">
+                                        <div className="flex items-center gap-2">
+                                            <h3 className="font-medium text-base text-alabaster">{user.name}</h3>
+                                            <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-ochre/10 text-ochre border border-ochre/30">
+                                                {user.role}
+                                            </span>
+                                        </div>
+                                        <p className="text-xs text-mist">{user.title || 'Creative Professional'} · {user.location || user.country || 'Tunisia'}</p>
+                                        <p className="text-xs text-mist/80 italic max-w-md line-clamp-2">
+                                            {user.bio ? `"${user.bio}"` : 'No public bio set yet. Click Edit Profile to tell clients about your vision.'}
+                                        </p>
+                                    </div>
+                                </div>
+                                <Button
+                                    onClick={() => setShowEditProfile(true)}
+                                    size="sm"
+                                    className="bg-ochre hover:bg-ochre-light text-canvas font-semibold text-xs rounded-xl gap-2 flex-shrink-0"
+                                >
+                                    <Edit3 className="w-3.5 h-3.5" />
+                                    Edit Photo &amp; Bio
+                                </Button>
+                            </div>
+
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
                                 <div className="p-4 rounded-2xl bg-surface-elevated border border-edge space-y-1">
                                     <span className="text-[10px] text-mist/60 uppercase">Full Name</span>
@@ -910,6 +972,12 @@ export function Dashboard() {
                     </div>
                 )}
             </div>
+
+            {/* Edit Profile & Bio Modal */}
+            <EditProfileModal
+                isOpen={showEditProfile}
+                onClose={() => setShowEditProfile(false)}
+            />
         </div>
     );
 }

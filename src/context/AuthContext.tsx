@@ -13,6 +13,9 @@ export interface User {
     email: string;
     name: string;
     avatar?: string;
+    bio?: string;
+    title?: string;
+    location?: string;
     role: 'creative' | 'visitor' | 'admin' | 'client';
     country?: string;
     createdAt?: string;
@@ -26,6 +29,9 @@ export interface AuthContextType {
     signup: (email: string, password: string, name: string, role?: 'creative' | 'visitor' | 'admin' | 'client', metadata?: Record<string, unknown>) => Promise<void>;
     logout: () => void;
     switchRole: (newRole: 'creative' | 'visitor' | 'admin' | 'client') => void;
+    updateProfile: (updates: Partial<User>) => Promise<void>;
+    resetPasswordForEmail: (email: string) => Promise<{ success: boolean; message: string }>;
+    updatePassword: (newPassword: string) => Promise<{ success: boolean; message: string }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -203,6 +209,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 email: supabaseUser.email || '',
                 name: (profile?.full_name as string) || (profile?.name as string) || (supabaseUser.user_metadata?.full_name as string) || supabaseUser.email?.split('@')[0] || 'User',
                 avatar: (profile?.avatar_url as string) || (supabaseUser.user_metadata?.avatar_url as string) || "https://randomuser.me/api/portraits/lego/1.jpg",
+                bio: (profile?.bio as string) || (supabaseUser.user_metadata?.bio as string) || undefined,
+                title: (profile?.title as string) || (supabaseUser.user_metadata?.title as string) || undefined,
+                location: (profile?.location as string) || (supabaseUser.user_metadata?.location as string) || undefined,
                 role: normalizedRole,
                 country: (profile?.country as string) || (supabaseUser.user_metadata?.country as string) || undefined,
                 createdAt: (supabaseUser as unknown as { created_at?: string }).created_at || (profile?.created_at as string) || undefined,
@@ -305,6 +314,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     email: foundUser.email,
                     name: foundUser.name,
                     avatar: foundUser.avatar || "https://randomuser.me/api/portraits/lego/1.jpg",
+                    bio: foundUser.bio || "Passionate creative exploring the visual heritage and contemporary landscapes of Tunisia.",
+                    title: foundUser.title || (foundUser.role === 'creative' ? 'Photographer & Visual Creator' : 'Commissioning Client'),
+                    location: foundUser.location || "Tunis, Tunisia",
                     role: normalizeRole(foundUser.role),
                     country: foundUser.country || undefined,
                     createdAt: foundUser.createdAt || undefined,
@@ -393,6 +405,100 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     };
 
+    const updateProfile = async (updates: Partial<User>) => {
+        if (!user) return;
+        const updatedUser: User = { ...user, ...updates };
+        setUser(updatedUser);
+
+        if (isConfigured) {
+            try {
+                // Update Supabase user metadata
+                await supabase.auth.updateUser({
+                    data: {
+                        full_name: updatedUser.name,
+                        avatar_url: updatedUser.avatar,
+                        bio: updatedUser.bio,
+                        title: updatedUser.title,
+                        location: updatedUser.location,
+                    }
+                });
+                // Also attempt updating public.profiles table
+                await supabase.from('profiles').update({
+                    full_name: updatedUser.name,
+                    avatar_url: updatedUser.avatar,
+                    bio: updatedUser.bio,
+                    title: updatedUser.title,
+                    location: updatedUser.location,
+                }).eq('id', user.id);
+            } catch (err) {
+                console.warn("Could not sync profile update to remote DB:", err);
+            }
+        } else {
+            // Update local mock storage
+            localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(updatedUser));
+            const mockUsers = JSON.parse(localStorage.getItem(MOCK_USERS_KEY) || '[]');
+            const idx = mockUsers.findIndex((u: { id: string }) => u.id === user.id);
+            if (idx !== -1) {
+                mockUsers[idx] = { ...mockUsers[idx], ...updates };
+                localStorage.setItem(MOCK_USERS_KEY, JSON.stringify(mockUsers));
+            }
+        }
+    };
+
+    const resetPasswordForEmail = async (email: string): Promise<{ success: boolean; message: string }> => {
+        const cleanEmail = email.trim().toLowerCase();
+        if (isConfigured) {
+            const redirectUrl = `${window.location.origin}/reset-password`;
+            const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
+                redirectTo: redirectUrl,
+            });
+            if (error) throw error;
+            return {
+                success: true,
+                message: `Password reset link dispatched to ${cleanEmail}. Check your inbox to proceed.`
+            };
+        } else {
+            // Mock mode password recovery
+            const mockUsers = JSON.parse(localStorage.getItem(MOCK_USERS_KEY) || '[]');
+            const exists = mockUsers.some((u: { email: string }) => u.email.toLowerCase() === cleanEmail);
+            if (!exists) {
+                throw new Error("No registered account found with this email address.");
+            }
+            localStorage.setItem('tl_reset_target_email', cleanEmail);
+            return {
+                success: true,
+                message: `Password reset instructions sent to ${cleanEmail}. You can now proceed to set a new password.`
+            };
+        }
+    };
+
+    const updatePassword = async (newPassword: string): Promise<{ success: boolean; message: string }> => {
+        const passwordEval = validatePassword(newPassword);
+        if (!passwordEval.isValid) {
+            throw new Error(passwordEval.errors[0] || "Password does not meet required security standards.");
+        }
+
+        if (isConfigured) {
+            const { error } = await supabase.auth.updateUser({ password: newPassword });
+            if (error) throw error;
+            return { success: true, message: "Your password has been successfully updated." };
+        } else {
+            const targetEmail = localStorage.getItem('tl_reset_target_email') || user?.email;
+            if (!targetEmail) {
+                throw new Error("No active password reset session found. Please request a new recovery link.");
+            }
+            const mockUsers = JSON.parse(localStorage.getItem(MOCK_USERS_KEY) || '[]');
+            const idx = mockUsers.findIndex((u: { email: string }) => u.email.toLowerCase() === targetEmail.toLowerCase());
+            if (idx !== -1) {
+                mockUsers[idx].password = newPassword;
+                localStorage.setItem(MOCK_USERS_KEY, JSON.stringify(mockUsers));
+                localStorage.removeItem('tl_reset_target_email');
+                return { success: true, message: "Password updated successfully. You can now log in." };
+            }
+            throw new Error("User account could not be located in local archive.");
+        }
+    };
+
     const logout = async () => {
         if (isConfigured) {
             await supabase.auth.signOut();
@@ -403,7 +509,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     return (
-        <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, signup, logout, switchRole }}>
+        <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, signup, logout, switchRole, updateProfile, resetPasswordForEmail, updatePassword }}>
             {children}
         </AuthContext.Provider>
     );

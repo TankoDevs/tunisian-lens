@@ -2,7 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { ARTISTS, PROJECTS } from "../data/mockData";
 import { ProjectCard } from "../components/ui/ProjectCard";
 import { Button } from "../components/ui/button";
-import { MapPin, Heart, Star, Clapperboard, Globe2, ShieldCheck, Camera, Share, Twitter, MessageSquare, Zap } from "lucide-react";
+import { MapPin, Heart, Star, Clapperboard, Globe2, ShieldCheck, Camera, Share, Twitter, MessageSquare, Zap, Edit3 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useAlert } from "../context/AlertContext";
@@ -12,6 +12,7 @@ import { BadgePill } from "../components/ui/BadgePill";
 import { CinematicViewer } from "../components/ui/CinematicViewer";
 import { ProfileAvatar } from "../components/ui/ProfileAvatar";
 import { BeforeAfterSlider } from "../components/ui/BeforeAfterSlider";
+import { EditProfileModal } from "../components/ui/EditProfileModal";
 import { cn } from "../lib/utils";
 import { isArtistVerified, setArtistVerification } from "../lib/verification";
 import { motion, AnimatePresence } from "framer-motion";
@@ -35,6 +36,7 @@ export function ArtistProfile() {
     const [isSaved, setIsSaved] = useState(false);
     const [activeCollection, setActiveCollection] = useState<string | null>(null);
     const [showShareMenu, setShowShareMenu] = useState(false);
+    const [showEditProfile, setShowEditProfile] = useState(false);
     const [isVerified, setIsVerified] = useState<boolean>(() => id ? isArtistVerified(id) : false);
     const { user } = useAuth();
     const { showAlert } = useAlert();
@@ -64,9 +66,14 @@ export function ArtistProfile() {
         if (id) setArtistVerification(id, newStatus);
     };
 
-    const loc = artist.location || "Tunisia";
+    const isMyProfile = Boolean(user && (user.id === artist.id || (user.email && artist.email && user.email.toLowerCase() === artist.email.toLowerCase())));
+    const avatarSrc = isMyProfile && user?.avatar ? user.avatar : artist.avatar;
+    const bioText = isMyProfile && user?.bio ? user.bio : (artist.bio || "Passionate creative exploring the beauty of Tunisia.");
+    const nameText = isMyProfile && user?.name ? user.name : artist.name;
+    const titleText = isMyProfile && user?.title ? user.title : (artist.title || "Creative Artist");
+    const loc = isMyProfile && user?.location ? user.location : (artist.location || "Tunisia");
     const country = artist.country || "Tunisia";
-    const bio = artist.bio || "Passionate creative exploring the beauty of Tunisia.";
+    const bio = bioText;
     const profileCategories = artist.categories || ["Photography"];
     const languages = artist.languages || [];
     const internationalAvailable = artist.internationalAvailable || false;
@@ -183,22 +190,45 @@ export function ArtistProfile() {
                         {/* Left: Identity */}
                         <div className="flex-1 space-y-6">
                             <div className="flex items-center gap-6">
-                                <ProfileAvatar
-                                    src={artist.avatar}
-                                    alt={artist.name}
-                                    size="lg"
-                                    className="ring-4 ring-offset-4 ring-offset-canvas ring-ochre shadow-2xl"
-                                />
+                                <div
+                                    className={`relative group ${isMyProfile ? "cursor-pointer" : ""}`}
+                                    onClick={() => { if (isMyProfile) setShowEditProfile(true); }}
+                                    title={isMyProfile ? "Click to change photo" : undefined}
+                                >
+                                    <ProfileAvatar
+                                        src={avatarSrc}
+                                        alt={nameText}
+                                        size="lg"
+                                        className="ring-4 ring-offset-4 ring-offset-canvas ring-ochre shadow-2xl"
+                                    />
+                                    {isMyProfile && (
+                                        <div className="absolute inset-0 rounded-full bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-ochre">
+                                            <Edit3 className="w-5 h-5" />
+                                        </div>
+                                    )}
+                                </div>
                                 <div className="space-y-2">
                                     <div className="flex items-center gap-3 flex-wrap">
-                                        <h1 className="font-serif text-3xl md:text-5xl font-normal text-alabaster tracking-tight">{artist.name}</h1>
+                                        <h1 className="font-serif text-3xl md:text-5xl font-normal text-alabaster tracking-tight">{nameText}</h1>
                                         {isVerified && <VerificationBadge size={24} />}
+                                        {isMyProfile && (
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => setShowEditProfile(true)}
+                                                className="rounded-xl border-edge text-xs hover:border-ochre hover:text-ochre gap-1.5 h-8 px-3"
+                                            >
+                                                <Edit3 className="w-3.5 h-3.5 text-ochre" /> Edit Profile &amp; Bio
+                                            </Button>
+                                        )}
                                     </div>
-                                    <div className="flex items-center gap-4 text-mist text-sm">
+                                    <div className="flex items-center gap-4 text-mist text-sm flex-wrap">
                                         <span className="flex items-center gap-1.5 font-medium">
                                             <MapPin className="h-4 w-4 text-ochre" /> {loc}, {country}
                                         </span>
-                                        <div className="h-4 w-[1px] bg-edge" />
+                                        <div className="h-4 w-[1px] bg-edge hidden sm:block" />
+                                        <span className="text-xs text-ochre font-mono">{titleText}</span>
+                                        <div className="h-4 w-[1px] bg-edge hidden sm:block" />
                                         <div className="flex items-center gap-1">
                                             <Star className="h-4 w-4 fill-ochre text-ochre" strokeWidth={0} />
                                             <span className="font-semibold text-alabaster">{profileRating}</span>
@@ -600,6 +630,19 @@ export function ArtistProfile() {
                     </motion.div>
                 )}
             </AnimatePresence>
-        </div >
+
+            {/* Edit Profile & Bio Modal */}
+            <EditProfileModal
+                isOpen={showEditProfile}
+                onClose={() => setShowEditProfile(false)}
+                initialData={{
+                    name: nameText,
+                    avatar: avatarSrc,
+                    bio: bioText,
+                    title: titleText,
+                    location: loc
+                }}
+            />
+        </div>
     );
 }

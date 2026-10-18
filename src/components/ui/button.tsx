@@ -7,21 +7,22 @@ const buttonVariants = cva(
     {
         variants: {
             variant: {
-                default: "bg-foreground text-background hover:bg-foreground/85 active:scale-[0.98]",
+                default: "bg-lemon text-black font-semibold hover:bg-lemon-hover active:scale-[0.98] shadow-sm",
                 destructive:
                     "bg-destructive text-destructive-foreground hover:bg-destructive/90",
                 outline:
-                    "border border-border bg-transparent hover:bg-muted hover:border-foreground/20 active:scale-[0.98]",
+                    "border border-border bg-transparent hover:bg-surface-elevated hover:border-lemon text-alabaster active:scale-[0.98]",
                 secondary:
                     "bg-secondary text-secondary-foreground hover:bg-secondary/80",
                 ghost: "hover:bg-muted hover:text-foreground",
-                link: "text-foreground underline-offset-4 hover:underline",
-                sand: "bg-sand-400 text-white hover:bg-sand-500 active:scale-[0.98]",
+                link: "text-lemon underline-offset-4 hover:underline",
+                lemon: "bg-lemon hover:bg-lemon-hover text-black font-semibold shadow-sm active:scale-[0.98]",
+                sand: "bg-lemon text-black font-semibold hover:bg-lemon-hover active:scale-[0.98]",
             },
             size: {
-                default: "h-10 px-5 py-2 rounded-md",
-                sm: "h-9 rounded-md px-4 text-xs",
-                lg: "h-12 rounded-md px-8 text-base",
+                default: "h-10 px-5 py-2 rounded-xl",
+                sm: "h-8 rounded-xl px-3.5 text-xs",
+                lg: "h-12 rounded-2xl px-8 text-sm font-semibold",
                 icon: "h-10 w-10 rounded-full",
             },
         },

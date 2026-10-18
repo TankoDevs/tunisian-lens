@@ -1,4 +1,4 @@
-import { Upload, X, Lock, Unlock, ShieldAlert, CheckCircle2, AlertCircle, Download, Sparkles, Camera, MapPin, Compass } from "lucide-react";
+import { Upload, X, Lock, Unlock, ShieldAlert, ShieldCheck, CheckCircle2, AlertCircle, Download, Sparkles, Camera, MapPin, Compass } from "lucide-react";
 import { useState, useEffect } from "react";
 import { CATEGORIES } from "../data/mockData";
 import { cn } from "../lib/utils";
@@ -476,10 +476,13 @@ export function SubmitProject() {
                                             <span className="font-medium text-alabaster">{detectedExif.iso || '—'}</span>
                                         </div>
                                         {detectedExif.latitude && detectedExif.longitude && (
-                                            <div className="col-span-2 sm:col-span-3 p-3 rounded-xl bg-canvas border border-edge flex items-center gap-2">
-                                                <Compass className="w-4 h-4 text-ochre" />
+                                            <div className="col-span-2 sm:col-span-3 p-3 rounded-xl bg-canvas border border-edge flex items-center gap-2.5">
+                                                <ShieldCheck className="w-4 h-4 text-ochre flex-shrink-0" />
                                                 <span className="text-xs text-mist">
-                                                    Geo Coordinates: <strong className="text-alabaster">{detectedExif.latitude.toFixed(4)}° N, {detectedExif.longitude.toFixed(4)}° E</strong>
+                                                    Geographic Provenance: <strong className="text-alabaster">Tunisia (Verified)</strong>
+                                                    <span className="text-[10px] text-mist/60 block sm:inline sm:ml-2">
+                                                        • Raw GPS coordinates protected &amp; hidden from public view for privacy
+                                                    </span>
                                                 </span>
                                             </div>
                                         )}

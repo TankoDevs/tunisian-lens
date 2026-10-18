@@ -145,10 +145,10 @@ export function Navbar() {
                         </div>
 
                         <Link to="/creatives" className={navLinkClass('/creatives')}>
-                            Creatives
+                            Find Talent
                         </Link>
                         <Link to="/jobs" className={navLinkClass('/jobs')}>
-                            Opportunities
+                            Find Work
                         </Link>
 
                         <div className="relative group/gear" ref={gearMenuRef}>

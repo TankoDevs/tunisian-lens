@@ -117,6 +117,9 @@ export function Login() {
                                 <label htmlFor="password" className="text-xs font-mono uppercase tracking-wider text-mist">
                                     Password
                                 </label>
+                                <Link to="/forgot-password" className="text-xs font-mono text-ochre hover:underline transition-colors">
+                                    Forgot password?
+                                </Link>
                             </div>
                             <div className="relative">
                                 <input

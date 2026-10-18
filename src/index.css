@@ -6,69 +6,67 @@
 
 @layer base {
   :root {
-    /* Premium Photography Palette — Light */
-    --background: 0 0% 100%;
-    --foreground: 0 0% 7%;
+    /* Upwork-inspired Lemon & Black Palette */
+    --background: 0 0% 0%; /* #000000 Pitch Black */
+    --foreground: 220 14% 96%; /* #F4F4F6 */
 
-    --card: 30 10% 98%;
-    --card-foreground: 0 0% 7%;
+    --card: 220 10% 4%; /* #0C0D0E */
+    --card-foreground: 220 14% 96%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 7%;
+    --popover: 220 10% 8%; /* #15171A */
+    --popover-foreground: 220 14% 96%;
 
-    --primary: 0 0% 7%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 68 93% 65%; /* #E2F952 Electric Lemon */
+    --primary-foreground: 0 0% 0%; /* Black text on Lemon */
 
-    --secondary: 30 12% 95%;
-    --secondary-foreground: 0 0% 7%;
+    --secondary: 220 10% 10%;
+    --secondary-foreground: 220 14% 96%;
 
-    --muted: 30 8% 96%;
-    --muted-foreground: 0 0% 42%;
+    --muted: 220 10% 10%;
+    --muted-foreground: 220 10% 65%;
 
-    /* Warm Sand Accent */
-    --accent: 34 38% 64%;
-    --accent-foreground: 0 0% 7%;
+    --accent: 68 93% 65%; /* Electric Lemon */
+    --accent-foreground: 0 0% 0%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 30 15% 90%;
-    --input: 30 15% 90%;
-    --ring: 34 38% 64%;
+    --border: 220 10% 16%; /* #22252C */
+    --input: 220 10% 16%;
+    --ring: 68 93% 65%;
 
-    --radius: 6px;
+    --radius: 12px;
   }
 
   .dark {
-    /* Premium Photography Palette — Dark Neutral Canvas */
-    --background: 220 12% 5%; /* #0B0C0E */
-    --foreground: 220 14% 96%; /* #F1F2F5 Alabaster */
+    /* Upwork-inspired Lemon & Black Dark Canvas */
+    --background: 0 0% 0%; /* #000000 Pitch Black */
+    --foreground: 220 14% 96%; /* #F4F4F6 */
 
-    --card: 223 14% 10%; /* #15171C */
+    --card: 220 10% 4%; /* #0C0D0E */
     --card-foreground: 220 14% 96%;
 
-    --popover: 222 14% 13%; /* #1E2127 */
+    --popover: 220 10% 8%; /* #15171A */
     --popover-foreground: 220 14% 96%;
 
-    --primary: 34 66% 59%; /* #D99B56 Desert Ochre */
-    --primary-foreground: 220 12% 5%;
+    --primary: 68 93% 65%; /* #E2F952 Electric Lemon */
+    --primary-foreground: 0 0% 0%; /* Black text on Lemon */
 
-    --secondary: 222 14% 14%;
+    --secondary: 220 10% 10%;
     --secondary-foreground: 220 14% 96%;
 
-    --muted: 222 12% 13%;
-    --muted-foreground: 220 10% 68%; /* #A4AAB7 Mist */
+    --muted: 220 10% 10%;
+    --muted-foreground: 220 10% 65%;
 
-    /* Mediterranean Cobalt / Azure */
-    --accent: 213 80% 56%; /* #3884E6 */
-    --accent-foreground: 0 0% 100%;
+    --accent: 68 93% 65%; /* Electric Lemon */
+    --accent-foreground: 0 0% 0%;
 
     --destructive: 0 62.8% 35%;
     --destructive-foreground: 0 0% 95%;
 
-    --border: 222 12% 17%; /* #262930 */
-    --input: 222 12% 17%; /* #262930 */
-    --ring: 34 66% 59%;
+    --border: 220 10% 16%; /* #22252C */
+    --input: 220 10% 16%;
+    --ring: 68 93% 65%;
   }
 
   /* ── Typography & Editorial Cadence ── */
