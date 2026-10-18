@@ -2,12 +2,22 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { ShieldAlert } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+const checkIsMobileDevice = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  const userAgent = navigator.userAgent || navigator.vendor || (window as unknown as { opera?: string }).opera || '';
+  const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|Silk/i;
+  const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  const isNarrowScreen = window.innerWidth <= 840;
+  return mobileRegex.test(userAgent) || (isTouch && isNarrowScreen);
+};
+
 interface AntiScreenshotContextType {
   isShieldActive: boolean;
   shieldReason: string;
   triggerShield: (reason?: string) => void;
   isViewingProtected: boolean;
   setIsViewingProtected: (viewing: boolean) => void;
+  isMobile: boolean;
 }
 
 const AntiScreenshotContext = createContext<AntiScreenshotContextType | undefined>(undefined);
@@ -19,12 +29,26 @@ export const AntiScreenshotProvider: React.FC<{ children: React.ReactNode }> = (
   const [isShieldActive, setIsShieldActive] = useState(false);
   const [shieldReason, setShieldReason] = useState<string>('Screen capture restricted');
   const [isViewingProtected, setIsViewingProtected] = useState(false);
+  const [isMobile, setIsMobile] = useState<boolean>(() => checkIsMobileDevice());
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(checkIsMobileDevice());
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const triggerShield = useCallback((reason = 'Screen capture shortcut restricted') => {
+    // Never trigger shield or restrict captures on mobile phones
+    if (checkIsMobileDevice()) {
+      return;
+    }
+
     setShieldReason(reason);
     setIsShieldActive(true);
 
-    // Overwrite system clipboard to prevent pasting captured plate
+    // Overwrite system clipboard to prevent pasting captured plate on desktop
     try {
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(COPYRIGHT_NOTICE).catch(() => {});
@@ -42,6 +66,11 @@ export const AntiScreenshotProvider: React.FC<{ children: React.ReactNode }> = (
   }, []);
 
   useEffect(() => {
+    // If on a mobile phone, don't register intrusive desktop screenshot interceptors
+    if (checkIsMobileDevice()) {
+      return;
+    }
+
     const handleKeyDown = (e: KeyboardEvent) => {
       // Windows PrintScreen
       if (e.key === 'PrintScreen') {
@@ -85,8 +114,11 @@ export const AntiScreenshotProvider: React.FC<{ children: React.ReactNode }> = (
       }
     };
 
-    // When window loses focus while viewing high-res photo (e.g. Snipping Tool overlay)
+    // When window loses focus while viewing high-res photo (e.g. Snipping Tool overlay on desktop)
     const handleWindowBlur = () => {
+      // Allow seamless screenshots on mobile phones without activating privacy veil
+      if (checkIsMobileDevice()) return;
+
       if (isViewingProtected) {
         setIsShieldActive(true);
         setShieldReason('Window blurred — Archival privacy veil active');
@@ -102,8 +134,10 @@ export const AntiScreenshotProvider: React.FC<{ children: React.ReactNode }> = (
       }
     };
 
-    // Prevent global context menu on any elements marked data-protected
+    // Prevent global context menu on desktop elements marked data-protected
     const handleContextMenu = (e: MouseEvent) => {
+      if (checkIsMobileDevice()) return;
+
       const target = e.target as HTMLElement | null;
       if (target?.closest('[data-protected-image]')) {
         e.preventDefault();
@@ -129,11 +163,12 @@ export const AntiScreenshotProvider: React.FC<{ children: React.ReactNode }> = (
   return (
     <AntiScreenshotContext.Provider
       value={{
-        isShieldActive,
+        isShieldActive: isMobile ? false : isShieldActive,
         shieldReason,
         triggerShield,
         isViewingProtected,
         setIsViewingProtected,
+        isMobile,
       }}
     >
       {children}

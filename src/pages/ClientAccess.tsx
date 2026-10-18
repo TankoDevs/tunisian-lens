@@ -23,7 +23,7 @@ export function ClientAccess() {
         if (project) {
             navigate(`/project/${project.id}`);
         } else {
-            setError("Unrecognized access code. Please verify with your photographer.");
+            setError("Unrecognized access code. Please verify with your videographer or photographer.");
         }
     };
 
@@ -37,9 +37,9 @@ export function ClientAccess() {
                         <Lock className="h-6 w-6" strokeWidth={1.8} />
                     </div>
                     <span className="text-xs font-mono uppercase tracking-[0.2em] text-ochre block">Protected Vault</span>
-                    <h1 className="text-3xl font-serif text-alabaster tracking-tight">Client Access</h1>
+                    <h1 className="text-3xl font-serif text-alabaster tracking-tight">Client &amp; Visitor Access</h1>
                     <p className="text-xs md:text-sm text-mist font-light leading-relaxed">
-                        Enter your private commission passcode to unlock your high-resolution proofs and media archive.
+                        Enter your private code from a videographer or photographer to unlock and download your photos, master files, and deliverables.
                     </p>
                 </div>
 

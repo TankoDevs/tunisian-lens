@@ -115,9 +115,27 @@ export function Signup() {
     };
 
     const roleOptions = [
-        { value: 'creative' as const, label: 'Creative / Curator' },
-        { value: 'client' as const, label: 'Commissioning Client' },
-        { value: 'visitor' as const, label: 'Observer / Collector' },
+        {
+            value: 'creative' as const,
+            title: 'Video / Photographer',
+            shortLabel: 'Video/Photo',
+            description: 'Showcase portfolios, receive client commissions, and dispatch client access codes.',
+            badge: 'Creator',
+        },
+        {
+            value: 'client' as const,
+            title: 'Client',
+            shortLabel: 'Client',
+            description: 'Post assignments, hire videographers & photographers, and commission custom works.',
+            badge: 'Hire',
+        },
+        {
+            value: 'visitor' as const,
+            title: 'Visitor',
+            shortLabel: 'Visitor',
+            description: 'For downloading wallpapers and/or entered a code from a videographer/photographer to download his photos.',
+            badge: 'Wallpapers & Codes',
+        },
     ];
 
     return (
@@ -190,23 +208,70 @@ export function Signup() {
                         </div>
 
                         {/* Role selection */}
-                        <div className="space-y-2">
-                            <label className="text-xs font-mono uppercase tracking-wider text-mist">I wish to join as</label>
-                            <div className="grid grid-cols-3 gap-2">
-                                {roleOptions.map(opt => (
-                                    <button
-                                        key={opt.value}
-                                        type="button"
-                                        onClick={() => setRole(opt.value)}
-                                        className={`py-2.5 px-2 rounded-xl text-xs font-mono tracking-wider border transition-all text-center ${role === opt.value
-                                            ? 'bg-ochre text-canvas border-ochre font-semibold shadow-sm'
-                                            : 'bg-surface border-edge text-mist hover:text-alabaster hover:border-edge/80'
+                        <div className="space-y-2.5">
+                            <label className="text-xs font-mono uppercase tracking-wider text-mist flex items-center justify-between">
+                                <span>Account Type</span>
+                                <span className="text-[10px] text-ochre font-normal">Choose your participation mode</span>
+                            </label>
+                            
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                {roleOptions.map(opt => {
+                                    const isSelected = role === opt.value;
+                                    return (
+                                        <button
+                                            key={opt.value}
+                                            type="button"
+                                            onClick={() => setRole(opt.value)}
+                                            className={`p-3 rounded-2xl border text-left transition-all relative flex flex-col justify-between ${
+                                                isSelected
+                                                    ? 'bg-ochre/15 border-ochre text-alabaster shadow-md shadow-ochre/10 ring-1 ring-ochre/40'
+                                                    : 'bg-surface border-edge text-mist hover:text-alabaster hover:border-edge/90'
                                             }`}
-                                    >
-                                        {opt.value === 'creative' ? 'Creative' : opt.value === 'client' ? 'Client' : 'Visitor'}
-                                    </button>
-                                ))}
+                                        >
+                                            <div className="space-y-1">
+                                                <div className="flex items-center justify-between">
+                                                    <span className={`text-xs font-semibold ${isSelected ? 'text-ochre' : 'text-alabaster'}`}>
+                                                        {opt.title}
+                                                    </span>
+                                                    {isSelected && (
+                                                        <span className="w-2 h-2 rounded-full bg-ochre inline-block" />
+                                                    )}
+                                                </div>
+                                                <p className="text-[10px] font-mono uppercase tracking-wider text-mist/70">
+                                                    {opt.badge}
+                                                </p>
+                                            </div>
+                                        </button>
+                                    );
+                                })}
                             </div>
+
+                            {/* Detailed Description of Selected Account Type */}
+                            <div className="p-3 rounded-xl border border-edge/80 bg-surface/70 text-xs text-mist leading-relaxed font-light">
+                                <p className="text-[11px]">
+                                    <strong className="font-semibold text-alabaster">
+                                        {roleOptions.find(o => o.value === role)?.title}:
+                                    </strong>{" "}
+                                    {roleOptions.find(o => o.value === role)?.description}
+                                </p>
+                            </div>
+
+                            {role === 'visitor' && (
+                                <div className="p-3 rounded-xl border border-ochre/30 bg-ochre/5 space-y-1.5 text-xs">
+                                    <div className="flex items-center gap-1.5 text-ochre font-mono uppercase tracking-wider text-[10px] font-semibold">
+                                        <Sparkles className="w-3.5 h-3.5" />
+                                        <span>Visitor Privileges</span>
+                                    </div>
+                                    <p className="text-[11px] text-mist font-light leading-relaxed">
+                                        Enjoy high-res wallpaper generation (9:16 mobile &amp; 4K desktop). If a videographer or photographer gave you a private code, enter it anytime under <strong className="text-alabaster font-normal">Client Access</strong> to unlock and download your photos.
+                                    </p>
+                                    <div className="pt-0.5">
+                                        <Link to="/client-access" className="text-ochre hover:text-ochre-light text-[11px] font-mono underline underline-offset-4 inline-flex items-center gap-1">
+                                            Have an access code already? Unlock photos now →
+                                        </Link>
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         <div className="space-y-2">

@@ -8,9 +8,18 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
+        sans: ['Satoshi', '"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
+        display: ['"Cabinet Grotesk"', 'Syne', '"Plus Jakarta Sans"', 'sans-serif'],
+        grotesk: ['"Cabinet Grotesk"', 'Syne', 'sans-serif'],
         serif: ['"Playfair Display"', 'Cinzel', 'Georgia', 'serif'],
-        display: ['"Playfair Display"', 'Cinzel', 'Georgia', 'serif'],
+      },
+      transitionTimingFunction: {
+        'editorial': 'cubic-bezier(0.16, 1, 0.3, 1)',
+      },
+      boxShadow: {
+        'inner-glow': 'inset 0 1px 0 rgba(255, 255, 255, 0.12)',
+        'inner-glow-hover': 'inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 20px 40px -15px rgba(0, 0, 0, 0.7)',
+        'inner-subtle': 'inset 0 1px 0 rgba(255, 255, 255, 0.08)',
       },
       colors: {
         canvas: "#000000",

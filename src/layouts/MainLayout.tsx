@@ -15,7 +15,8 @@ export function MainLayout() {
     const location = useLocation();
 
     return (
-        <div className="min-h-screen flex flex-col font-sans text-alabaster bg-canvas selection:bg-ochre/25 selection:text-alabaster">
+        <div className="min-h-screen flex flex-col font-sans text-alabaster bg-canvas selection:bg-ochre/25 selection:text-alabaster relative">
+            <div className="noise-overlay" aria-hidden="true" />
             <GlobalAlert />
             <Navbar />
             <main className="flex-1 flex flex-col">

@@ -84,9 +84,9 @@ export function PostJob() {
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center space-y-4">
                     <Briefcase className="h-12 w-12 mx-auto text-muted-foreground opacity-40" strokeWidth={1.5} />
-                    <p className="text-lg font-medium">Only clients can post jobs</p>
-                    <p className="text-sm text-muted-foreground">Creatives can browse and apply to jobs.</p>
-                    <Link to="/jobs"><Button variant="outline">Browse Jobs</Button></Link>
+                    <p className="text-lg font-medium">Only clients can post assignments</p>
+                    <p className="text-sm text-muted-foreground">Videographers and photographers can browse and apply to assignments.</p>
+                    <Link to="/jobs"><Button variant="outline">Browse Assignments</Button></Link>
                 </div>
             </div>
         );

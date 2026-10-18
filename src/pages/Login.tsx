@@ -205,7 +205,7 @@ export function Login() {
 
                         <div className="space-y-3 text-xs">
                             <div>
-                                <span className="text-[11px] text-mist/60 block mb-1.5 font-mono">Photographer Profiles:</span>
+                                <span className="text-[11px] text-mist/60 block mb-1.5 font-mono">Videographer &amp; Photographer Profiles:</span>
                                 <div className="flex flex-wrap gap-1.5">
                                     {PHOTO_CATEGORIES.slice(0, 5).map(cat => {
                                         const demoEmail = `${cat.toLowerCase().replace(/[^a-z0-9]/g, '')}@demo.com`;
@@ -224,14 +224,21 @@ export function Login() {
                             </div>
 
                             <div>
-                                <span className="text-[11px] text-mist/60 block mb-1.5 font-mono">Administrative & Client:</span>
-                                <div className="flex gap-2">
+                                <span className="text-[11px] text-mist/60 block mb-1.5 font-mono">Client &amp; Visitor Profiles:</span>
+                                <div className="flex gap-2 flex-wrap">
                                     <button
                                         type="button"
                                         onClick={() => { handleEmailChange('client@tunisianlens.com'); setPassword('client123'); setIsVerified(true); }}
                                         className="text-[10px] font-mono px-3 py-1 rounded-full border border-edge bg-surface text-sidi-azure hover:border-sidi-azure transition-colors"
                                     >
                                         Client Role
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => { handleEmailChange('visitor@demo.com'); setPassword('demo123'); setIsVerified(true); }}
+                                        className="text-[10px] font-mono px-3 py-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition-colors"
+                                    >
+                                        Visitor (Wallpapers &amp; Codes)
                                     </button>
                                     <button
                                         type="button"

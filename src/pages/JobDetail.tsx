@@ -381,6 +381,14 @@ export function JobDetail() {
                         ) : user?.role === 'client' ? (
                             /* Client viewing */
                             <p className="text-xs text-mist text-center py-4">Client accounts commission briefs and cannot submit proposals.</p>
+                        ) : user?.role === 'visitor' ? (
+                            /* Visitor viewing */
+                            <div className="text-center py-4 space-y-2">
+                                <p className="text-xs text-mist">Visitor accounts can browse wallpapers and access client galleries with a code. To apply for assignments, switch to a Videographer / Photographer account in your Dashboard.</p>
+                                <Link to="/dashboard" className="text-ochre hover:text-ochre-light text-xs font-mono underline inline-block">
+                                    Open Dashboard →
+                                </Link>
+                            </div>
                         ) : user?.role === 'creative' && user?.createdAt && (now - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24) < 7 ? (
                             /* Account too new */
                             <div className="flex items-start gap-3 p-4 bg-sidi.azure/10 border border-sidi.azure/30 rounded-xl">

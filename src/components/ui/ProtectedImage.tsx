@@ -37,9 +37,11 @@ export const ProtectedImage: React.FC<ProtectedImageProps> = ({
   onError,
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
-  const { isShieldActive, triggerShield } = useAntiScreenshot();
+  const { isShieldActive, triggerShield, isMobile } = useAntiScreenshot();
+  const effectiveShieldActive = !isMobile && isShieldActive;
 
   const handleInterceptAction = (e: React.SyntheticEvent) => {
+    if (isMobile) return;
     e.preventDefault();
     e.stopPropagation();
     triggerShield('Direct image saving and drag-copying are restricted');
@@ -77,12 +79,12 @@ export const ProtectedImage: React.FC<ProtectedImageProps> = ({
         className={cn(
           'w-full h-full object-cover pointer-events-none select-none transition-all duration-700 ease-out',
           isLoaded ? 'opacity-100 scale-100 filter-none' : 'opacity-0 scale-[1.03] blur-sm',
-          isShieldActive && 'blur-xl brightness-50 contrast-125 transition-all duration-150',
+          effectiveShieldActive && 'blur-xl brightness-50 contrast-125 transition-all duration-150',
           imgClassName
         )}
         style={{
-          WebkitTouchCallout: 'none',
-          WebkitUserSelect: 'none',
+          WebkitTouchCallout: isMobile ? 'default' : 'none',
+          WebkitUserSelect: isMobile ? 'auto' : 'none',
         }}
       />
 
@@ -107,16 +109,18 @@ export const ProtectedImage: React.FC<ProtectedImageProps> = ({
         </div>
       )}
 
-      {/* Transparent Click & Drag Shield (Prevents right-click and save-as) */}
-      <div
-        className="absolute inset-0 z-30 pointer-events-auto cursor-pointer"
-        onContextMenu={handleInterceptAction}
-        onDragStart={handleInterceptAction}
-        aria-hidden="true"
-      />
+      {/* Transparent Click & Drag Shield for Desktop (Prevents right-click and save-as) */}
+      {!isMobile && (
+        <div
+          className="absolute inset-0 z-30 pointer-events-auto cursor-pointer"
+          onContextMenu={handleInterceptAction}
+          onDragStart={handleInterceptAction}
+          aria-hidden="true"
+        />
+      )}
 
-      {/* Security Privacy Veil when Snipping / Shield is active */}
-      {isShieldActive && (
+      {/* Security Privacy Veil when Snipping / Shield is active on desktop */}
+      {effectiveShieldActive && (
         <div className="absolute inset-0 z-40 bg-canvas/80 backdrop-blur-md flex flex-col items-center justify-center p-4 text-center border border-ochre/30">
           <div className="w-10 h-10 rounded-full bg-ochre/20 text-ochre flex items-center justify-center mb-2 border border-ochre/40 shadow-lg shadow-ochre/15">
             <Lock size={18} />

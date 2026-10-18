@@ -60,6 +60,15 @@ const CURRENT_USER_KEY = 'tunisian_lens_current_user';
             country: 'TN',
             avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
         },
+        {
+            id: 'demo-visitor-1',
+            email: 'visitor@demo.com',
+            password: 'demo123',
+            name: 'Yassine Triki',
+            role: 'visitor',
+            country: 'TN',
+            avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
+        },
     ];
 
     // Dynamically inject a creative account for every category
@@ -123,10 +132,44 @@ export function normalizeRole(rawRole?: string): 'creative' | 'visitor' | 'admin
     if (!rawRole) return 'creative';
     const r = rawRole.toLowerCase().trim();
     if (r === 'admin' || r === 'curator') return 'admin';
-    if (r === 'client' || r === 'partner') return 'client';
-    if (r === 'visitor' || r === 'collector' || r === 'user') return 'visitor';
-    if (r === 'creative' || r === 'contributor' || r === 'photographer' || r === 'videographer') return 'creative';
+    if (r === 'client' || r === 'partner' || r === 'customer' || r === 'buyer') return 'client';
+    if (r === 'visitor' || r === 'collector' || r === 'user' || r.includes('visit') || r.includes('wallpaper')) return 'visitor';
+    if (r === 'creative' || r === 'contributor' || r === 'photographer' || r === 'videographer' || r.includes('photo') || r.includes('video')) return 'creative';
     return 'creative';
+}
+
+// eslint-disable-next-line react-refresh/only-export-components
+export function getRoleDisplayName(role?: 'creative' | 'visitor' | 'admin' | 'client' | string): string {
+    const norm = normalizeRole(role);
+    switch (norm) {
+        case 'creative':
+            return 'Videographer / Photographer';
+        case 'client':
+            return 'Client';
+        case 'visitor':
+            return 'Visitor (Wallpapers & Codes)';
+        case 'admin':
+            return 'Curatorial Admin';
+        default:
+            return 'Member';
+    }
+}
+
+// eslint-disable-next-line react-refresh/only-export-components
+export function getRoleDescription(role?: 'creative' | 'visitor' | 'admin' | 'client' | string): string {
+    const norm = normalizeRole(role);
+    switch (norm) {
+        case 'creative':
+            return 'Showcase photo & video folios, receive client commissions, and dispatch client access codes.';
+        case 'client':
+            return 'Post briefs, commission videographers & photographers, and license cultural media.';
+        case 'visitor':
+            return 'For downloading wallpapers and/or entered a code from a videographer/photographer to download his photos.';
+        case 'admin':
+            return 'Platform administration and archival curation.';
+        default:
+            return '';
+    }
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {

@@ -1,13 +1,14 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import {
     Zap, Briefcase, ChevronRight, CheckCircle2, XCircle, AlertCircle,
-    PlusCircle, ShieldCheck, Clock, Globe, Tag, Image, Download,
-    Layers, Sparkles, SlidersHorizontal, Lock, ArrowUpRight, Edit3
+    PlusCircle, ShieldCheck, Clock, Globe, Tag, Download,
+    Layers, SlidersHorizontal, Lock, ArrowUpRight, Edit3, Key
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMarketplace } from "../context/MarketplaceContext";
 import { useAuth } from "../context/AuthContext";
+import { useProjects } from "../context/ProjectContext";
 import { Button } from "../components/ui/button";
 import { EditProfileModal } from "../components/ui/EditProfileModal";
 import {
@@ -82,6 +83,28 @@ export function Dashboard() {
     const [requestMsg, setRequestMsg] = useState('');
     const [requestSent, setRequestSent] = useState(false);
     const [showEditProfile, setShowEditProfile] = useState(false);
+
+    // Visitor code unlock
+    const navigate = useNavigate();
+    const { getProjectByCode } = useProjects();
+    const [visitorCode, setVisitorCode] = useState('');
+    const [visitorCodeError, setVisitorCodeError] = useState('');
+
+    const handleVisitorCodeSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        setVisitorCodeError('');
+        const trimmed = visitorCode.trim();
+        if (!trimmed) {
+            setVisitorCodeError('Please enter your photo access code');
+            return;
+        }
+        const proj = getProjectByCode(trimmed);
+        if (proj) {
+            navigate(`/project/${proj.id}`);
+        } else {
+            setVisitorCodeError('Unrecognized code. Verify with your videographer/photographer.');
+        }
+    };
 
     // International toggle & style tags (creative only)
     const [intlAvailable, setIntlAvailable] = useState<boolean>(() => user ? getStoredIntl(user.id) : false);
@@ -178,12 +201,12 @@ export function Dashboard() {
     };
 
     const roleBadgeText = isCreative
-        ? 'Verified Creative'
+        ? 'Videographer & Photographer'
         : isClient
-            ? 'Commission Partner'
+            ? 'Commissioning Client'
             : isAdmin
                 ? 'Curatorial Director'
-                : 'Archival Collector';
+                : 'Visitor · Wallpapers & Private Code';
 
     return (
         <div className="min-h-screen bg-canvas text-alabaster py-10 md:py-14">
@@ -227,7 +250,7 @@ export function Dashboard() {
                                     Welcome back, {user.name}
                                 </h1>
                                 <p className="text-xs text-mist font-light">
-                                    {user.title || (isCreative ? 'Photographer & Visual Creator' : 'Commission Partner')} · {user.location || user.country || 'Tunisia'} · Active Session
+                                    {user.title || (isCreative ? 'Videographer & Photographer' : isClient ? 'Commissioning Client' : 'Visitor / Wallpaper & Media Access')} · {user.location || user.country || 'Tunisia'} · Active Session
                                 </p>
                                 {user.bio && (
                                     <p className="text-xs text-mist/80 line-clamp-1 italic max-w-xl font-light">
@@ -270,18 +293,18 @@ export function Dashboard() {
                             )}
                             {isVisitor && (
                                 <>
-                                    <Button
-                                        size="sm"
-                                        onClick={() => switchRole('creative')}
-                                        className="gap-2 text-xs bg-ochre hover:bg-ochre-light text-canvas font-medium rounded-xl h-10"
-                                    >
-                                        <Sparkles className="h-4 w-4" /> Activate Creative Folio
-                                    </Button>
-                                    <Link to="/explore">
-                                        <Button variant="outline" size="sm" className="gap-2 text-xs border-edge text-alabaster hover:bg-surface-elevated rounded-xl h-10">
-                                            <Image className="h-4 w-4" /> Explore Archive
+                                    <Link to="/client-access">
+                                        <Button size="sm" className="gap-2 text-xs bg-ochre hover:bg-ochre-light text-canvas font-medium rounded-xl h-10">
+                                            <Key className="h-4 w-4" /> Enter Photo Code
                                         </Button>
                                     </Link>
+                                    <button
+                                        type="button"
+                                        onClick={() => setActiveTab('wallpapers')}
+                                        className="gap-2 text-xs border border-edge text-alabaster hover:border-ochre hover:bg-surface-elevated rounded-xl h-10 px-3.5 inline-flex items-center transition-colors"
+                                    >
+                                        <Download className="h-4 w-4 text-ochre" /> Wallpapers
+                                    </button>
                                 </>
                             )}
                         </div>
@@ -304,7 +327,7 @@ export function Dashboard() {
                                             : 'text-mist hover:text-alabaster hover:bg-surface-elevated'
                                     }`}
                                 >
-                                    {r === 'creative' ? 'Creative' : r === 'client' ? 'Client' : 'Collector'}
+                                    {r === 'creative' ? 'Video/Photo Grapher' : r === 'client' ? 'Client' : 'Visitor'}
                                 </button>
                             ))}
                             {user.role === 'admin' && (
@@ -380,6 +403,72 @@ export function Dashboard() {
                 {/* ── TAB 1: OVERVIEW ── */}
                 {activeTab === 'overview' && (
                     <div className="space-y-8">
+                        {/* ── VISITOR HUB: PHOTO CODE UNLOCK & WALLPAPERS ── */}
+                        {isVisitor && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-2">
+                                {/* Card 1: Enter Videographer / Photographer Code */}
+                                <div className="border border-edge rounded-3xl p-6 bg-surface space-y-4 shadow-sm flex flex-col justify-between">
+                                    <div className="space-y-3">
+                                        <div className="flex items-center gap-2 text-ochre text-xs font-mono uppercase tracking-wider">
+                                            <Key className="h-4 w-4" />
+                                            <span>Private Commission Vault</span>
+                                        </div>
+                                        <h3 className="font-serif text-xl text-alabaster">Got a Code from your Videographer or Photographer?</h3>
+                                        <p className="text-xs text-mist font-light leading-relaxed">
+                                            Enter the private access code from your videographer or photographer to unlock and download your photos, master files, and deliverables.
+                                        </p>
+                                    </div>
+
+                                    <form onSubmit={handleVisitorCodeSubmit} className="space-y-3 pt-1">
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="text"
+                                                placeholder="e.g. X7K-9P2"
+                                                value={visitorCode}
+                                                onChange={(e) => { setVisitorCode(e.target.value); setVisitorCodeError(''); }}
+                                                className="flex-1 uppercase font-mono tracking-widest text-sm px-4 h-11 rounded-xl border border-edge bg-canvas text-alabaster placeholder:text-mist/30 focus:outline-none focus:border-ochre transition-all"
+                                            />
+                                            <Button type="submit" size="sm" className="bg-ochre hover:bg-ochre-light text-canvas font-mono uppercase text-xs tracking-wider px-4 h-11 rounded-xl font-semibold">
+                                                Unlock Photos
+                                            </Button>
+                                        </div>
+                                        {visitorCodeError && (
+                                            <p className="text-xs text-rose-400 font-mono">{visitorCodeError}</p>
+                                        )}
+                                    </form>
+                                </div>
+
+                                {/* Card 2: Wallpaper Studio */}
+                                <div className="border border-edge rounded-3xl p-6 bg-surface space-y-4 shadow-sm flex flex-col justify-between">
+                                    <div className="space-y-3">
+                                        <div className="flex items-center gap-2 text-ochre text-xs font-mono uppercase tracking-wider">
+                                            <Download className="h-4 w-4" />
+                                            <span>Curated Wallpapers</span>
+                                        </div>
+                                        <h3 className="font-serif text-xl text-alabaster">Download Device Wallpapers</h3>
+                                        <p className="text-xs text-mist font-light leading-relaxed">
+                                            Download high-resolution wallpapers tailored for smartphones (OLED 9:16), 4K desktop screens (16:9), and square formats with custom browser-canvas cropping.
+                                        </p>
+                                    </div>
+
+                                    <div className="pt-1 flex items-center gap-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => setActiveTab('wallpapers')}
+                                            className="flex-1 h-11 rounded-xl bg-ochre hover:bg-ochre-light text-canvas font-mono uppercase text-xs tracking-wider font-semibold flex items-center justify-center gap-2"
+                                        >
+                                            <Download className="w-4 h-4" /> Wallpaper Studio
+                                        </button>
+                                        <Link to="/explore" className="flex-1">
+                                            <Button variant="outline" className="w-full h-11 rounded-xl border-edge text-alabaster hover:bg-surface-elevated font-mono uppercase text-xs tracking-wider">
+                                                Browse Photos
+                                            </Button>
+                                        </Link>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                         {/* Metrics Row */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                             {/* Connects Card */}

@@ -1,10 +1,10 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useMarketplace } from "../context/MarketplaceContext";
 import { Button } from "./ui/button";
-import { Menu, X, Camera, User, LogIn, UserPlus, LogOut, Briefcase, ShieldCheck, MessageSquare, Zap, TrendingUp, Bell, ChevronDown, Sparkles } from "lucide-react";
+import { Menu, X, Camera, User, LogIn, UserPlus, LogOut, Briefcase, ShieldCheck, MessageSquare, Zap, TrendingUp, Bell, ChevronDown, Sparkles, Key, Download } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useAuth } from "../context/AuthContext";
+import { useAuth, getRoleDisplayName } from "../context/AuthContext";
 import { useChat } from "../context/ChatContext";
 import { cn } from "../lib/utils";
 
@@ -311,7 +311,7 @@ export function Navbar() {
                                                 <p className="text-sm font-medium text-foreground truncate">{user?.name}</p>
                                                 <div className="flex items-center gap-1.5 mt-0.5">
                                                     <span className="text-[10px] uppercase tracking-wider font-semibold px-1.5 py-0.5 rounded bg-ochre/15 text-ochre border border-ochre/20">
-                                                        {user?.role}
+                                                        {getRoleDisplayName(user?.role)}
                                                     </span>
                                                     <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
                                                 </div>
@@ -331,6 +331,26 @@ export function Navbar() {
                                                     <Briefcase className="h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
                                                     Dashboard
                                                 </Link>
+                                                {user?.role === 'visitor' && (
+                                                    <>
+                                                        <Link
+                                                            to="/client-access"
+                                                            className="flex items-center gap-2.5 px-3 py-2 text-sm rounded-md hover:bg-muted text-ochre transition-colors duration-200"
+                                                            onClick={() => setIsUserMenuOpen(false)}
+                                                        >
+                                                            <Key className="h-4 w-4" strokeWidth={1.5} />
+                                                            Enter Photo Code
+                                                        </Link>
+                                                        <Link
+                                                            to="/explore"
+                                                            className="flex items-center gap-2.5 px-3 py-2 text-sm rounded-md hover:bg-muted transition-colors duration-200"
+                                                            onClick={() => setIsUserMenuOpen(false)}
+                                                        >
+                                                            <Download className="h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
+                                                            Wallpapers Archive
+                                                        </Link>
+                                                    </>
+                                                )}
                                                 {user?.role === 'admin' && (
                                                     <Link
                                                         to="/admin"
