@@ -2,7 +2,6 @@ import { Outlet, Link, useLocation } from "react-router-dom";
 import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/Footer";
 import { GlobalAlert } from "../components/ui/GlobalAlert";
-import { ScrollButton } from "../components/ui/ScrollButton";
 import { ChatWidget } from "../components/ui/ChatWidget";
 import { MessageSquare, Plus } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
@@ -34,7 +33,6 @@ export function MainLayout() {
                 </AnimatePresence>
             </main>
             <Footer />
-            <ScrollButton />
             <ChatWidget />
 
             {/* Mobile Floating Action Buttons */}

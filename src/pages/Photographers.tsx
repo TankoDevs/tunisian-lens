@@ -439,13 +439,13 @@ export function Photographers() {
                         <section>
                             <div className="flex items-end justify-between mb-8">
                                 <div className="space-y-1">
-                                    <div className="flex items-center gap-2 text-[#C8A97E] mb-1">
+                                    <div className="flex items-center gap-2 text-lemon mb-1">
                                         <TrendingUp className="h-4 w-4" />
                                         <span className="text-[10px] font-bold uppercase tracking-[0.2em]">High Demand</span>
                                     </div>
                                     <h2 className="text-3xl font-bold tracking-tight">Trending Creators</h2>
                                 </div>
-                                <Button variant="ghost" size="sm" className="gap-2 text-[#C8A97E]" onClick={() => setDiscoveryTab("trending")}>
+                                <Button variant="ghost" size="sm" className="gap-2 text-lemon" onClick={() => setDiscoveryTab("trending")}>
                                     Explore Trending <ChevronRight className="h-4 w-4" />
                                 </Button>
                             </div>
@@ -468,7 +468,7 @@ export function Photographers() {
                                     </div>
                                     <h2 className="text-3xl font-bold tracking-tight">Top Rated Professionals</h2>
                                 </div>
-                                <Button variant="ghost" size="sm" className="gap-2 text-[#C8A97E]" onClick={() => setDiscoveryTab("top_rated")}>
+                                <Button variant="ghost" size="sm" className="gap-2 text-lemon" onClick={() => setDiscoveryTab("top_rated")}>
                                     View All Top Rated <ChevronRight className="h-4 w-4" />
                                 </Button>
                             </div>
@@ -491,7 +491,7 @@ export function Photographers() {
                                     </div>
                                     <h2 className="text-3xl font-bold tracking-tight">New Creators</h2>
                                 </div>
-                                <Button variant="ghost" size="sm" className="gap-2 text-[#C8A97E]" onClick={() => setDiscoveryTab("new")}>
+                                <Button variant="ghost" size="sm" className="gap-2 text-lemon" onClick={() => setDiscoveryTab("new")}>
                                     Discover Fresh Talent <ChevronRight className="h-4 w-4" />
                                 </Button>
                             </div>
