@@ -65,7 +65,7 @@ export function ScrollButton() {
                     transition={{ duration: 0.35, ease: "easeInOut" }}
                     onClick={handleClick}
                     className={cn(
-                        "fixed right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-[#C8A97E] text-white shadow-lg",
+                        "fixed right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-lemon text-black font-semibold shadow-[0_4px_20px_rgba(226,249,82,0.35)] hover:bg-lemon-hover hover:scale-105 active:scale-95 transition-all",
                         "bottom-24 md:bottom-24" // Moved higher to avoid overlapping with Post Job (bottom-6)
                     )}
                     aria-label={isAtBottom ? "Scroll to top" : "Scroll to bottom"}
